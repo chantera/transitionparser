@@ -49,8 +49,8 @@ protected:
     static const std::map<LogLevel, std::string> LABELS;
     std::string accessId;
     std::string accessTime;
-
     Logger() {};  // constructor
+
 
     static void _initialize();
 
@@ -63,7 +63,7 @@ protected:
 
 template<typename ... Args>
 void Logger::log(LogLevel logLevel, const char* format, const Args&... args) {
-    std::string message = StringUtils::format(format, args...);
+    std::string message = utility::StringUtils::format(format, args...);
     _getInstance()._log(logLevel, message.c_str());
 }
 

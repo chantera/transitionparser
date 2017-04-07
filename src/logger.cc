@@ -33,8 +33,8 @@ Logger& Logger::_getInstance() {
 }
 
 void Logger::_log(LogLevel logLevel, const char* message) {
-    std::string output = StringUtils::format("[%s]\t%s", Logger::LABELS.at(logLevel), message);
-    FileUtils::write("/Users/hiroki/work/coordparser/logs/test.log", output.c_str());
+    std::string output = utility::StringUtils::format("[%s]\t%s", Logger::LABELS.at(logLevel), message);
+    utility::FileUtils::write("/Users/hiroki/work/coordparser/logs/test.log", output.c_str());
     std::cout << output << std::endl;
 }
 

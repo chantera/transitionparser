@@ -14,34 +14,29 @@ Token::Token(const string& id, const string& form, const string& lemma, const st
         : Token(id, form, postag, head, deprel) {}
 
 std::string Token::getForm() const {
-    return Token::getAttribute(form);
+    return Token::getAttribute(form_);
 }
 
 std::string Token::getPostag() const {
-    return Token::getAttribute(postag);
+    return Token::getAttribute(postag_);
 }
 
 std::string Token::getDeprel() const {
-    return Token::getAttribute(deprel);
+    return Token::getAttribute(deprel_);
 }
 
 Token Token::createRoot() {
     Token token(
-            // "0",       // ID
-            // "<ROOT>",  // FORM
-            // // "<ROOT>",  // LEMMA
-            // // "ROOT",    // CPOSTAG
-            // "ROOT",    // POSTAG
-            // // "_",       // FEATS
-            // "-1",      // HEAD
-            // "ROOT"     // DEPREL
-            // // "_",       // PHEAD
-            // // "_"        // PDEPREL
-            0,
-            0,
-            0,
-            0,
-            0
+            "0",       // ID
+            "<ROOT>",  // FORM
+            // "<ROOT>",  // LEMMA
+            // "ROOT",    // CPOSTAG
+            "ROOT",    // POSTAG
+            // "_",       // FEATS
+            "-1",      // HEAD
+            "ROOT"     // DEPREL
+            // "_",       // PHEAD
+            // "_"        // PDEPREL
     );
     return token;
 }
@@ -51,24 +46,40 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
     return os;
 }
 
+Token::attribute_map Token::attributes_map_ = [] {
+    attribute_map map;
+    return map;
+}();
+
 Token::Token(const int id, const int form, const int postag, const int head, const int deprel)
-        : id(id), form(form), postag(postag), head(head), deprel(deprel) {}
+        : id_(id), form_(form), postag_(postag), head_(head), deprel_(deprel) {}
 
 Token::Token(const string& id, const string& form, const string& postag, const string& head, const string& deprel)
         : Token(
-                registerAttribute(Token::Atttribute::ID,     id    ),
-                registerAttribute(Token::Atttribute::FORM,   form  ),
-                registerAttribute(Token::Atttribute::POSTAG, postag),
-                registerAttribute(Token::Atttribute::HEAD,   head  ),
-                registerAttribute(Token::Atttribute::DEPREL, deprel)
+                std::stoi(id),
+                registerAttribute(Token::Attribute::FORM,   form  ),
+                registerAttribute(Token::Attribute::POSTAG, postag),
+                std::stoi(head),
+                registerAttribute(Token::Attribute::DEPREL, deprel)
         ) {}
 
-int Token::registerAttribute(const Token::Atttribute name, const string& value) {
-    return 0;
+int Token::registerAttribute(const Token::Attribute name, const string& value) {
+    std::pair<Attribute, std::string> attribute(name, value);
+    int index;
+    if (attributes_map_.left.find(attribute) != attributes_map_.left.end()) {
+        index = attributes_map_.left.at(attribute);
+    } else {
+        index = attributes_map_.size();
+        attributes_map_.insert(attribute_map::value_type(attribute, index));
+    }
+    return index;
 }
 
 std::string Token::getAttribute(const int index) {
-    return "test";
+    if (attributes_map_.right.find(index) == attributes_map_.right.end()) {
+        return nullptr;
+    }
+    return attributes_map_.right.at(index).second;
 }
 
 }

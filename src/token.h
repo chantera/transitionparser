@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/bimap.hpp>
 
 using std::string;
 
@@ -15,18 +16,18 @@ namespace coordparser {
 class Token {
 
 public:
-    const int id;
-    const int form;
-    // const int lemma;
-    // const int cpostag;
-    const int postag;
+    const int id_;
+    const int form_;
+    // const int lemma_;
+    // const int cpostag_;
+    const int postag_;
     // const int feats;
-    const int head;
-    const int deprel;
-    // const int phead;
-    // const int pdeprel;
+    const int head_;
+    const int deprel_;
+    // const int phead_;
+    // const int pdeprel_;
 
-    enum Atttribute {
+    enum Attribute {
         ID,
         FORM,
         // LEMMA,
@@ -55,11 +56,15 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
 private:
+    typedef boost::bimap<std::pair<Attribute, std::string>, int> attribute_map;
+
+    static attribute_map attributes_map_;
+
     Token(const int id, const int form, const int postag, const int head, const int deprel);
 
     Token(const string& id, const string& form, const string& postag, const string& head, const string& deprel);
 
-    static int registerAttribute(const Atttribute name, const string& value);
+    static int registerAttribute(const Attribute name, const string& value);
 
     static std::string getAttribute(const int index);
 };

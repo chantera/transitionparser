@@ -2,14 +2,12 @@
 // Created by Hiroki Teranishi on 4/6/17.
 //
 
-#include <iostream>
 #include "greedy_parser.h"
 #include "logger.h"
 
 namespace coordparser {
 
 State GreedyParser::parse(Sentence sentence) {
-    std::cout << sentence << std::endl;
     Logger::info("%s", sentence);
     State state;
     while (!state.isTerminal()) {

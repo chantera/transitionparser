@@ -15,6 +15,8 @@ class Sentence {
 public:
     Sentence(const int id, std::vector<Token>& tokens);
 
+    friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
+
 protected:
     const int id;
     const std::vector<Token> tokens;

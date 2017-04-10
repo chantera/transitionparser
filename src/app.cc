@@ -19,12 +19,13 @@ void App::train() {
 
     std::string filepath = "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
     ConllReader reader(filepath);
-    std::vector<Sentence> sentences = reader.read();
-    std::cout << &filepath << std::endl;
 
-    // Parser* parser = new GreedyParser();
-    // Sentence sentence;
-    // parser->parse(sentence);
+    std::unique_ptr<Parser> parser(new GreedyParser());
+
+    const std::vector<Sentence> sentences = reader.read();
+    for (auto& sentence : sentences) {
+        parser->parse(sentence);
+    }
 }
 
 }

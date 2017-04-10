@@ -63,7 +63,7 @@ protected:
 
 template<typename ... Args>
 void Logger::log(LogLevel logLevel, const char* format, const Args&... args) {
-    std::string message = utility::StringUtils::format(format, args...);
+    std::string message = utility::string::format(format, args...);
     _getInstance()._log(logLevel, message.c_str());
 }
 

@@ -13,6 +13,18 @@ Token::Token(const string& id, const string& form, const string& lemma, const st
              const string& feats, const string& head, const string& deprel, const string& phead, const string& pdeprel)
         : Token(id, form, postag, head, deprel) {}
 
+std::string Token::getForm() const {
+    return Token::getAttribute(form);
+}
+
+std::string Token::getPostag() const {
+    return Token::getAttribute(postag);
+}
+
+std::string Token::getDeprel() const {
+    return Token::getAttribute(deprel);
+}
+
 Token Token::createRoot() {
     Token token(
             // "0",       // ID
@@ -34,6 +46,11 @@ Token Token::createRoot() {
     return token;
 }
 
+std::ostream& operator<<(std::ostream& os, const Token& token) {
+    os << token.getForm();
+    return os;
+}
+
 Token::Token(const int id, const int form, const int postag, const int head, const int deprel)
         : id(id), form(form), postag(postag), head(head), deprel(deprel) {}
 
@@ -46,8 +63,12 @@ Token::Token(const string& id, const string& form, const string& postag, const s
                 registerAttribute(Token::Atttribute::DEPREL, deprel)
         ) {}
 
-int Token::registerAttribute(Token::Atttribute name, const string& value) {
+int Token::registerAttribute(const Token::Atttribute name, const string& value) {
     return 0;
+}
+
+std::string Token::getAttribute(const int index) {
+    return "test";
 }
 
 }

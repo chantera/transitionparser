@@ -12,7 +12,7 @@ namespace coordparser {
 class GreedyParser : public Parser {
 
 public:
-    State parse(Sentence sentence) override;
+    State parse(const Sentence& sentence) override;
 };
 
 }

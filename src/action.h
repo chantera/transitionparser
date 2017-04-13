@@ -19,7 +19,7 @@ public:
         LEFT   = 3,
     };
 
-    State apply(State state);
+    State apply(const State& state);
 };
 
 }

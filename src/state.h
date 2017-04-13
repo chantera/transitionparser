@@ -5,12 +5,22 @@
 #ifndef COORDPARSER_STATE_H
 #define COORDPARSER_STATE_H
 
+#include "sentence.h"
+
 namespace coordparser {
 
 class State {
 
 public:
-    bool isTerminal();
+  const std::shared_ptr<State> prev_state_;
+
+  explicit State(const Sentence& sentence);
+
+  bool isTerminal();
+
+private:
+  // const std::vector<Token>& tokens;
+
 };
 
 }

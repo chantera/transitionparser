@@ -4,6 +4,10 @@
 
 #include "action.h"
 
-coordparser::State coordparser::Action::apply(coordparser::State state) {
-    return coordparser::State();
+namespace coordparser {
+
+State Action::apply(const State& state) {
+  return state;
+}
+
 }

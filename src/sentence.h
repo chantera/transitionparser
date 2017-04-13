@@ -13,13 +13,12 @@ namespace coordparser {
 class Sentence {
 
 public:
-    Sentence(const int id, std::vector<Token>& tokens);
+  const int id;
+  std::vector<Token> tokens;
 
-    friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
+  Sentence(const int id, const std::vector<Token>& tokens);
 
-protected:
-    const int id;
-    const std::vector<Token> tokens;
+  friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
 };
 
 }

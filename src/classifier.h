@@ -13,7 +13,9 @@ namespace coordparser {
 class Classifier {
 
 public:
-    virtual Action getNextAction(State state) = 0;
+  virtual ~Classifier() {}
+
+  virtual Action getNextAction(const State& state) = 0;
 };
 
 }

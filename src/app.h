@@ -10,10 +10,10 @@ namespace coordparser {
 class App {
 
 public:
-    App();
+  App();
 
 //private:
-    void train();
+  void train();
 };
 
 }

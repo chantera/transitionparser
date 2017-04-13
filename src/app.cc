@@ -14,8 +14,6 @@ App::App() {}
 
 void App::train() {
     Logger::log(Logger::LogLevel::INFO, "Hello, World!");
-    Logger::log(Logger::LogLevel::INFO, "int: %d", 10);
-    Logger::info("float: %f", 2.3);
 
     std::string filepath = "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
     ConllReader reader(filepath);

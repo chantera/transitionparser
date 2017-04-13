@@ -12,12 +12,12 @@ namespace coordparser {
 class ConllReader : public Reader {
 
 public:
-    ConllReader(const std::string& filepath);
+  ConllReader(const std::string& filepath);
 
-    std::vector<Sentence> read() override;
+  std::vector<Sentence> read() override;
 
 private:
-    static const char DELIMITER = '\t';
+  static const char kDelimiter = '\t';
 };
 
 }

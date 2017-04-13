@@ -16,6 +16,8 @@ class Reader {
 public:
     Reader(const std::string& filepath);
 
+    virtual ~Reader() {}
+
     virtual std::vector<Sentence> read() = 0;
 
 protected:

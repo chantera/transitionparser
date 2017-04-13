@@ -6,8 +6,12 @@
 
 namespace coordparser {
 
+State::State(const Sentence& sentence) /*: tokens(sentence.tokens)*/ {
+
+}
+
 bool State::isTerminal() {
-    return true;
+  return true;
 }
 
 }

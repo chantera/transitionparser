@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <boost/bimap.hpp>
+#include <iostream>
 
 using std::string;
 
@@ -16,57 +17,63 @@ namespace coordparser {
 class Token {
 
 public:
-    const int id_;
-    const int form_;
-    // const int lemma_;
-    // const int cpostag_;
-    const int postag_;
-    // const int feats;
-    const int head_;
-    const int deprel_;
-    // const int phead_;
-    // const int pdeprel_;
+  const int id_;
+  const int form_;
+  // const int lemma_;
+  // const int cpostag_;
+  const int postag_;
+  // const int feats;
+  const int head_;
+  const int deprel_;
+  // const int phead_;
+  // const int pdeprel_;
 
-    enum Attribute {
-        ID,
-        FORM,
-        // LEMMA,
-        // CPOSTAG,
-        POSTAG,
-        // FEATS,
-        HEAD,
-        DEPREL,
-        // PHEAD,
-        // PDEPREL,
-    };
+  enum Attribute {
+      ID,
+      FORM,
+      // LEMMA,
+      // CPOSTAG,
+      POSTAG,
+      // FEATS,
+      HEAD,
+      DEPREL,
+      // PHEAD,
+      // PDEPREL,
+  };
 
-    Token(const std::vector<string>& attributes);
+  Token() = delete;
 
-    Token(const string& id, const string& form, const string& lemma, const string& cpostag, const string& postag,
-          const string& feats, const string& head, const string& deprel, const string& phead, const string& pdeprel);
+  explicit Token(const std::vector<string>& attributes);
 
-    std::string getForm() const;
+  Token(const string& id, const string& form, const string& lemma, const string& cpostag, const string& postag,
+        const string& feats, const string& head, const string& deprel, const string& phead, const string& pdeprel);
 
-    std::string getPostag() const;
+  Token(const Token& token);
 
-    std::string getDeprel() const;
+  Token(Token&& token) noexcept;
 
-    static Token createRoot();
+  std::string getForm() const;
 
-    friend std::ostream& operator<<(std::ostream& os, const Token& token);
+  std::string getPostag() const;
+
+  std::string getDeprel() const;
+
+  static Token createRoot();
+
+  friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
 private:
-    typedef boost::bimap<std::pair<Attribute, std::string>, int> attribute_map;
+  typedef boost::bimap<std::pair<Attribute, std::string>, int> attribute_map;
 
-    static attribute_map attributes_map_;
+  static attribute_map attributes_map_;
 
-    Token(const int id, const int form, const int postag, const int head, const int deprel);
+  Token(const int id, const int form, const int postag, const int head, const int deprel);
 
-    Token(const string& id, const string& form, const string& postag, const string& head, const string& deprel);
+  Token(const string& id, const string& form, const string& postag, const string& head, const string& deprel);
 
-    static int registerAttribute(const Attribute name, const string& value);
+  static int registerAttribute(const Attribute name, const string& value);
 
-    static std::string getAttribute(const int index);
+  static std::string getAttribute(const int index);
 };
 
 }

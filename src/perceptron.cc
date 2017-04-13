@@ -6,7 +6,7 @@
 
 namespace coordparser {
 
-Action Perceptron::getNextAction(State state) {
+Action Perceptron::getNextAction(const State& state) {
     return Action();
 }
 

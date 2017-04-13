@@ -14,10 +14,12 @@ namespace coordparser {
 class Parser {
 
 public:
-    virtual State parse(Sentence sentence) = 0;
+    virtual ~Parser() {}
+
+    virtual State parse(const Sentence& sentence) = 0;
 
 protected:
-    Classifier* classifier;
+    const std::unique_ptr<Classifier> classifier_;
 };
 
 }

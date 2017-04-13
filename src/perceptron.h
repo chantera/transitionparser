@@ -12,7 +12,7 @@ namespace coordparser {
 class Perceptron : public Classifier {
 
 public:
-    Action getNextAction(State state) override ;
+    Action getNextAction(const State& state) override ;
 };
 
 }

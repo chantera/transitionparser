@@ -6,7 +6,16 @@
 
 namespace coordparser {
 
-State::State(const Sentence& sentence) /*: tokens(sentence.tokens)*/ {
+State::State(const Sentence& sentence)
+    : tokens_(&sentence.tokens)  {
+
+}
+
+State::State(const std::shared_ptr<State>& prev_state,
+             const Action &prev_action,
+             const Arc &prev_arc,
+             const std::stack<int> &stack,
+             const int buffer_head) : tokens_(prev_state->tokens_) {
 
 }
 

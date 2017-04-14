@@ -19,7 +19,7 @@ public:
         LEFT   = 3,
     };
 
-    State apply(const State& state);
+    std::shared_ptr<State> apply(const std::shared_ptr<State>& state);
 };
 
 }

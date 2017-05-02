@@ -21,8 +21,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 find_package(Boost REQUIRED)
+set(EIGEN_INCLUDE_DIR /usr/local/Cellar/eigen/HEAD-a038e46f2d3e/include/eigen3)
 set(DYNET_INCLUDE_DIR /Users/hiroki/work/dynet)
 set(DYNET_LIBRARY_DIR /Users/hiroki/work/dynet/build/dynet)
+MESSAGE("EIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}")
 MESSAGE("DYNET_INCLUDE_DIR=${DYNET_INCLUDE_DIR}")
 MESSAGE("DYNET_LIBRARY_DIR=${DYNET_LIBRARY_DIR}")
 #check_option(DYNET_INCLUDE_DIR)
@@ -33,6 +35,7 @@ set(DYNET_LIBRARIES "dynet")
 
 include_directories(
     ${Boost_INCLUDE_DIRS}
+    ${EIGEN_INCLUDE_DIR}
     ${DYNET_INCLUDE_DIR}
 )
 

@@ -12,8 +12,11 @@ class App {
 public:
   App();
 
-//private:
   void train();
+
+private:
+  void initialize();
+
 };
 
 }

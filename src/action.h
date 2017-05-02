@@ -13,10 +13,9 @@ class Action {
 
 public:
     enum {
-        REDUCE = 0,
-        SHIFT  = 1,
-        RIGHT  = 2,
-        LEFT   = 3,
+        SHIFT  = 0,
+        RIGHT  = 1,
+        LEFT   = 2,
     };
 
     std::shared_ptr<State> apply(const std::shared_ptr<State>& state);

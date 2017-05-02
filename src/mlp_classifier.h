@@ -30,11 +30,14 @@ public:
 
   Action getNextAction(const State& state) override ;
 
+  void prepareNextIteration();
+
 private:
   typedef dynet::Trainer Optimizer;
 
   dynet::Model model_;
   std::unique_ptr<Optimizer> optimizer_;
+  dynet::ComputationGraph cg_;
 
   class MLP {
 

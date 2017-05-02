@@ -32,10 +32,28 @@ MlpClassifier::MlpClassifier(const unsigned word_vocab_size,
         hidden1_size,
         hidden2_size,
         n_labels),
-    optimizer_(std::make_unique<dynet::SimpleSGDTrainer>(model_)) {}
+    optimizer_(std::make_unique<dynet::SimpleSGDTrainer>(model_)),
+    cg_() {}
 
 Action MlpClassifier::getNextAction(const State &state) {
+  const Feature* feature = state.getFeature();
+  DE::Expression y = mlp_.forward(feature->getWordFeatures(),
+                                         feature->getPosFeatures(),
+                                         feature->getLabelFeatures(),
+                                         cg_);
+  std::vector<float> probs = dynet::as_vector(cg_.incremental_forward(y));
+  unsigned argmax = 0;
+  for (unsigned i = 1; i < probs.size(); ++i) {
+    if (probs[i] > probs[argmax])
+      argmax = i;
+  }
+
+
   return Action();
+}
+
+void MlpClassifier::prepareNextIteration() {
+  cg_.clear();
 }
 
 MlpClassifier::MLP::MLP(dynet::Model &model,

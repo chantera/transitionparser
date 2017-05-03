@@ -1,5 +1,6 @@
 //
-// Created by Hiroki Teranishi on 3/6/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
 #ifndef COORDPARSER_UTILITY_H
@@ -8,6 +9,30 @@
 #include <boost/format.hpp>
 #include <sstream>
 #include <fstream>
+
+#define DEFAULT_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = default; \
+  TypeName& operator=(const TypeName&) = default;
+
+#define DEFAULT_MOVE_AND_ASSIGN(TypeName) \
+  TypeName(TypeName&&) = default; \
+  TypeName& operator=(TypeName&&) = default
+
+#define DEFAULT_COPY_AND_MOVE(TypeName) \
+  DEFAULT_COPY_AND_ASSIGN(TypeName); \
+  DEFAULT_MOVE_AND_ASSIGN(TypeName)
+
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = delete; \
+  TypeName& operator=(const TypeName&) = delete;
+
+#define DISALLOW_MOVE_AND_ASSIGN(TypeName) \
+  TypeName(TypeName&&) = delete; \
+  TypeName& operator=(TypeName&&) = delete
+
+#define DISALLOW_COPY_AND_MOVE(TypeName) \
+  DISALLOW_COPY_AND_ASSIGN(TypeName); \
+  DISALLOW_MOVE_AND_ASSIGN(TypeName)
 
 namespace utility {
 

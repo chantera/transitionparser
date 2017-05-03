@@ -1,5 +1,6 @@
 //
-// Created by Hiroki Teranishi on 5/2/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
 #include "feature.h"

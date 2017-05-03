@@ -1,5 +1,6 @@
 //
-// Created by Hiroki Teranishi on 4/7/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
 #ifndef COORDPARSER_READER_H
@@ -8,20 +9,34 @@
 #include <string>
 #include <vector>
 #include "sentence.h"
+#include "utility.h"
 
 namespace coordparser {
 
 class Reader {
+  DISALLOW_COPY_AND_MOVE(Reader);
 
 public:
-    Reader(const std::string& filepath);
+  Reader() = delete;
+  virtual ~Reader() = default;
 
-    virtual ~Reader() {}
+  Reader(const std::string& filepath);
 
-    virtual std::vector<Sentence> read() = 0;
+  virtual std::vector<Sentence> read() = 0;
 
 protected:
-    const std::string filepath;
+  const std::string filepath;
+};
+
+class ConllReader : public Reader {
+
+ public:
+  ConllReader(const std::string& filepath);
+
+  std::vector<Sentence> read() override;
+
+ private:
+  static const char kDelimiter = '\t';
 };
 
 }

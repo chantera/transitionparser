@@ -6,7 +6,7 @@
 #include "app.h"
 #include "logger.h"
 #include "greedy_parser.h"
-#include "conll_reader.h"
+#include "reader.h"
 
 namespace coordparser {
 

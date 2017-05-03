@@ -6,6 +6,13 @@
 
 namespace coordparser {
 
+Token::Token(Token &&token) noexcept
+    : Token(token.id_, token.form_, token.postag_, token.head_, token.deprel_) {}
+
+std::string Token::getForm() const {
+  return Token::getAttribute(form_);
+}
+
 Token::Token(const std::vector<string>& attributes)
     : Token(attributes[0], attributes[1], attributes[4], attributes[6], attributes[7]) {}
 
@@ -16,13 +23,6 @@ Token::Token(const string& id, const string& form, const string& lemma, const st
 Token::Token(const Token& token)
     : Token(token.id_, token.form_, token.postag_, token.head_, token.deprel_) {
   std::cout << id_ << token << std::endl;
-}
-
-Token::Token(Token &&token) noexcept
-    : Token(token.id_, token.form_, token.postag_, token.head_, token.deprel_) {}
-
-std::string Token::getForm() const {
-  return Token::getAttribute(form_);
 }
 
 std::string Token::getPostag() const {

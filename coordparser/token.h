@@ -1,9 +1,10 @@
 //
-// Created by Hiroki Teranishi on 4/7/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_TOKEN_H
-#define COORDPARSER_TOKEN_H
+#ifndef COORDPARSER_TOKEN_H_
+#define COORDPARSER_TOKEN_H_
 
 #include <string>
 #include <vector>
@@ -16,7 +17,14 @@ namespace coordparser {
 
 class Token {
 
-public:
+ public:
+  Token() = delete;
+  Token(const Token& token);
+  Token& operator=(const Token&) = default;
+  Token(Token&& token) noexcept;
+  Token& operator=(Token&&) = default;
+  ~Token() {}
+
   const int id_;
   const int form_;
   // const int lemma_;
@@ -41,16 +49,10 @@ public:
       // PDEPREL,
   };
 
-  Token() = delete;
-
   explicit Token(const std::vector<string>& attributes);
 
   Token(const string& id, const string& form, const string& lemma, const string& cpostag, const string& postag,
         const string& feats, const string& head, const string& deprel, const string& phead, const string& pdeprel);
-
-  Token(const Token& token);
-
-  Token(Token&& token) noexcept;
 
   std::string getForm() const;
 
@@ -62,7 +64,7 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
-private:
+ private:
   typedef boost::bimap<std::pair<Attribute, std::string>, int> attribute_map;
 
   static attribute_map attributes_map_;
@@ -79,4 +81,4 @@ private:
 }
 
 
-#endif //COORDPARSER_TOKEN_H
+#endif //COORDPARSER_TOKEN_H_

@@ -12,7 +12,7 @@
 
 #define DEFAULT_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = default; \
-  TypeName& operator=(const TypeName&) = default;
+  TypeName& operator=(const TypeName&) = default
 
 #define DEFAULT_MOVE_AND_ASSIGN(TypeName) \
   TypeName(TypeName&&) = default; \
@@ -24,7 +24,7 @@
 
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = delete; \
-  TypeName& operator=(const TypeName&) = delete;
+  TypeName& operator=(const TypeName&) = delete
 
 #define DISALLOW_MOVE_AND_ASSIGN(TypeName) \
   TypeName(TypeName&&) = delete; \

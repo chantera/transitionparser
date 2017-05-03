@@ -8,6 +8,7 @@
 
 #include <vector>
 #include "token.h"
+#include "utility.h"
 
 namespace coordparser {
 
@@ -15,6 +16,7 @@ class Sentence {
 
 public:
   Sentence() = delete;
+  DEFAULT_COPY_AND_MOVE(Sentence);
   ~Sentence() {};
 
   const int id;

@@ -10,12 +10,14 @@
 
 namespace coordparser {
 
-App::App() {}
+App::App() {
+  initialize();
+}
 
 void App::initialize() {
-  /*
   dynet::DynetParams params;
 
+  /*
   // 確保するメモリ量を3つ指定する(MB単位)。
   // それぞれforward-path, backward-path, パラメータで使用する量。
   params.mem_descriptor = "1024,1024,2048";
@@ -40,7 +42,7 @@ void App::initialize() {
 
   */
 
-  // dynet::initialize(params);
+  dynet::initialize(params);
 
 }
 
@@ -50,7 +52,27 @@ void App::train() {
   std::string filepath = "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
   ConllReader reader(filepath);
 
-  std::unique_ptr<Parser> parser(new GreedyParser());
+  dynet::Model model;
+  std::unique_ptr<dynet::Trainer> optimizer = std::make_unique<dynet::SimpleSGDTrainer>(model);
+  dynet::ComputationGraph cg;
+
+  Logger::log(Logger::LogLevel::INFO, "test0");
+  std::shared_ptr<Classifier> classifier = std::make_shared<MlpClassifier>(
+      model,
+      10,  // Token::getVocabSize(),
+      64,
+      20,  //Feature::kNWordFeatures,
+      10,  // Token::getVocabSize(),
+      64,
+      20,  //Feature::kNWordFeatures,
+      10,  // Token::getVocabSize(),
+      64,
+      20,  //Feature::kNWordFeatures,
+      1024,
+      256,
+      48
+  );
+  std::unique_ptr<Parser> parser = std::make_unique<GreedyParser>(classifier);
 
   const std::vector<Sentence> sentences = reader.read();
   for (auto& sentence : sentences) {

@@ -17,7 +17,7 @@ class Reader {
   DISALLOW_COPY_AND_MOVE(Reader);
 
 public:
-  Reader() {};
+  Reader() = delete;
   virtual ~Reader() {};
 
   explicit Reader(const std::string& filepath);
@@ -31,7 +31,9 @@ protected:
 class ConllReader : public Reader {
 
 public:
-  explicit ConllReader(const std::string& filepath);
+  ConllReader() = delete;
+
+  explicit ConllReader(const std::string& filepath) ;
 
   std::vector<Sentence> read() override;
 

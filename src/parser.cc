@@ -7,6 +7,9 @@
 
 namespace coordparser {
 
+Parser::Parser(std::shared_ptr<Classifier> classifier) :
+    classifier_(classifier) {}
+
 State GreedyParser::parse(const Sentence& sentence) {
   State state(sentence);
   while (!state.isTerminal()) {
@@ -15,5 +18,8 @@ State GreedyParser::parse(const Sentence& sentence) {
   }
   return state;
 }
+
+GreedyParser::GreedyParser(std::shared_ptr<Classifier> classifier) :
+    Parser(classifier) {}
 
 }

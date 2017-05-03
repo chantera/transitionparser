@@ -1,5 +1,6 @@
 //
-// Created by Hiroki Teranishi on 4/6/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
 #ifndef COORDPARSER_SENTENCE_H
@@ -13,6 +14,9 @@ namespace coordparser {
 class Sentence {
 
 public:
+  Sentence() = delete;
+  ~Sentence() {};
+
   const int id;
   std::vector<Token> tokens;
 

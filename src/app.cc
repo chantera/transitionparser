@@ -5,7 +5,7 @@
 #include <iostream>
 #include "app.h"
 #include "logger.h"
-#include "greedy_parser.h"
+#include "parser.h"
 #include "reader.h"
 
 namespace coordparser {

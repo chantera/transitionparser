@@ -9,11 +9,7 @@
 
 namespace coordparser {
 
-// Reader
-
 Reader::Reader(const std::string& filepath) : filepath(filepath) {}
-
-// ConllReader
 
 ConllReader::ConllReader(const std::string& filepath) : Reader(filepath) {}
 

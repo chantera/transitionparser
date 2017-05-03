@@ -1,25 +1,36 @@
 //
-// Created by Hiroki Teranishi on 4/6/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
 #ifndef COORDPARSER_PARSER_H
 #define COORDPARSER_PARSER_H
 
 #include "classifier.h"
-#include "sentence.h"
 #include "state.h"
+#include "utility.h"
 
 namespace coordparser {
 
+class Sentence;
+
 class Parser {
+  DISALLOW_COPY_AND_MOVE(Parser);
 
 public:
-    virtual ~Parser() {}
+  Parser() {};
+  virtual ~Parser() {};
 
-    virtual State parse(const Sentence& sentence) = 0;
+  virtual State parse(const Sentence& sentence) = 0;
 
 protected:
-    const std::unique_ptr<Classifier> classifier_;
+  const std::unique_ptr<Classifier> classifier_;
+};
+
+class GreedyParser : public Parser {
+
+public:
+  State parse(const Sentence& sentence) override;
 };
 
 }

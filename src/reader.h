@@ -17,10 +17,10 @@ class Reader {
   DISALLOW_COPY_AND_MOVE(Reader);
 
 public:
-  Reader() = delete;
-  virtual ~Reader() = default;
+  Reader() {};
+  virtual ~Reader() {};
 
-  Reader(const std::string& filepath);
+  explicit Reader(const std::string& filepath);
 
   virtual std::vector<Sentence> read() = 0;
 
@@ -30,12 +30,12 @@ protected:
 
 class ConllReader : public Reader {
 
- public:
-  ConllReader(const std::string& filepath);
+public:
+  explicit ConllReader(const std::string& filepath);
 
   std::vector<Sentence> read() override;
 
- private:
+private:
   static const char kDelimiter = '\t';
 };
 

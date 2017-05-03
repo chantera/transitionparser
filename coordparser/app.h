@@ -3,23 +3,21 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_APP_H
-#define COORDPARSER_APP_H
+#ifndef COORDPARSER_APP_H_
+#define COORDPARSER_APP_H_
 
 namespace coordparser {
 
 class App {
-
-public:
+ public:
   App();
 
   void train();
 
-private:
+ private:
   void initialize();
-
 };
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_APP_H
+#endif  // COORDPARSER_APP_H_

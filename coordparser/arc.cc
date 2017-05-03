@@ -1,5 +1,6 @@
 //
-// Created by Hiroki Teranishi on 4/13/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "arc.h"
+#include "coordparser/arc.h"

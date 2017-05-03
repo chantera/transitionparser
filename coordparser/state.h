@@ -3,13 +3,18 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_STATE_H
-#define COORDPARSER_STATE_H
+#ifndef COORDPARSER_STATE_H_
+#define COORDPARSER_STATE_H_
 
+#include <deque>
+#include <memory>
 #include <stack>
-#include "sentence.h"
-#include "arc.h"
-#include "feature.h"
+#include <vector>
+
+#include "coordparser/arc.h"
+#include "coordparser/action.h"
+#include "coordparser/feature.h"
+#include "coordparser/sentence.h"
 
 namespace coordparser {
 
@@ -17,8 +22,7 @@ class Action;
 class Feature;
 
 class State {
-
-public:
+ public:
   const int step_;
   const std::vector<Token>* tokens_;
   const int token_length_;
@@ -34,8 +38,11 @@ public:
 
   explicit State(const Sentence& sentence);
 
-  State(const std::shared_ptr<State>& prev_state, const Action& prev_action,
-        const Arc& prev_arc, const std::deque<int>& stack, const int buffer_head);
+  State(const std::shared_ptr<State>& prev_state,
+        const Action& prev_action,
+        const Arc& prev_arc,
+        const std::deque<int>& stack,
+        const int buffer_head);
 
   bool isTerminal();
 
@@ -51,9 +58,8 @@ public:
 
  private:
   mutable std::unique_ptr<Feature> feature_;
-
 };
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_STATE_H
+#endif  // COORDPARSER_STATE_H_

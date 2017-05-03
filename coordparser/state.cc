@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "state.h"
+#include "coordparser/state.h"
 
 namespace coordparser {
 
@@ -52,4 +52,4 @@ const Feature* State::getFeature() const {
   return feature_.get();
 }
 
-}
+}  // namespace coordparser

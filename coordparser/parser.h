@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_PARSER_H
-#define COORDPARSER_PARSER_H
+#ifndef COORDPARSER_PARSER_H_
+#define COORDPARSER_PARSER_H_
 
 #include "classifier.h"
 #include "state.h"
@@ -39,4 +39,4 @@ public:
 
 }
 
-#endif //COORDPARSER_PARSER_H
+#endif //COORDPARSER_PARSER_H_

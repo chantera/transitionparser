@@ -1,29 +1,37 @@
 //
-// Created by Hiroki Teranishi on 4/7/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "token.h"
+#include "coordparser/token.h"
 
 namespace coordparser {
-
-Token::Token(Token &&token) noexcept
-    : Token(token.id_, token.form_, token.postag_, token.head_, token.deprel_) {}
 
 std::string Token::getForm() const {
   return Token::getAttribute(form_);
 }
 
+// cppcheck-suppress uninitMemberVar
 Token::Token(const std::vector<string>& attributes)
-    : Token(attributes[0], attributes[1], attributes[4], attributes[6], attributes[7]) {}
+    : Token(attributes[0], attributes[1], attributes[4], attributes[6],
+            attributes[7]) {}
 
-Token::Token(const string& id, const string& form, const string& lemma, const string& cpostag, const string& postag,
-             const string& feats, const string& head, const string& deprel, const string& phead, const string& pdeprel)
+// cppcheck-suppress uninitMemberVar
+Token::Token(const string& id, const string& form, const string& lemma,
+             const string& cpostag, const string& postag, const string& feats,
+             const string& head, const string& deprel, const string& phead,
+             const string& pdeprel)
     : Token(id, form, postag, head, deprel) {}
 
 Token::Token(const Token& token)
-    : Token(token.id_, token.form_, token.postag_, token.head_, token.deprel_) {
+    : id_(token.id_), form_(token.form_), postag_(token.postag_),
+      head_(token.head_), deprel_(token.deprel_) {
   std::cout << id_ << token << std::endl;
 }
+
+Token::Token(Token &&token) noexcept
+    : id_(token.id_), form_(token.form_), postag_(token.postag_),
+      head_(token.head_), deprel_(token.deprel_) {}
 
 std::string Token::getPostag() const {
   return Token::getAttribute(postag_);
@@ -42,10 +50,9 @@ Token Token::createRoot() {
       "ROOT",    // POSTAG
       // "_",       // FEATS
       "-1",      // HEAD
-      "ROOT"     // DEPREL
+      "ROOT");   // DEPREL
       // "_",       // PHEAD
-      // "_"        // PDEPREL
-  );
+      // "_");      // PDEPREL
   return token;
 }
 
@@ -54,18 +61,15 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
   return os;
 }
 
-Token::attribute_map Token::attributes_map_ = [] {
-  attribute_map map;
-  return map;
-}();
-
-Token::Token(const int id, const int form, const int postag, const int head, const int deprel)
+Token::Token(const int id, const int form, const int postag,
+             const int head, const int deprel)
     : id_(id), form_(form), postag_(postag), head_(head), deprel_(deprel) {}
 
-Token::Token(const string& id, const string& form, const string& postag, const string& head, const string& deprel)
+Token::Token(const string& id, const string& form, const string& postag,
+             const string& head, const string& deprel)
     : Token(
         std::stoi(id),
-        registerAttribute(Token::Attribute::FORM,   form  ),
+        registerAttribute(Token::Attribute::FORM,   form),
         registerAttribute(Token::Attribute::POSTAG, postag),
         std::stoi(head),
         registerAttribute(Token::Attribute::DEPREL, deprel)
@@ -90,4 +94,9 @@ std::string Token::getAttribute(const int index) {
   return attributes_map_.right.at(index).second;
 }
 
-}
+Token::attribute_map Token::attributes_map_ = [] {
+  attribute_map map;
+  return map;
+}();
+
+}  // namespace coordparser

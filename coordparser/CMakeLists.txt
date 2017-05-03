@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 3.6)
-project(coordparser)
-
 # set (Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
 # set (Boost_USE_MULTITHREAD ON)  # enable multithreading
 
-set(SOURCE_FILES main.cc app.cc app.h logger.cc logger.h utility.h parser.cc parser.h classifier.cc classifier.h state.cc state.h sentence.cc sentence.h action.cc action.h token.cc token.h reader.cc reader.h arc.cc arc.h feature.cc feature.h)
-add_executable(coordparser ${SOURCE_FILES})
+set(HEADER_FILES app.h logger.h utility.h parser.h classifier.h state.h sentence.h action.h token.h reader.h arc.h feature.h)
+set(SOURCE_FILES app.cc logger.cc parser.cc classifier.cc state.cc sentence.cc action.cc token.cc reader.cc arc.cc feature.cc)
+add_library(coordparser ${HEADER_FILES} ${SOURCE_FILES})
 
-target_link_libraries(coordparser ${Boost_LIBRARIES} ${DYNET_LIBRARIES})
+add_executable(main main.cc)
+target_link_libraries(main ${Boost_LIBRARIES} ${DYNET_LIBRARIES} coordparser)

@@ -5,7 +5,9 @@
 
 #include <fstream>
 #include <iostream>
-#include "reader.h"
+#include <utility>
+
+#include "coordparser/reader.h"
 
 namespace coordparser {
 
@@ -42,4 +44,4 @@ std::vector<Sentence> ConllReader::read() {
   return sentences;
 }
 
-}
+}  // namespace coordparser

@@ -3,44 +3,43 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_READER_H
-#define COORDPARSER_READER_H
+#ifndef COORDPARSER_READER_H_
+#define COORDPARSER_READER_H_
 
 #include <string>
 #include <vector>
-#include "sentence.h"
-#include "utility.h"
+
+#include "coordparser/sentence.h"
+#include "coordparser/utility.h"
 
 namespace coordparser {
 
 class Reader {
-  DISALLOW_COPY_AND_MOVE(Reader);
-
-public:
+ public:
   Reader() = delete;
-  virtual ~Reader() {};
-
   explicit Reader(const std::string& filepath);
+  virtual ~Reader() {}
 
   virtual std::vector<Sentence> read() = 0;
 
-protected:
+ protected:
   const std::string filepath;
+
+ private:
+  DISALLOW_COPY_AND_MOVE(Reader);
 };
 
 class ConllReader : public Reader {
-
-public:
+ public:
   ConllReader() = delete;
-
-  explicit ConllReader(const std::string& filepath) ;
+  explicit ConllReader(const std::string& filepath);
 
   std::vector<Sentence> read() override;
 
-private:
+ private:
   static const char kDelimiter = '\t';
 };
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_READER_H
+#endif  // COORDPARSER_READER_H_

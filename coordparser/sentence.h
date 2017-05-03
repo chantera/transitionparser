@@ -3,30 +3,29 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_SENTENCE_H
-#define COORDPARSER_SENTENCE_H
+#ifndef COORDPARSER_SENTENCE_H_
+#define COORDPARSER_SENTENCE_H_
 
 #include <vector>
-#include "token.h"
-#include "utility.h"
+
+#include "coordparser/token.h"
+#include "coordparser/utility.h"
 
 namespace coordparser {
 
 class Sentence {
-
-public:
+ public:
   Sentence() = delete;
+  Sentence(const int id, const std::vector<Token>& tokens);
   DEFAULT_COPY_AND_MOVE(Sentence);
-  ~Sentence() {};
+  ~Sentence() {}
+
+  friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
 
   const int id;
   std::vector<Token> tokens;
-
-  Sentence(const int id, const std::vector<Token>& tokens);
-
-  friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
 };
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_SENTENCE_H
+#endif  // COORDPARSER_SENTENCE_H_

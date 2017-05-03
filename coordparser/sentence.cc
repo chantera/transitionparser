@@ -4,8 +4,8 @@
 //
 
 #include <vector>
-#include "sentence.h"
-#include "utility.h"
+
+#include "coordparser/sentence.h"
 
 namespace coordparser {
 
@@ -17,4 +17,4 @@ std::ostream& operator<<(std::ostream& os, const Sentence& sentence) {
   return os;
 }
 
-}
+}  // namespace coordparser

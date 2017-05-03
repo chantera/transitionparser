@@ -6,37 +6,39 @@
 #ifndef COORDPARSER_PARSER_H_
 #define COORDPARSER_PARSER_H_
 
-#include "classifier.h"
-#include "state.h"
-#include "utility.h"
+#include <memory>
+
+#include "coordparser/classifier.h"
+#include "coordparser/state.h"
+#include "coordparser/utility.h"
 
 namespace coordparser {
 
 class Sentence;
 
 class Parser {
-  DISALLOW_COPY_AND_MOVE(Parser);
-
-public:
+ public:
   Parser() = delete;
-  virtual ~Parser() {};
+  virtual ~Parser() {}
 
   explicit Parser(std::shared_ptr<Classifier> classifier);
 
   virtual State parse(const Sentence& sentence) = 0;
 
-protected:
+ protected:
   const std::shared_ptr<Classifier> classifier_;
+
+ private:
+  DISALLOW_COPY_AND_MOVE(Parser);
 };
 
 class GreedyParser : public Parser {
-
-public:
+ public:
   explicit GreedyParser(std::shared_ptr<Classifier> classifier);
 
   State parse(const Sentence& sentence) override;
 };
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_PARSER_H_
+#endif  // COORDPARSER_PARSER_H_

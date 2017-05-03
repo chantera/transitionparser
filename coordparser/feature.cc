@@ -3,15 +3,14 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "feature.h"
+#include "coordparser/feature.h"
 
 namespace coordparser {
 
 Feature::Feature(const State &state) :
   word_features_(kNWordFeatures),
   pos_features_(kNPosFeatures),
-  label_features_(kNLabelFeatures)
-{
+  label_features_(kNLabelFeatures) {
   const Token& s0 = state.getStackToken(0);
   const Token& s1 = state.getStackToken(1);
   const Token& s2 = state.getStackToken(2);
@@ -46,4 +45,4 @@ const std::vector<unsigned>& Feature::getLabelFeatures() const {
   return label_features_;
 }
 
-}
+}  // namespace coordparser

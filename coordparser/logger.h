@@ -1,102 +1,104 @@
 //
-// Created by Hiroki Teranishi on 3/2/17.
+// Created by h.teranishi <teranishihiroki@gmail.com>
+// Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_LOGGER_H
-#define COORDPARSER_LOGGER_H
+#ifndef COORDPARSER_LOGGER_H_
+#define COORDPARSER_LOGGER_H_
 
 #include <map>
-#include "utility.h"
+#include <string>
+
+#include "coordparser/utility.h"
 
 namespace coordparser {
 
 class Logger {
+ public:
+  enum class LogLevel {
+      NONE    = 0b0000'0000'0000'0000'0000'0000,
+      ERROR   = 0b0000'0000'0000'0000'0000'0001,
+      WARNING = 0b0000'0000'0000'0000'0000'0010,
+      NOTICE  = 0b0000'0000'0000'0000'0000'1000,
+      INFO    = 0b0001'0000'0000'0000'0000'0000,
+      DEBUG   = 0b0010'0000'0000'0000'0000'0000,
+      TRACE   = 0b0100'0000'0000'0000'0000'0000,
+      ALL     = 0b1111'1111'1111'1111'1111'1111,
+  };
 
-public:
-    enum class LogLevel {
-        NONE    = 0b0000'0000'0000'0000'0000'0000,
-        ERROR   = 0b0000'0000'0000'0000'0000'0001,
-        WARNING = 0b0000'0000'0000'0000'0000'0010,
-        NOTICE  = 0b0000'0000'0000'0000'0000'1000,
-        INFO    = 0b0001'0000'0000'0000'0000'0000,
-        DEBUG   = 0b0010'0000'0000'0000'0000'0000,
-        TRACE   = 0b0100'0000'0000'0000'0000'0000,
-        ALL     = 0b1111'1111'1111'1111'1111'1111,
-    };
+  template <typename ... Args>
+  static void log(LogLevel logLevel, const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void log(LogLevel logLevel, const char* format, const Args&... args);
+  template <typename ... Args>
+  static void error(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void error(const char* format, const Args&... args);
+  template <typename ... Args>
+  static void warning(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void warning(const char* format, const Args&... args);
+  template <typename ... Args>
+  static void notice(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void notice(const char* format, const Args&... args);
+  template <typename ... Args>
+  static void info(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void info(const char* format, const Args&... args);
+  template <typename ... Args>
+  static void debug(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void debug(const char* format, const Args&... args);
+  template <typename ... Args>
+  static void trace(const char* format, const Args&... args);
 
-    template <typename ... Args>
-    static void trace(const char* format, const Args&... args);
+ protected:
+  Logger() {}  // constructor
 
-protected:
-    static const std::map<LogLevel, std::string> LABELS;
-    std::string accessId;
-    std::string accessTime;
-    Logger() {};  // constructor
+  static void _initialize();
 
+  static void _finalize();
 
-    static void _initialize();
+  static Logger& _getInstance();
 
-    static void _finalize();
+  void _log(LogLevel logLevel, const char* message);
 
-    static Logger& _getInstance();
-
-    void _log(LogLevel logLevel, const char* message);
+  static const std::map<LogLevel, std::string> LABELS;
+  std::string accessId;
+  std::string accessTime;
 };
 
 template<typename ... Args>
 void Logger::log(LogLevel logLevel, const char* format, const Args&... args) {
-    std::string message = utility::string::format(format, args...);
-    _getInstance()._log(logLevel, message.c_str());
+  std::string message = utility::string::format(format, args...);
+  _getInstance()._log(logLevel, message.c_str());
 }
 
 template<typename ... Args>
 void Logger::error(const char* format, const Args&... args) {
-    log(LogLevel::ERROR, format, args...);
+  log(LogLevel::ERROR, format, args...);
 }
 
 template<typename ... Args>
 void Logger::warning(const char* format, const Args&... args) {
-    log(LogLevel::WARNING, format, args...);
+  log(LogLevel::WARNING, format, args...);
 }
 
 template<typename ... Args>
 void Logger::notice(const char* format, const Args&... args) {
-    log(LogLevel::NOTICE, format, args...);
+  log(LogLevel::NOTICE, format, args...);
 }
 
 template<typename ... Args>
 void Logger::info(const char* format, const Args&... args) {
-    log(LogLevel::INFO, format, args...);
+  log(LogLevel::INFO, format, args...);
 }
 
 template<typename ... Args>
 void Logger::debug(const char* format, const Args&... args) {
-    log(LogLevel::DEBUG, format, args...);
+  log(LogLevel::DEBUG, format, args...);
 }
 
 template<typename ... Args>
 void Logger::trace(const char* format, const Args&... args) {
-    log(LogLevel::TRACE, format, args...);
+  log(LogLevel::TRACE, format, args...);
 }
 
-}
+}  // namespace coordparser
 
-#endif //COORDPARSER_LOGGER_H
+#endif  // COORDPARSER_LOGGER_H_

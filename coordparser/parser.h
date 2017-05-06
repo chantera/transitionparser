@@ -23,7 +23,7 @@ class Parser {
 
   explicit Parser(std::shared_ptr<Classifier> classifier);
 
-  virtual State parse(const Sentence& sentence) = 0;
+  virtual std::shared_ptr<State> parse(const Sentence& sentence) = 0;
 
  protected:
   const std::shared_ptr<Classifier> classifier_;
@@ -36,7 +36,7 @@ class GreedyParser : public Parser {
  public:
   explicit GreedyParser(std::shared_ptr<Classifier> classifier);
 
-  State parse(const Sentence& sentence) override;
+  std::shared_ptr<State> parse(const Sentence& sentence) override;
 };
 
 }  // namespace coordparser

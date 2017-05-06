@@ -12,7 +12,7 @@
 #include <vector>
 #include <utility>
 
-#include "coordparser/action.h"
+#include "coordparser/transition.h"
 #include "coordparser/utility.h"
 
 namespace coordparser {

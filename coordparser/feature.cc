@@ -11,15 +11,16 @@ Feature::Feature(const State &state) :
   word_features_(kNWordFeatures),
   pos_features_(kNPosFeatures),
   label_features_(kNLabelFeatures) {
-  const Token& s0 = state.getStackToken(0);
-  const Token& s1 = state.getStackToken(1);
-  const Token& s2 = state.getStackToken(2);
-  const Token& s3 = state.getStackToken(3);
+  Token pad = Token::createPad();
+  const Token& s0 = state.getStackToken(0, pad);
+  const Token& s1 = state.getStackToken(1, pad);
+  const Token& s2 = state.getStackToken(2, pad);
+  const Token& s3 = state.getStackToken(3, pad);
 
-  const Token& b0 = state.getBufferToken(0);
-  const Token& b1 = state.getBufferToken(1);
-  const Token& b2 = state.getBufferToken(2);
-  const Token& b3 = state.getBufferToken(3);
+  const Token& b0 = state.getBufferToken(0, pad);
+  const Token& b1 = state.getBufferToken(1, pad);
+  const Token& b2 = state.getBufferToken(2, pad);
+  const Token& b3 = state.getBufferToken(3, pad);
 
   word_features_ = {
       (unsigned) s0.form_,

@@ -13,7 +13,7 @@
 
 namespace coordparser {
 
-class Sentence {
+struct Sentence {
  public:
   Sentence() = delete;
   Sentence(const int id, const std::vector<Token>& tokens);
@@ -23,7 +23,7 @@ class Sentence {
   friend std::ostream& operator<<(std::ostream& os, const Sentence& sentence);
 
   const int id;
-  std::vector<Token> tokens;
+  const std::vector<Token> tokens;
 };
 
 }  // namespace coordparser

@@ -8,56 +8,68 @@
 
 #include <deque>
 #include <memory>
+#include <set>
 #include <stack>
 #include <vector>
 
-#include "coordparser/arc.h"
-#include "coordparser/action.h"
+#include "coordparser/transition.h"
 #include "coordparser/feature.h"
 #include "coordparser/sentence.h"
 
 namespace coordparser {
 
-class Action;
+typedef int Action;
 class Feature;
 
 class State {
  public:
   const int step_;
-  const std::vector<Token>* tokens_;
-  const int token_length_;
-  const std::deque<int> stack_;
-  const int buffer_head_;
-  const std::vector<int> leftmost_;
-  const std::vector<int> rightmost_;
-  // const std::vector<int> features_;
-  // const std::set<Action> possible_actions_;
-  // const std::shared_ptr<State> prev_state_;
-  // const Action prev_action_;
-  // const double score_;
+  const Sentence* sentence_;
+  const unsigned num_tokens_;
+  const std::vector<int> stack_;
+  const int buffer_;
+  const std::vector<int> heads_;
+  const std::vector<int> labels_;
+  const std::shared_ptr<State> prev_state_;
+  const Action action_;
 
-  explicit State(const Sentence& sentence);
+  State() = delete;
+
+  explicit State(const Sentence* sentence);
 
   State(const std::shared_ptr<State>& prev_state,
-        const Action& prev_action,
-        const Arc& prev_arc,
-        const std::deque<int>& stack,
-        const int buffer_head);
+        const Action& action,
+        const std::vector<int>& stack,
+        const int buffer,
+        const std::vector<int>& heads,
+        const std::vector<int>& labels);
+
+  DEFAULT_MOVE_AND_ASSIGN(State);
+
+  ~State() = default;
 
   bool isTerminal();
 
-  const Token& getStackToken(const int position) const;
+  const Token& getStackToken(const unsigned position,
+                             const Token& default_token) const;
 
-  const Token& getBufferToken(const int position) const;
+  const Token& getBufferToken(const unsigned position,
+                              const Token& default_token) const;
 
-  const Token& getLeftmostToken(const int index) const;
+  const Token& getLeftmostToken(const unsigned index,
+                                const Token& default_token) const;
 
-  const Token& getRightmostToken(const int index) const;
+  const Token& getRightmostToken(const unsigned index,
+                                 const Token& default_token) const;
 
   const Feature* getFeature() const;
 
  private:
   mutable std::unique_ptr<Feature> feature_;
+  mutable std::set<Action> possible_actions_;
+  double score_ = 0.0;
+
+  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 }  // namespace coordparser

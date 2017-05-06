@@ -56,6 +56,21 @@ Token Token::createRoot() {
   return token;
 }
 
+Token Token::createPad() {
+  static Token pad(
+      "-10",    // ID
+      "<PAD>",  // FORM
+      // "<PAD>",  // LEMMA
+      // "NULL",   // CPOSTAG
+      "NULL",   // POSTAG
+      // "",       // FEATS
+      "-11",     // HEAD
+      "NULL");  // DEPREL
+      // "",       // PHEAD
+      // "");      // PDEPREL
+  return pad;
+}
+
 std::ostream& operator<<(std::ostream& os, const Token& token) {
   os << token.getForm();
   return os;

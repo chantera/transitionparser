@@ -7,42 +7,77 @@
 
 namespace coordparser {
 
-State::State(const Sentence& sentence) :
+State::State(const Sentence* sentence) :
     step_(0),
-    tokens_(&sentence.tokens),
-    token_length_((const int) tokens_->size()),
+    sentence_(sentence),
+    num_tokens_((const unsigned int) sentence->tokens.size()),
     stack_{0},
-    buffer_head_(1) {}
+    buffer_(1),
+    heads_(num_tokens_, -1),
+    labels_(num_tokens_, -1),
+    prev_state_(),
+    action_(NoneAction) {}
 
 State::State(const std::shared_ptr<State>& prev_state,
-             const Action& prev_action,
-             const Arc& prev_arc,
-             const std::deque<int>& stack,
-             const int buffer_head) :
+             const Action& action,
+             const std::vector<int>& stack,
+             const int buffer,
+             const std::vector<int>& heads,
+             const std::vector<int>& labels) :
     step_(prev_state->step_ + 1),
-    tokens_(prev_state->tokens_),
-    token_length_((const int) tokens_->size()),
+    sentence_(prev_state->sentence_),
+    num_tokens_(prev_state->num_tokens_),
     stack_(stack),
-    buffer_head_(buffer_head) {}
+    buffer_(buffer),
+    heads_(heads),
+    labels_(labels),
+    prev_state_(prev_state),
+    action_(action) {}
 
 bool State::isTerminal() {
-  return true;
+  return buffer_ == num_tokens_;
 }
 
-const Token& State::getStackToken(const int position) const {
-  return (Token &) tokens_->operator[](stack_.at(position));
+const Token& State::getStackToken(const unsigned position,
+                                  const Token& default_token) const {
+  const unsigned bound = static_cast<const unsigned>(stack_.size() - 1);
+  if (position > bound) {
+    return default_token;
+  }
+  return (Token &) sentence_->tokens[stack_[bound - position]];
 }
 
-const Token& State::getBufferToken(const int position) const {
-  return (Token &) tokens_->operator[](buffer_head_ + position);
+const Token& State::getBufferToken(const unsigned position,
+                                   const Token& default_token) const {
+  const unsigned index = buffer_ + position;
+  if (index >= num_tokens_) {
+    return default_token;
+  }
+  return (Token &) sentence_->tokens[index];
 }
 
-const Token& State::getLeftmostToken(const int index) const {
-  return (Token &) tokens_->operator[](leftmost_[index]);
+const Token& State::getLeftmostToken(const unsigned index,
+                                     const Token& default_token) const {
+  if (index < num_tokens_) {
+    for (int i = 0; i < index; i++) {
+      if (heads_[i] == index) {
+        return (Token&) sentence_->tokens[i];
+      }
+    }
+  }
+  return default_token;
 }
 
-const Token& State::getRightmostToken(const int index) const {
-  return (Token &) tokens_->operator[](rightmost_[index]);
+const Token& State::getRightmostToken(const unsigned index,
+                                      const Token& default_token) const {
+  if (index < num_tokens_) {
+    for (int i = num_tokens_ - 1; i > index; i--) {
+      if (heads_[i] == index) {
+        return (Token&) sentence_->tokens[i];
+      }
+    }
+  }
+  return default_token;
 }
 
 const Feature* State::getFeature() const {

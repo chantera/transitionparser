@@ -59,8 +59,7 @@ Action MlpClassifier::getNextAction(const State& state) {
     if (probs[i] > probs[argmax])
       argmax = i;
   }
-
-  return Action();
+  return static_cast<Action>(argmax);
 }
 
 MlpClassifier::MLP::MLP(dynet::Model& model,

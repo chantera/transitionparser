@@ -10,12 +10,12 @@ namespace coordparser {
 Parser::Parser(std::shared_ptr<Classifier> classifier) :
     classifier_(classifier) {}
 
-State GreedyParser::parse(const Sentence& sentence) {
-  State state(sentence);
-  while (!state.isTerminal()) {
+std::shared_ptr<State> GreedyParser::parse(const Sentence& sentence) {
+  std::shared_ptr<State> state = std::make_shared<State>(&sentence);
+  while (!state->isTerminal()) {
     // retrieve an one best action greedily
-    Action action = classifier_->getNextAction(state);
-    // state = action.apply(state);
+    Action action = classifier_->getNextAction(*state);
+    Transition::apply(action, state);
   }
   return state;
 }

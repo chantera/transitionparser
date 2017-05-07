@@ -85,8 +85,12 @@ class StdoutHandler : public BaseHandler {
 
 using handler_sptr = std::shared_ptr<BaseHandler>;
 
+namespace internal {
+
 const LogLevel defaultLogLevel = LogLevel::INFO;
 const std::string defaultFormat = "[%s]\t%s";
+
+}  // namespace internal
 
 }  // namespace log
 
@@ -94,23 +98,30 @@ class Logger {
  public:
   class Builder {
    public:
-    Builder& setLogLevel(log::LogLevel logLevel) {
+    Logger* build() {
+      return new Logger(handlers_.begin(), handlers_.end(), *this);
+    }
+    Builder& setLogLevel(const log::LogLevel logLevel) {
       logLevel_ = logLevel;
       return *this;
     }
-    Builder& setFormat(std::string& format) {
+    Builder& setFormat(const std::string& format) {
       format_ = format;
+      return *this;
+    }
+    Builder& addHandler(const log::handler_sptr& handler) {
+      handlers_.push_back(handler);
       return *this;
     }
     static const Builder& getDefault() {
       static const Builder kDefault{};
       return kDefault;
     }
-    log::LogLevel logLevel_ = log::defaultLogLevel;
-    std::string format_ = log::defaultFormat;
+    log::LogLevel logLevel_ = log::internal::defaultLogLevel;
+    std::string format_ = log::internal::defaultFormat;
+    std::vector<log::handler_sptr> handlers_;
   };
 
-  /*
   template <class InputIter>
   Logger(const InputIter& first, const InputIter& last,
          const Builder& builder = Builder::getDefault())
@@ -123,7 +134,6 @@ class Logger {
   Logger(std::initializer_list<log::handler_sptr> handlers_list,
          const Builder& builder = Builder::getDefault())
       : Logger(handlers_list.begin(), handlers_list.end(), builder) {}
-      */
 
   explicit Logger(log::handler_sptr handler,
                   const Builder& builder = Builder::getDefault())
@@ -199,7 +209,7 @@ namespace internal {
 class Registry {
  public:
   Registry() {
-    registerDefault();
+    createDefault();
   }
   ~Registry() {}
   static Registry& getInstance() {
@@ -208,13 +218,37 @@ class Registry {
   }
   void registerLogger(const std::string& name,
                        const std::shared_ptr<Logger>& logger) {
+    if (has(name)) {
+      drop(name);
+    }
     loggers_[name] = logger;
+  }
+  std::shared_ptr<Logger> create(const std::string& name) {
+    std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
+    std::shared_ptr<Logger> logger(
+        Logger::Builder()
+            .setLogLevel(LogLevel::DEBUG)
+            .addHandler(std::make_shared<FileHandler>(file))
+            .addHandler(std::make_shared<StdoutHandler>())
+            .build()
+    );
+    registerLogger(name, logger);
+    return logger;
+  }
+  std::shared_ptr<Logger> createDefault() {
+    return create(defaultName());
   }
   std::shared_ptr<Logger> get(const std::string& name) {
     return loggers_.at(name);
   }
   std::shared_ptr<Logger> getDefault() {
     return get(defaultName());
+  }
+  bool has(const std::string &name) {
+    return loggers_.find(name) != loggers_.end();
+  }
+  void drop(const std::string& name) {
+    loggers_.erase(name);
   }
  protected:
   static const std::string& defaultName() {
@@ -223,26 +257,6 @@ class Registry {
   }
   std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
  private:
-  void registerDefault() {
-    std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
-    // std::vector<handler_sptr> handlers;
-    // handlers.push_back());
-    // handlers.push_back(;
-
-    /*
-    std::shared_ptr<Logger> logger = std::make_shared<Logger>(
-        {
-            std::move(std::make_shared<FileHandler>(file)),
-            std::move(std::make_shared<StdoutHandler>()),
-        }
-    );
-     */
-    std::shared_ptr<Logger> logger = std::make_shared<Logger>(
-        std::move(std::make_shared<FileHandler>(file))
-    );
-    registerLogger(defaultName(), logger);
-    //Builder builder
-  }
   DISALLOW_COPY_AND_MOVE(Registry);
 };
 

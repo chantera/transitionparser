@@ -65,15 +65,16 @@ void App::train() {
   dynet::ComputationGraph cg;
 
   Logger::log(Logger::LogLevel::INFO, "test0");
-  std::shared_ptr<Classifier> classifier = std::make_shared<MlpClassifier>(
+  std::shared_ptr<NeuralClassifier> classifier
+      = std::make_shared<MlpClassifier>(
       model,
-      10,  // Token::getVocabSize(),
+      10000,  // Token::getVocabSize(),
       64,
       Feature::kNWordFeatures,
-      10,  // Token::getVocabSize(),
+      10000,  // Token::getVocabSize(),
       64,
       Feature::kNPosFeatures,
-      10,  // Token::getVocabSize(),
+      10000,  // Token::getVocabSize(),
       64,
       Feature::kNLabelFeatures,
       1024,
@@ -81,6 +82,7 @@ void App::train() {
       48);
   std::unique_ptr<Parser> parser = std::make_unique<GreedyParser>(classifier);
 
+  classifier->prepare(&cg);
   const std::vector<Sentence> sentences = reader.read();
   for (auto& sentence : sentences) {
       parser->parse(sentence);

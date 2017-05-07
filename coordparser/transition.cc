@@ -89,4 +89,28 @@ State* Transition::right(const std::shared_ptr<State>& state, int label) {
                    std::move(heads), std::move(labels));
 }
 
+bool Transition::isAllowed(Action action, const State& state) {
+  switch (ActionType(action)) {
+    case SHIFT:
+      return isAllowedShift(state);
+    case LEFT:
+      return isAllowedLeft(state);
+    case RIGHT:
+      return isAllowedRight(state);
+  }
+  return false;
+}
+
+bool Transition::isAllowedShift(const State& state) {
+  return !state.isTerminal();
+}
+
+bool Transition::isAllowedLeft(const State& state) {
+  return state.stack_.size() > 2;
+}
+
+bool Transition::isAllowedRight(const State& state) {
+  return state.stack_.size() > 1;
+}
+
 }  // namespace coordparser

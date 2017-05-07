@@ -49,18 +49,21 @@ void MlpClassifier::prepare(dynet::ComputationGraph* cg) {
 }
 
 Action MlpClassifier::getNextAction(const State& state) {
-  Logger::info(state);
+  Logger::trace(state);
   const Feature* feature = state.getFeature();
   DE::Expression y = mlp_.forward(feature->getWordFeatures(),
                                   feature->getPosFeatures(),
                                   feature->getLabelFeatures(),
                                   *cg_);
   std::vector<float> probs = dynet::as_vector(cg_->incremental_forward(y));
+  Logger::trace("probabilities: %s", probs);
   unsigned argmax = 0;
   for (unsigned i = 1; i < probs.size(); ++i) {
-    if (probs[i] > probs[argmax])
+    if (probs[i] > probs[argmax] && Transition::isAllowed(i, state)) {
       argmax = i;
+    }
   }
+  Logger::trace("argmax: %d", argmax);
   return static_cast<Action>(argmax);
 }
 
@@ -109,9 +112,9 @@ DE::Expression MlpClassifier::MLP::forward(
     const std::vector<unsigned>& X_p,
     const std::vector<unsigned>& X_l,
     dynet::ComputationGraph& cg) {
-  Logger::debug(X_w);
-  Logger::debug(X_p);
-  Logger::debug(X_l);
+  Logger::trace("word features: %s", X_w);
+  Logger::trace("pos features: %s", X_p);
+  Logger::trace("label features: %s", X_l);
   DE::Expression h0_w = DE::reshape(DE::lookup(cg, p_lookup_w_, X_w),
                                     {word_feature_size_ * word_embed_size_});
   DE::Expression h0_p = DE::reshape(DE::lookup(cg, p_lookup_p_, X_p),

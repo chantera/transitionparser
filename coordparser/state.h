@@ -50,7 +50,7 @@ class State {
 
   friend std::ostream& operator<<(std::ostream& os, const State& state);
 
-  bool isTerminal();
+  bool isTerminal() const;
 
   const Token& getStackToken(const unsigned position,
                              const Token& default_token) const;
@@ -70,7 +70,6 @@ class State {
 
  private:
   mutable std::unique_ptr<Feature> feature_;
-  mutable std::set<Action> possible_actions_;
   double score_ = 0.0;
 
   DISALLOW_COPY_AND_ASSIGN(State);

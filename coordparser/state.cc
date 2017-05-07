@@ -45,7 +45,7 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
   return os;
 }
 
-bool State::isTerminal() {
+bool State::isTerminal() const {
   return buffer_ == num_tokens_;
 }
 
@@ -70,7 +70,7 @@ const Token& State::getBufferToken(const unsigned position,
 const Token& State::getLeftmostToken(const int index,
                                      const Token& default_token,
                                      const int from) const {
-  if (index >=0 && index < num_tokens_) {
+  if (index >=0 && index < num_tokens_ && from >= 0 && from < index) {
     for (int i = from; i < index; i++) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
@@ -83,8 +83,9 @@ const Token& State::getLeftmostToken(const int index,
 const Token& State::getRightmostToken(const int index,
                                       const Token& default_token,
                                       const int from) const {
-  if (index >= 0 && index < num_tokens_) {
-    for (int i = (from == -1 ? num_tokens_ - 1 : from); i > index; i--) {
+  int i = from == -1 ? num_tokens_ - 1 : from;
+  if (index >= 0 && index < num_tokens_ && i > index && i < num_tokens_) {
+    for (i; i > index; i--) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
       }

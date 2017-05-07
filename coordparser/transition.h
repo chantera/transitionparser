@@ -46,6 +46,14 @@ class Transition {
 
   static State* right(const std::shared_ptr<State>& state, int label);
 
+  static bool isAllowed(Action action, const State& state);
+
+  static bool isAllowedShift(const State& state);
+
+  static bool isAllowedLeft(const State& state);
+
+  static bool isAllowedRight(const State& state);
+
  private:
   Transition() = delete;
   DISALLOW_COPY_AND_MOVE(Transition);

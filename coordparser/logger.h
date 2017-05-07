@@ -6,9 +6,10 @@
 #ifndef COORDPARSER_LOGGER_H_
 #define COORDPARSER_LOGGER_H_
 
+#include <iostream>
 #include <map>
 #include <string>
-#include <iostream>
+#include <unordered_map>
 
 #include "coordparser/utility.h"
 
@@ -42,23 +43,105 @@ static inline std::string label(LogLevel logLevel) {
   return labels.at(logLevel);
 }
 
+class BaseHandler {
+ public:
+  BaseHandler() {};
+  virtual ~BaseHandler() {};
+
+  virtual void log(const std::string& message) = 0;
+
+ private:
+  DISALLOW_COPY_AND_MOVE(BaseHandler);
+};
+
+class FileHandler : public BaseHandler {
+ public:
+  FileHandler() {}
+  explicit FileHandler(const std::string& filename) : file_(filename) {
+    ofs_.open(file_, std::ofstream::out | std::ofstream::app);
+  }
+  ~FileHandler() {
+    ofs_.close();
+  }
+
+  void log(const std::string& message) override {
+    ofs_ << message << std::endl;
+  }
+
+ private:
+  std::string file_;
+  mutable std::ofstream ofs_;
+};
+
+class StdoutHandler : public BaseHandler {
+ public:
+  StdoutHandler() {}
+  ~StdoutHandler() {}
+
+  void log(const std::string& message) override {
+    std::cout << message << std::endl;
+  }
+};
+
+using handler_sptr = std::shared_ptr<BaseHandler>;
+
+const LogLevel defaultLogLevel = LogLevel::INFO;
+const std::string defaultFormat = "[%s]\t%s";
+
 }  // namespace log
 
 class Logger {
  public:
-  ~Logger() {
-    _finalize();
+  class Builder {
+   public:
+    Builder& setLogLevel(log::LogLevel logLevel) {
+      logLevel_ = logLevel;
+      return *this;
+    }
+    Builder& setFormat(std::string& format) {
+      format_ = format;
+      return *this;
+    }
+    static const Builder& getDefault() {
+      static const Builder kDefault{};
+      return kDefault;
+    }
+    log::LogLevel logLevel_ = log::defaultLogLevel;
+    std::string format_ = log::defaultFormat;
+  };
+
+  /*
+  template <class InputIter>
+  Logger(const InputIter& first, const InputIter& last,
+         const Builder& builder = Builder::getDefault())
+      : handlers_(first, last),
+        logLevel_(builder.logLevel_),
+        format_(builder.format_) {
+    _initialize();
   }
 
-  static Logger& getInstance() {
-    static Logger instance;
-    return instance;
+  Logger(std::initializer_list<log::handler_sptr> handlers_list,
+         const Builder& builder = Builder::getDefault())
+      : Logger(handlers_list.begin(), handlers_list.end(), builder) {}
+      */
+
+  explicit Logger(log::handler_sptr handler,
+                  const Builder& builder = Builder::getDefault())
+      // : Logger({handler}, builder) {}
+      : handlers_({handler}),
+        logLevel_(builder.logLevel_),
+        format_(builder.format_) {
+    _initialize();
+  }
+
+  ~Logger() {
+    _finalize();
   }
 
   template <typename ... Args>
   inline void log(log::LogLevel logLevel, const char* format,
                   const Args&... args) {
-    if (!_should_log(logLevel)) {
+    if (!shouldLog(logLevel)) {
       return;
     }
     _log(logLevel, utility::string::format(format, args...));
@@ -66,66 +149,112 @@ class Logger {
 
   template <typename T>
   inline void log(log::LogLevel logLevel, const T& message) const {
-    if (!_should_log(logLevel)) {
+    if (!shouldLog(logLevel)) {
       return;
     }
     _log(logLevel, message);
   }
 
- protected:
-  Logger() {
-    logLevel_ = log::LogLevel::DEBUG;
-    verbose_ = true;
-    format_ = "[%s]\t%s";
-    file_ = "/Users/hiroki/work/coordparser/logs/test.log";
-    _initialize();
+  inline bool shouldLog(log::LogLevel logLevel) const {
+    return logLevel_ >= logLevel;
   }
 
+ protected:
   void _initialize() {
-    ofs_.open(file_, std::ofstream::out | std::ofstream::app);
     this->log(log::LogLevel::INFO, "logger._initialize() called.");
   }
 
   void _finalize() {
     this->log(log::LogLevel::INFO, "logger._initialize() called.");
-    ofs_.close();
   }
 
   template <typename T>
   inline void _log(log::LogLevel logLevel, const T& message) const {
-    _log_raw(utility::string::format(format_.c_str(),
-                                     log::label(logLevel), message));
+    _logRaw(utility::string::format(format_.c_str(),
+                                    log::label(logLevel), message));
   }
 
-  inline void _log_raw(const std::string& message) const {
-    ofs_ << message << std::endl;
-    if (verbose_) {
-      std::cout << message << std::endl;
+  inline void _logRaw(const std::string& message) const {
+    for (auto& handler : handlers_) {
+      handler->log(message);
     }
   }
 
-  inline bool _should_log(log::LogLevel logLevel) const {
-    return logLevel_ >= logLevel;
-  }
-
+  std::vector<log::handler_sptr> handlers_;
   std::string accessId_;
   std::string accessTime_;
   log::LogLevel logLevel_;
-  bool verbose_;
   std::string format_;
   std::string file_;
 
  private:
-  mutable std::ofstream ofs_;
-
+  Logger() = delete;
   DISALLOW_COPY_AND_MOVE(Logger);
 };
 
 namespace log {
 
+namespace internal {
+
+class Registry {
+ public:
+  Registry() {
+    registerDefault();
+  }
+  ~Registry() {}
+  static Registry& getInstance() {
+    static Registry instance;
+    return instance;
+  }
+  void registerLogger(const std::string& name,
+                       const std::shared_ptr<Logger>& logger) {
+    loggers_[name] = logger;
+  }
+  std::shared_ptr<Logger> get(const std::string& name) {
+    return loggers_.at(name);
+  }
+  std::shared_ptr<Logger> getDefault() {
+    return get(defaultName());
+  }
+ protected:
+  static const std::string& defaultName() {
+    static const std::string defaultKey = "default";
+    return defaultKey;
+  }
+  std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
+ private:
+  void registerDefault() {
+    std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
+    // std::vector<handler_sptr> handlers;
+    // handlers.push_back());
+    // handlers.push_back(;
+
+    /*
+    std::shared_ptr<Logger> logger = std::make_shared<Logger>(
+        {
+            std::move(std::make_shared<FileHandler>(file)),
+            std::move(std::make_shared<StdoutHandler>()),
+        }
+    );
+     */
+    std::shared_ptr<Logger> logger = std::make_shared<Logger>(
+        std::move(std::make_shared<FileHandler>(file))
+    );
+    registerLogger(defaultName(), logger);
+    //Builder builder
+  }
+  DISALLOW_COPY_AND_MOVE(Registry);
+};
+
+static inline std::shared_ptr<Logger> getDefaultLogger() {
+  return Registry::getInstance().getDefault();
+}
+
+}  // namespace internal
+
 template <typename ... Args>
 static void log(LogLevel logLevel, const char* format, const Args&... args) {
-  Logger::getInstance().log(logLevel, format, args...);
+  internal::getDefaultLogger()->log(logLevel, format, args...);
 }
 
 template <typename ... Args>
@@ -160,7 +289,7 @@ static void trace(const char* format, const Args&... args) {
 
 template <typename T>
 static void inline log(LogLevel logLevel, const T& obj) {
-  Logger::getInstance().log(logLevel, obj);
+  internal::getDefaultLogger()->log(logLevel, obj);
 }
 
 template <typename T>

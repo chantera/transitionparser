@@ -109,6 +109,9 @@ DE::Expression MlpClassifier::MLP::forward(
     const std::vector<unsigned>& X_p,
     const std::vector<unsigned>& X_l,
     dynet::ComputationGraph& cg) {
+  Logger::debug(X_w);
+  Logger::debug(X_p);
+  Logger::debug(X_l);
   DE::Expression h0_w = DE::reshape(DE::lookup(cg, p_lookup_w_, X_w),
                                     {word_feature_size_ * word_embed_size_});
   DE::Expression h0_p = DE::reshape(DE::lookup(cg, p_lookup_p_, X_p),

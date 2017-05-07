@@ -74,6 +74,7 @@ class Logger {
 
  protected:
   Logger() {
+    logLevel_ = log::LogLevel::DEBUG;
     verbose_ = true;
     format_ = "[%s]\t%s";
     file_ = "/Users/hiroki/work/coordparser/logs/test.log";
@@ -90,8 +91,8 @@ class Logger {
     ofs_.close();
   }
 
-  inline void _log(log::LogLevel logLevel,
-                   const std::string& message) const {
+  template <typename T>
+  inline void _log(log::LogLevel logLevel, const T& message) const {
     _log_raw(utility::string::format(format_.c_str(),
                                      log::label(logLevel), message));
   }
@@ -104,7 +105,7 @@ class Logger {
   }
 
   inline bool _should_log(log::LogLevel logLevel) const {
-    return logLevel >= logLevel;
+    return logLevel_ >= logLevel;
   }
 
   std::string accessId_;
@@ -115,7 +116,7 @@ class Logger {
   std::string file_;
 
  private:
-  std::ofstream ofs_;
+  mutable std::ofstream ofs_;
 
   DISALLOW_COPY_AND_MOVE(Logger);
 };
@@ -124,7 +125,7 @@ namespace log {
 
 template <typename ... Args>
 static void log(LogLevel logLevel, const char* format, const Args&... args) {
-  Logger::getInstance().log(logLevel, format, args);
+  Logger::getInstance().log(logLevel, format, args...);
 }
 
 template <typename ... Args>

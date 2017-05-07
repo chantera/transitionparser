@@ -3,10 +3,10 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
+#include "coordparser/transition.h"
+
 #include <utility>
 #include <vector>
-
-#include "coordparser/transition.h"
 
 namespace coordparser {
 

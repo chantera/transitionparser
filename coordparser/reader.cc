@@ -3,11 +3,11 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
+#include "coordparser/reader.h"
+
 #include <fstream>
 #include <iostream>
 #include <utility>
-
-#include "coordparser/reader.h"
 
 namespace coordparser {
 

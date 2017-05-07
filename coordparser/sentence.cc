@@ -3,9 +3,9 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include <vector>
-
 #include "coordparser/sentence.h"
+
+#include <vector>
 
 namespace coordparser {
 

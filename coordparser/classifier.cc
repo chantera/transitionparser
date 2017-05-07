@@ -3,10 +3,11 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
+#include "coordparser/classifier.h"
+
 #include <dynet/init.h>
 #include <dynet/expr.h>
 
-#include "coordparser/classifier.h"
 #include "coordparser/logger.h"
 
 namespace DE = dynet::expr;

@@ -3,12 +3,13 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
+#include "coordparser/app.h"
+
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "coordparser/app.h"
 #include "coordparser/feature.h"
 #include "coordparser/logger.h"
 #include "coordparser/parser.h"

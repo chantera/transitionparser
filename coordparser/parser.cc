@@ -4,6 +4,7 @@
 //
 
 #include "coordparser/parser.h"
+
 #include "coordparser/logger.h"
 
 namespace coordparser {

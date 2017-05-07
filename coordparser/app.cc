@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "coordparser/app.h"
+#include "coordparser/feature.h"
 #include "coordparser/logger.h"
 #include "coordparser/parser.h"
 #include "coordparser/reader.h"
@@ -68,13 +69,13 @@ void App::train() {
       model,
       10,  // Token::getVocabSize(),
       64,
-      20,  // Feature::kNWordFeatures,
+      Feature::kNWordFeatures,
       10,  // Token::getVocabSize(),
       64,
-      20,  // Feature::kNWordFeatures,
+      Feature::kNPosFeatures,
       10,  // Token::getVocabSize(),
       64,
-      20,  // Feature::kNWordFeatures,
+      Feature::kNLabelFeatures,
       1024,
       256,
       48);

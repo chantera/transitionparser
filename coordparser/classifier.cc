@@ -7,6 +7,7 @@
 #include <dynet/expr.h>
 
 #include "coordparser/classifier.h"
+#include "coordparser/logger.h"
 
 namespace DE = dynet::expr;
 
@@ -48,6 +49,7 @@ void MlpClassifier::prepare(dynet::ComputationGraph* cg) {
 }
 
 Action MlpClassifier::getNextAction(const State& state) {
+  Logger::info(state);
   const Feature* feature = state.getFeature();
   DE::Expression y = mlp_.forward(feature->getWordFeatures(),
                                   feature->getPosFeatures(),

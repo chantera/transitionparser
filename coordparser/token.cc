@@ -26,7 +26,7 @@ Token::Token(const string& id, const string& form, const string& lemma,
 Token::Token(const Token& token)
     : id_(token.id_), form_(token.form_), postag_(token.postag_),
       head_(token.head_), deprel_(token.deprel_) {
-  std::cout << id_ << token << std::endl;
+  // std::cout << id_ << token << std::endl;
 }
 
 Token::Token(Token &&token) noexcept
@@ -69,6 +69,10 @@ Token Token::createPad() {
       // "",       // PHEAD
       // "");      // PDEPREL
   return pad;
+}
+
+bool Token::isRoot() {
+  return id_ == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {

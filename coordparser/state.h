@@ -48,6 +48,8 @@ class State {
 
   ~State() = default;
 
+  friend std::ostream& operator<<(std::ostream& os, const State& state);
+
   bool isTerminal();
 
   const Token& getStackToken(const unsigned position,
@@ -56,11 +58,13 @@ class State {
   const Token& getBufferToken(const unsigned position,
                               const Token& default_token) const;
 
-  const Token& getLeftmostToken(const unsigned index,
-                                const Token& default_token) const;
+  const Token& getLeftmostToken(const int index,
+                                const Token& default_token,
+                                const int from = 0) const;
 
-  const Token& getRightmostToken(const unsigned index,
-                                 const Token& default_token) const;
+  const Token& getRightmostToken(const int index,
+                                 const Token& default_token,
+                                 const int from = -1) const;
 
   const Feature* getFeature() const;
 

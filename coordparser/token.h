@@ -54,6 +54,8 @@ class Token {
 
   static Token createPad();
 
+  inline bool isRoot();
+
   friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
   const int id_;

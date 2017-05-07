@@ -16,9 +16,9 @@ class State;
 
 class Feature {
  public:
-  static const unsigned kNWordFeatures  = 20;
-  static const unsigned kNPosFeatures   = 20;
-  static const unsigned kNLabelFeatures = 12;
+  static const unsigned kNWordFeatures;
+  static const unsigned kNPosFeatures;
+  static const unsigned kNLabelFeatures;
 
   Feature() = delete;
   explicit Feature(const State &state);

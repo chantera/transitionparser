@@ -34,6 +34,17 @@ State::State(const std::shared_ptr<State>& prev_state,
     prev_state_(prev_state),
     action_(action) {}
 
+std::ostream& operator<<(std::ostream& os, const State& state) {
+  Token pad = Token::createPad();
+  Token s0 = state.getStackToken(0, pad);
+  Token s1 = state.getStackToken(1, pad);
+  Token b0 = state.getBufferToken(0, pad);
+  Token b1 = state.getBufferToken(1, pad);
+  os << utility::string::format("step=%d, s0: %s, s1: %s, b0: %s, b1: %s",
+                                state.step_, s0, s1, b0, b1);
+  return os;
+}
+
 bool State::isTerminal() {
   return buffer_ == num_tokens_;
 }
@@ -56,10 +67,11 @@ const Token& State::getBufferToken(const unsigned position,
   return (Token &) sentence_->tokens[index];
 }
 
-const Token& State::getLeftmostToken(const unsigned index,
-                                     const Token& default_token) const {
-  if (index < num_tokens_) {
-    for (int i = 0; i < index; i++) {
+const Token& State::getLeftmostToken(const int index,
+                                     const Token& default_token,
+                                     const int from) const {
+  if (index >=0 && index < num_tokens_) {
+    for (int i = from; i < index; i++) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
       }
@@ -68,10 +80,11 @@ const Token& State::getLeftmostToken(const unsigned index,
   return default_token;
 }
 
-const Token& State::getRightmostToken(const unsigned index,
-                                      const Token& default_token) const {
-  if (index < num_tokens_) {
-    for (int i = num_tokens_ - 1; i > index; i--) {
+const Token& State::getRightmostToken(const int index,
+                                      const Token& default_token,
+                                      const int from) const {
+  if (index >= 0 && index < num_tokens_) {
+    for (int i = (from == -1 ? num_tokens_ - 1 : from); i > index; i--) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
       }

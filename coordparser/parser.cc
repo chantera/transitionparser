@@ -4,6 +4,7 @@
 //
 
 #include "coordparser/parser.h"
+#include "coordparser/logger.h"
 
 namespace coordparser {
 
@@ -12,6 +13,7 @@ Parser::Parser(std::shared_ptr<Classifier> classifier) :
 
 std::shared_ptr<State> GreedyParser::parse(const Sentence& sentence) {
   std::shared_ptr<State> state = std::make_shared<State>(&sentence);
+  Logger::debug("Parse: %s", sentence);
   while (!state->isTerminal()) {
     // retrieve an one best action greedily
     Action action = classifier_->getNextAction(*state);

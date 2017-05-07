@@ -53,7 +53,7 @@ void App::initialize() {
 }
 
 void App::train() {
-  Logger::log(Logger::LogLevel::INFO, "Hello, World!");
+  log::info("Hello, World!");
 
   std::string filepath =
       "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
@@ -64,7 +64,6 @@ void App::train() {
       std::make_unique<dynet::SimpleSGDTrainer>(model);
   dynet::ComputationGraph cg;
 
-  Logger::log(Logger::LogLevel::INFO, "test0");
   std::shared_ptr<NeuralClassifier> classifier
       = std::make_shared<MlpClassifier>(
       model,

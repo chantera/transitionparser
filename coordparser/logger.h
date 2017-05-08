@@ -181,7 +181,7 @@ class Logger {
  protected:
   void _initialize() {
     this->log(log::LogLevel::INFO,
-              "LOG Start with ACCESSID=[%s] UNIQUEID=[%s] ACCESSTIME=[%s]",
+              "LOG Start with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}]",
               access_id_,
               unique_id_,
               utility::date::strftime_hr(time_format_, access_time_));
@@ -192,8 +192,8 @@ class Logger {
         std::chrono::duration_cast<std::chrono::microseconds>(
             utility::date::now() - access_time_).count();
     this->log(log::LogLevel::INFO,
-              "LOG End with ACCESSID=[%s] UNIQUEID=[%s] ACCESSTIME=[%3.9f] "
-                  "PROCESSTIME=[%s]\n",
+              "LOG End with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}] "
+                  "PROCESSTIME=[{:3.6f}]\n",
               access_id_,
               "UNIQID",
               utility::date::strftime_hr(time_format_, access_time_),

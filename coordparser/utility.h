@@ -83,6 +83,13 @@ static std::string format(const boost::format& fmt) {
 
 template<typename T, typename... Args>
 static std::string format(boost::format& fmt,  // NOLINT(runtime/references)
+                          const std::vector<T>& arg, Args&& ... args) {
+  fmt = fmt % vector::join(arg, ' ');
+  return format(fmt, std::forward<Args>(args)...);
+}
+
+template<typename T, typename... Args>
+static std::string format(boost::format& fmt,  // NOLINT(runtime/references)
                           const T& arg, Args&& ... args) {
   fmt = fmt % arg;
   return format(fmt, std::forward<Args>(args)...);
@@ -97,8 +104,8 @@ std::string format(const char* fmt, Args&& ... args) {
 }
 #else
 template<typename... Args>
-std::string format(const char* fmt, Args&& ... args) {
-  return fmt::format(fmt, std::forward<Args>(args)...);
+std::string format(const char* fmt, const Args& ... args) {
+  return fmt::format(fmt, args...);
 }
 #endif
 

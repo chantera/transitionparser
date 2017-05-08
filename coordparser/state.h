@@ -50,6 +50,14 @@ class State {
 
   friend std::ostream& operator<<(std::ostream& os, const State& state);
 
+  template<typename OStream>
+  friend OStream& operator<<(OStream& os, const State& state) {
+    std::stringstream ss;
+    ss << state;
+    os << ss.str();
+    return os;
+  }
+
   bool isTerminal() const;
 
   const Token& getStackToken(const unsigned position,

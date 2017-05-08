@@ -23,8 +23,8 @@ template <class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
 
 #ifndef USE_INTERNAL_FMT
-#include "coordparser/fmt/format.h"
-#include "coordparser/fmt/ostream.h"
+#include <spdlog/fmt/fmt.h>
+#include <spdlog/fmt/ostr.h>
 #endif
 
 #define DEFAULT_COPY_AND_ASSIGN(TypeName) \
@@ -98,13 +98,13 @@ static std::string format(boost::format& fmt,  // NOLINT(runtime/references)
 }  // namespace internal
 
 template<typename... Args>
-std::string format(const char* fmt, Args&& ... args) {
+static inline std::string format(const char* fmt, Args&& ... args) {
   boost::format boost_format(fmt);
   return internal::format(boost_format, std::forward<Args>(args)...);
 }
 #else
 template<typename... Args>
-std::string format(const char* fmt, const Args& ... args) {
+static inline std::string format(const char* fmt, const Args& ... args) {
   return fmt::format(fmt, args...);
 }
 #endif

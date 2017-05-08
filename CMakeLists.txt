@@ -38,6 +38,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIR}
     ${DYNET_INCLUDE_DIR}
+    ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
 
 link_directories(

@@ -6,6 +6,9 @@
 #ifndef COORDPARSER_LOGGER_H_
 #define COORDPARSER_LOGGER_H_
 
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/bundled/time.h>
+
 #include <chrono>  // NOLINT(build/c++11)
 #include <iostream>
 #include <map>
@@ -18,6 +21,7 @@
 
 namespace coordparser {
 
+/*
 namespace log {
 
 enum class LogLevel {
@@ -98,150 +102,78 @@ static const char* kDefaultTimeFormat = "%Y-%m-%d %H:%M:%S.%f %Z";
 }  // namespace internal
 
 }  // namespace log
+ */
 
-class Logger {
+class Logger : public spdlog::logger {
  public:
-  class Builder {
-   public:
-    Logger* build() {
-      return new Logger(handlers_.begin(), handlers_.end(), *this);
-    }
-    Builder& setLogLevel(const log::LogLevel log_level) {
-      log_level_ = log_level;
-      return *this;
-    }
-    Builder& setFormat(const std::string& format) {
-      format_ = format;
-      return *this;
-    }
-    Builder& setTimeFormat(const std::string& time_format) {
-      time_format_ = time_format;
-      return *this;
-    }
-    Builder& addHandler(const log::handler_sptr& handler) {
-      handlers_.push_back(handler);
-      return *this;
-    }
-    static const Builder& getDefault() {
-      static const Builder kDefault{};
-      return kDefault;
-    }
-    log::LogLevel log_level_ = log::internal::kDefaultLogLevel;
-    std::string format_ = std::string(log::internal::kDefaultFormat);
-    std::string time_format_ = std::string(log::internal::kDefaultTimeFormat);
-    std::vector<log::handler_sptr> handlers_;
-  };
+  using clock = std::chrono::system_clock;
 
-  template <class InputIter>
-  Logger(const InputIter& first, const InputIter& last,
-         const Builder& builder = Builder::getDefault())
-      : handlers_(first, last),
-        log_level_(builder.log_level_),
-        format_(builder.format_),
-        time_format_(builder.time_format_),
-        access_id_(utility::hash::generate_uuid().substr(0, 6)),
-        unique_id_("UNIQID"),
-        access_time_(utility::date::now()) {
+  template<class It>
+  inline Logger(const std::string& logger_name, const It& begin, const It& end):
+      access_id_(utility::hash::generate_uuid().substr(0, 6)),
+      unique_id_("UNIQID"),
+      access_time_(clock::now()),
+      spdlog::logger(logger_name, begin, end) {
     _initialize();
   }
 
-  Logger(std::initializer_list<log::handler_sptr> handlers_list,
-         const Builder& builder = Builder::getDefault())
-      : Logger(handlers_list.begin(), handlers_list.end(), builder) {}
+  inline Logger(const std::string& logger_name,
+                spdlog::sinks_init_list sinks_list):
+      Logger(logger_name, sinks_list.begin(), sinks_list.end()) {}
 
-  explicit Logger(log::handler_sptr handler,
-                  const Builder& builder = Builder::getDefault())
-      : Logger({handler}, builder) {}
+  inline Logger(const std::string& logger_name, spdlog::sink_ptr single_sink):
+      Logger(logger_name, {single_sink}) {}
 
-  ~Logger() {
+  inline ~Logger() {
     _finalize();
-  }
-
-  template <typename ... Args>
-  inline void log(log::LogLevel log_level, const char* format,
-                  const Args&... args) {
-    if (!shouldLog(log_level)) {
-      return;
-    }
-    _log(log_level, utility::string::format(format, args...));
-  }
-
-  template <typename T>
-  inline void log(log::LogLevel log_level, const T& message) const {
-    if (!shouldLog(log_level)) {
-      return;
-    }
-    _log(log_level, message);
-  }
-
-  inline bool shouldLog(log::LogLevel log_level) const {
-    return log_level_ >= log_level;
   }
 
  protected:
   void _initialize() {
-    this->log(log::LogLevel::INFO,
-              "LOG Start with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}]",
-              access_id_,
-              unique_id_,
-              utility::date::strftime_hr(time_format_, access_time_));
+    std::time_t t = clock::to_time_t(access_time_);
+    std::tm tm;
+    localtime_r(&t, &tm);
+    time_format_ = utility::string::format("{} {:%Z}",
+                                           "%Y-%m-%d %H:%M:%S.%f",
+                                           tm);
+    format_ = utility::string::format("{}\t{}\t[%l]\t%v",
+                                      time_format_, access_id_);
+    set_pattern(format_);
+    info("LOG Start with ACCESSID=[{}] UNIQUEID=[{}] "
+             "ACCESSTIME=[{:%Y-%m-%d %H:%M:%S.%f %Z}]",
+         access_id_,
+         unique_id_,
+         tm);
   }
 
   void _finalize() {
-    double elapsed_time =
+    std::time_t t = clock::to_time_t(access_time_);
+    std::tm tm;
+    localtime_r(&t, &tm);
+    const double elapsed_time =
         std::chrono::duration_cast<std::chrono::microseconds>(
             utility::date::now() - access_time_).count();
-    this->log(log::LogLevel::INFO,
-              "LOG End with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}] "
-                  "PROCESSTIME=[{:3.6f}]\n",
-              access_id_,
-              "UNIQID",
-              utility::date::strftime_hr(time_format_, access_time_),
-              (elapsed_time / 1000) / 1000);
+    info("LOG End with ACCESSID=[{}] UNIQUEID=[{}] "
+             "ACCESSTIME=[{:%Y-%m-%d %H:%M:%S.%f %Z}] PROCESSTIME=[{:3.6f}]\n",
+         access_id_,
+         unique_id_,
+         tm,
+         (elapsed_time / 1000) / 1000);
   }
-
-  template <typename T>
-  inline void _log(log::LogLevel log_level, const T& message) const {
-    // @TODO: implement
-    // std::string output = format_;
-    // utility::string::replace(output, "%(time)",
-    //                          utility::date::strftime_hr(time_format_));
-    // utility::string::replace(output, "%(accessid)", access_id_);
-    // utility::string::replace(output, "%(level)", log::label(log_level));
-    // utility::string::replace(output, "%(message)",
-    //                          utility::string::to_string(message));
-    // _logRaw(ouput);
-    _logRaw(utility::string::format(
-        "{}\t{}\t[{}]\t{}",
-        utility::date::strftime_hr(time_format_),
-        access_id_,
-        log::label(log_level),
-        message));
-  }
-
-  inline void _logRaw(const std::string& message) const {
-    for (auto& handler : handlers_) {
-      handler->log(message);
-    }
-  }
-
-  std::vector<log::handler_sptr> handlers_;
-  log::LogLevel log_level_;
-  std::string format_;
-  std::string time_format_;
-  const std::string access_id_;
-  const std::string unique_id_;
-  const std::chrono::system_clock::time_point access_time_;
 
  private:
-  Logger() = delete;
-  DISALLOW_COPY_AND_MOVE(Logger);
+  const std::string access_id_;
+  const std::string unique_id_;
+  const clock::time_point access_time_;
+  std::string time_format_;
+  std::string format_;
 };
 
 namespace log {
 
 namespace internal {
 
+/*
 class Registry {
  public:
   Registry() {
@@ -265,7 +197,7 @@ class Registry {
         Logger::Builder()
             .setLogLevel(LogLevel::DEBUG)
             .setFormat(kDefaultFormat)
-            .addHandler(std::make_shared<FileHandler>(file))
+            // .addHandler(std::make_shared<FileHandler>(file))
             .addHandler(std::make_shared<StdoutHandler>())
             .build());
     registerLogger(name, logger);
@@ -301,8 +233,50 @@ class Registry {
 static inline std::shared_ptr<Logger> get_default_logger() {
   return Registry::getInstance().getDefault();
 }
+ */
 
 }  // namespace internal
+
+inline std::shared_ptr<spdlog::logger> my_logger(
+    const std::string& logger_name,
+    const spdlog::filename_t& filename,
+    bool truncate = false,
+    bool stdout = true)
+{
+  std::vector<spdlog::sink_ptr> sinks;
+  sinks.push_back(std::move(
+      std::make_shared<spdlog::sinks::simple_file_sink_st>(
+          filename, truncate)));
+  if (stdout) {
+#ifdef _WIN32
+    sinks.push_back(std::move(
+        std::make_shared<spdlog::sinks::wincolor_stdout_sink_st>()));
+#else
+    sinks.push_back(std::move(
+        std::make_shared<spdlog::sinks::ansicolor_sink>(
+            spdlog::sinks::stdout_sink_st::instance())));
+#endif
+  }
+  return std::make_shared<Logger>(logger_name, sinks.begin(), sinks.end());
+}
+
+namespace internal {
+
+std::once_flag once;
+
+void init() {
+  const std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
+  spdlog::register_logger(my_logger("default", file, false, true));
+}
+
+inline std::shared_ptr<spdlog::logger> get_default_logger() {
+  std::call_once(once, init);
+  return spdlog::get("default");
+}
+
+}  // namespace internal
+
+using LogLevel = spdlog::level::level_enum;
 
 template <typename ... Args>
 static void log(LogLevel log_level, const char* format, const Args&... args) {
@@ -311,32 +285,27 @@ static void log(LogLevel log_level, const char* format, const Args&... args) {
 
 template <typename ... Args>
 static void error(const char* format, const Args&... args) {
-  log(LogLevel::ERROR, format, args...);
+  log(LogLevel::err, format, args...);
 }
 
 template <typename ... Args>
 static void warning(const char* format, const Args&... args) {
-  log(LogLevel::WARNING, format, args...);
-}
-
-template <typename ... Args>
-static void notice(const char* format, const Args&... args) {
-  log(LogLevel::NOTICE, format, args...);
+  log(LogLevel::warn, format, args...);
 }
 
 template <typename ... Args>
 static void info(const char* format, const Args&... args) {
-  log(LogLevel::INFO, format, args...);
+  log(LogLevel::info, format, args...);
 }
 
 template <typename ... Args>
 static void debug(const char* format, const Args&... args) {
-  log(LogLevel::DEBUG, format, args...);
+  log(LogLevel::debug, format, args...);
 }
 
 template <typename ... Args>
 static void trace(const char* format, const Args&... args) {
-  log(LogLevel::TRACE, format, args...);
+  log(LogLevel::trace, format, args...);
 }
 
 template <typename T>
@@ -346,32 +315,27 @@ static void inline log(LogLevel log_level, const T& obj) {
 
 template <typename T>
 static inline void error(const T& obj) {
-  log(LogLevel::ERROR, obj);
+  log(LogLevel::err, obj);
 }
 
 template <typename T>
 static inline void warning(const T& obj) {
-  log(LogLevel::WARNING, obj);
-}
-
-template <typename T>
-static inline void notice(const T& obj) {
-  log(LogLevel::NOTICE, obj);
+  log(LogLevel::warn, obj);
 }
 
 template <typename T>
 static inline void info(const T& obj) {
-  log(LogLevel::INFO, obj);
+  log(LogLevel::info, obj);
 }
 
 template <typename T>
 static inline void debug(const T& obj) {
-  log(LogLevel::DEBUG, obj);
+  log(LogLevel::debug, obj);
 }
 
 template <typename T>
 static inline void trace(const T& obj) {
-  log(LogLevel::TRACE, obj);
+  log(LogLevel::trace, obj);
 }
 
 }  // namespace log

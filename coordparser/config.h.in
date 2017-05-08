@@ -1,0 +1,17 @@
+#ifndef COORDPARSER_CONFIG_H_
+#define COORDPARSER_CONFIG_H_
+
+#cmakedefine USE_GPU
+#ifdef USE_GPU
+  #define HAVE_CUDA 1
+#else
+  #define HAVE_CUDA 0
+#endif
+
+#cmakedefine DEBUG
+#ifdef DEBUG
+  #define LOG_TRACE_ON
+  #define LOG_DEBUG_ON
+#endif
+
+#endif  //  COORDPARSER_CONFIG_H_

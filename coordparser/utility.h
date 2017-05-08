@@ -51,6 +51,15 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
   DISALLOW_COPY_AND_ASSIGN(TypeName); \
   DISALLOW_MOVE_AND_ASSIGN(TypeName)
 
+#define FMT_OPERATOR(TypeName) \
+  template<typename OStream> \
+  friend OStream& operator<<(OStream& os, const TypeName& obj) { \
+    std::stringstream ss; \
+    ss << obj; \
+    os << ss.str(); \
+    return os; \
+  }
+
 namespace utility {
 
 namespace vector {

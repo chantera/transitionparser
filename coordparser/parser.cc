@@ -14,7 +14,7 @@ Parser::Parser(std::shared_ptr<Classifier> classifier) :
 
 std::shared_ptr<State> GreedyParser::parse(const Sentence& sentence) {
   std::shared_ptr<State> state = std::make_shared<State>(&sentence);
-  log::debug("Parse: %s", sentence);
+  LOG_DEBUG("Parse: {}", sentence);
   while (!state->isTerminal()) {
     // retrieve an one best action greedily
     Action action = classifier_->getNextAction(*state);

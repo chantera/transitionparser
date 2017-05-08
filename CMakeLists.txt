@@ -1,6 +1,22 @@
 cmake_minimum_required(VERSION 3.6)
 project(coordparser)
 
+# Set default build type.
+if(NOT CMAKE_BUILD_TYPE)
+  message(STATUS "CMAKE_BUILD_TYPE not given, defaulting to 'Dev'.")
+  set(CMAKE_BUILD_TYPE "Dev" CACHE STRING "Choose the type of build." FORCE)
+endif()
+
+# Set available build types for CMake GUIs.
+# A different build type can still be set by -DCMAKE_BUILD_TYPE=...
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
+STRINGS "Debug" "Dev" "Release" "MinSizeRel" "RelWithDebInfo")
+
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+  set(DEBUG 1)
+else()
+  set(DEBUG 0)
+endif()
 
 function(check_option name)
   if(DEFINED ENV{${name}} AND NOT DEFINED ${name})
@@ -33,8 +49,15 @@ MESSAGE("DYNET_LIBRARY_DIR=${DYNET_LIBRARY_DIR}")
 #set(DYNET_LIBRARIES "gdynet")  # GPU
 set(DYNET_LIBRARIES "dynet")
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/coordparser/config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/coordparser/config.h
+)
+add_definitions(-DHAVE_CONFIG_H)
+
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${PROJECT_SOURCE_DIR}
+    ${PROJECT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
     ${EIGEN_INCLUDE_DIR}
     ${DYNET_INCLUDE_DIR}

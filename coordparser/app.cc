@@ -54,7 +54,7 @@ void App::initialize() {
 
   AppLogger::init("/Users/hiroki/work/coordparser/logs/test.log",
                   log::LogLevel::off,
-                  log::LogLevel::info);
+                  log::LogLevel::debug);
 }
 
 void App::train() {

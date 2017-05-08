@@ -38,7 +38,7 @@
 *.iml
 
 # Application files
-cmake-build-debug
+cmake-build-*
 logs/*
 !.gitkeep
 

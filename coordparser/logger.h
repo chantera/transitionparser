@@ -6,6 +6,10 @@
 #ifndef COORDPARSER_LOGGER_H_
 #define COORDPARSER_LOGGER_H_
 
+#ifdef HAVE_CONFIG_H
+#include "coordparser/config.h"
+#endif
+
 #include <spdlog/spdlog.h>
 #include <spdlog/fmt/bundled/time.h>
 
@@ -193,6 +197,21 @@ static inline void trace(const T& obj) {
 }
 
 }  // namespace log
+
+#ifdef LOG_TRACE_ON
+#define LOG_STR_H(x) #x
+#define LOG_STR_HELPER(x) LOG_STR_H(x)
+#define LOG_TRACE(...) \
+log::trace("[" __FILE__ " line #" LOG_STR_HELPER(__LINE__) "] " __VA_ARGS__)
+#else
+#define LOG_TRACE(...)
+#endif
+
+#ifdef LOG_DEBUG_ON
+#define LOG_DEBUG(...) log::debug(__VA_ARGS__)
+#else
+#define LOG_DEBUG(...)
+#endif
 
 }  // namespace coordparser
 

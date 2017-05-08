@@ -83,9 +83,10 @@ const Token& State::getLeftmostToken(const int index,
 const Token& State::getRightmostToken(const int index,
                                       const Token& default_token,
                                       const int from) const {
-  int i = from == -1 ? num_tokens_ - 1 : from;
-  if (index >= 0 && index < num_tokens_ && i > index && i < num_tokens_) {
-    for (i; i > index; i--) {
+  int begin = from == -1 ? num_tokens_ - 1 : from;
+  if (index >= 0 && index < num_tokens_
+      && begin > index && begin < num_tokens_) {
+    for (int i = begin; i > index; i--) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
       }

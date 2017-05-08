@@ -184,11 +184,11 @@ class Logger {
               "LOG Start with ACCESSID=[%s] UNIQUEID=[%s] ACCESSTIME=[%s]",
               access_id_,
               unique_id_,
-              utility::date::strftime(time_format_, access_time_));
+              utility::date::strftime_hr(time_format_, access_time_));
   }
 
   void _finalize() {
-    int64_t elapsed_time =
+    double elapsed_time =
         std::chrono::duration_cast<std::chrono::microseconds>(
             utility::date::now() - access_time_).count();
     this->log(log::LogLevel::INFO,
@@ -196,7 +196,7 @@ class Logger {
                   "PROCESSTIME=[%s]\n",
               access_id_,
               "UNIQID",
-              utility::date::strftime(time_format_, access_time_),
+              utility::date::strftime_hr(time_format_, access_time_),
               (elapsed_time / 1000) / 1000);
   }
 
@@ -204,7 +204,7 @@ class Logger {
   inline void _log(log::LogLevel log_level, const T& message) const {
     std::string output = format_;
     utility::string::replace(output, "%(time)",
-                             utility::date::strftime(time_format_));
+                             utility::date::strftime_hr(time_format_));
     utility::string::replace(output, "%(accessid)", access_id_);
     utility::string::replace(output, "%(level)", log::label(log_level));
     utility::string::replace(output, "%(message)",

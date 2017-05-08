@@ -198,6 +198,15 @@ static inline std::string strftime(const std::string& format,
 
 static inline std::string strftime(const std::string& format,
                                    const clock::time_point& tp) {
+  return date::strftime(format, clock::to_time_t(tp));
+}
+
+static inline std::string strftime(const std::string& format) {
+  return date::strftime(format, time(nullptr));
+}
+
+static inline std::string strftime_hr(const std::string& format,
+                                      const clock::time_point& tp) {
   std::string new_format = format;
   const auto d = tp.time_since_epoch();
   const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
@@ -205,11 +214,11 @@ static inline std::string strftime(const std::string& format,
       = std::chrono::duration_cast<std::chrono::microseconds>(d - seconds);
   string::replace(new_format, "%f",
                   string::format("%06ld", microseconds.count()));
-  return date::strftime(new_format, clock::to_time_t(tp));
+  return date::strftime(new_format, tp);
 }
 
-static inline std::string strftime(const std::string& format) {
-  return date::strftime(format, now());
+static inline std::string strftime_hr(const std::string& format) {
+  return date::strftime_hr(format, now());
 }
 
 }  // namespace date

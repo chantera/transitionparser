@@ -19,6 +19,14 @@
 #include <utility>
 #include <vector>
 
+template <class T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
+
+#ifndef USE_INTERNAL_FMT
+#include "coordparser/fmt/format.h"
+#include "coordparser/fmt/ostream.h"
+#endif
+
 #define DEFAULT_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = default; \
   TypeName& operator=(const TypeName&) = default
@@ -64,19 +72,13 @@ static inline std::string join(const std::vector<T>& vector, char delimiter) {
 
 namespace string {
 
+#ifdef USE_INTERNAL_FMT
 namespace internal {
 
 static std::string format(const boost::format& fmt) {
   std::stringstream stream;
   stream << fmt;
   return stream.str();
-}
-
-template<typename T, typename... Args>
-static std::string format(boost::format& fmt,  // NOLINT(runtime/references)
-                          const std::vector<T>& arg, Args&& ... args) {
-  fmt = fmt % vector::join(arg, ' ');
-  return format(fmt, std::forward<Args>(args)...);
 }
 
 template<typename T, typename... Args>
@@ -93,6 +95,12 @@ std::string format(const char* fmt, Args&& ... args) {
   boost::format boost_format(fmt);
   return internal::format(boost_format, std::forward<Args>(args)...);
 }
+#else
+template<typename... Args>
+std::string format(const char* fmt, Args&& ... args) {
+  return fmt::format(fmt, std::forward<Args>(args)...);
+}
+#endif
 
 static inline void replace(std::string& s,  // NOLINT(runtime/references)
                            const std::string& target,
@@ -224,5 +232,11 @@ static inline std::string strftime_hr(const std::string& format) {
 }  // namespace date
 
 }  // namespace utility
+
+template <class T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
+  os << utility::vector::join(v, ' ');
+  return os;
+}
 
 #endif  // COORDPARSER_UTILITY_H_

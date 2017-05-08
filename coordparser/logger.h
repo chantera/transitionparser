@@ -257,6 +257,7 @@ class Registry {
     std::shared_ptr<Logger> logger(
         Logger::Builder()
             .setLogLevel(LogLevel::DEBUG)
+            .setFormat(kDefaultFormat)
             .addHandler(std::make_shared<FileHandler>(file))
             .addHandler(std::make_shared<StdoutHandler>())
             .build());

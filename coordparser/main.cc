@@ -8,7 +8,7 @@
 using namespace coordparser;  // NOLINT(build/namespaces)
 
 int main() {
-    App app;
-    app.train();
-    return 0;
+  App app;
+  app.train();
+  return 0;
 }

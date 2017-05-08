@@ -51,6 +51,10 @@ void App::initialize() {
   */
 
   dynet::initialize(params);
+
+  AppLogger::init("/Users/hiroki/work/coordparser/logs/test.log",
+                  log::LogLevel::off,
+                  log::LogLevel::info);
 }
 
 void App::train() {

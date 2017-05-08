@@ -34,9 +34,7 @@ class Logger : public spdlog::logger {
       access_id_(utility::hash::generate_uuid().substr(0, 6)),
       unique_id_("UNIQID"),
       access_time_(clock::now()),
-      spdlog::logger(logger_name, begin, end) {
-    _initialize();
-  }
+      spdlog::logger(logger_name, begin, end) { _initialize(); }
 
   inline Logger(const std::string& logger_name,
                 spdlog::sinks_init_list sinks_list):
@@ -92,7 +90,7 @@ class Logger : public spdlog::logger {
 
 class AppLogger : public Logger {
  public:
-  AppLogger() : Logger("app", app_sinks_.begin(), app_sinks_.end()) {
+  AppLogger() : Logger("app", sinks(true).begin(), sinks().end()) {
     set_level(log::LogLevel::trace);
   }
   static inline AppLogger& getInstance() {
@@ -102,10 +100,11 @@ class AppLogger : public Logger {
   static void init(const spdlog::filename_t& filename,
                    log::LogLevel log_level = log::LogLevel::info,
                    log::LogLevel display_level = log::LogLevel::info) {
-    if (initialized_) {
+    if (sinks(false).size() > 0) {
+      getInstance().warn("AppLogger has already been initialized.");
       return;
     }
-    app_sinks_.clear();
+    sinks().clear();
     auto file_sink_st =
         std::make_shared<spdlog::sinks::simple_file_sink_st>(filename);
     auto stdout_color_st =
@@ -117,19 +116,17 @@ class AppLogger : public Logger {
 #endif
     file_sink_st->set_level(log_level);
     stdout_color_st->set_level(display_level);
-    app_sinks_.push_back(std::move(file_sink_st));
-    app_sinks_.push_back(std::move(stdout_color_st));
-    initialized_ = true;
+    sinks().push_back(std::move(file_sink_st));
+    sinks().push_back(std::move(stdout_color_st));
   }
  protected:
-  static bool initialized_;
-  static std::vector<spdlog::sink_ptr> app_sinks_;
-};
-
-bool AppLogger::initialized_ = false;
-
-std::vector<spdlog::sink_ptr> AppLogger::app_sinks_ = {
-    spdlog::sinks::stdout_sink_st::instance()
+  static std::vector<spdlog::sink_ptr>& sinks(bool init = false) {
+    static std::vector<spdlog::sink_ptr> sinks_;
+    if (init && sinks_.size() == 0) {
+      sinks().push_back(spdlog::sinks::stdout_sink_st::instance());
+    }
+    return sinks_;
+  }
 };
 
 namespace log {

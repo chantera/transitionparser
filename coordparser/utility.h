@@ -7,7 +7,11 @@
 #define COORDPARSER_UTILITY_H_
 
 #include <boost/format.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
+#include <ctime>
+#include <chrono>  // NOLINT(build/c++11)
 #include <fstream>
 #include <functional>
 #include <sstream>
@@ -90,6 +94,27 @@ std::string format(const char* fmt, Args&& ... args) {
   return internal::format(boost_format, std::forward<Args>(args)...);
 }
 
+static inline void replace(std::string& s,  // NOLINT(runtime/references)
+                           const std::string& target,
+                           const std::string& replacement) {
+  std::string::size_type pos = 0;
+  while (pos = s.find(target, pos), pos != std::string::npos) {
+    s.replace(pos, target.length(), replacement);
+    pos += replacement.length();
+  }
+}
+
+static inline void replace(std::string& s,  // NOLINT(runtime/references)
+                           const std::string& target,
+                           const std::string& replacement, int count) {
+  std::string::size_type pos = 0;
+  while (pos = s.find(target, pos), pos != std::string::npos && count > 0) {
+    s.replace(pos, target.length(), replacement);
+    pos += replacement.length();
+    --count;
+  }
+}
+
 static inline void ltrim(std::string& s) {  // NOLINT(runtime/references)
   s.erase(s.begin(),
           std::find_if(
@@ -122,6 +147,13 @@ static inline std::vector<std::string> split(const std::string& string,
   return splits;
 }
 
+template <typename T>
+static inline std::string to_string(const T& message) {
+  std::stringstream ss;
+  ss << message;
+  return ss.str();
+}
+
 }  // namespace string
 
 namespace file {
@@ -132,6 +164,55 @@ static inline void write(const char* path, const char* data) {
 }
 
 }  // namespace file
+
+namespace hash {
+
+static inline std::string generate_uuid() {
+  return boost::uuids::to_string(
+      boost::uuids::random_generator{}());  // NOLINT(whitespace/braces)
+}
+
+}  // namespace hash
+
+namespace date {
+
+using clock = std::chrono::system_clock;
+
+static inline clock::time_point now() {
+  return clock::now();
+}
+
+static inline std::string strftime(const std::string& format,
+                                   const struct tm* timeptr) {
+  char buffer[80];
+  std::strftime(buffer, sizeof(buffer), format.c_str(), timeptr);
+  return std::string(buffer);
+}
+
+static inline std::string strftime(const std::string& format,
+                                   const time_t& time) {
+  struct tm tm;
+  localtime_r(&time, &tm);
+  return date::strftime(format, &tm);
+}
+
+static inline std::string strftime(const std::string& format,
+                                   const clock::time_point& tp) {
+  std::string new_format = format;
+  const auto d = tp.time_since_epoch();
+  const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
+  const auto microseconds
+      = std::chrono::duration_cast<std::chrono::microseconds>(d - seconds);
+  string::replace(new_format, "%f",
+                  string::format("%06ld", microseconds.count()));
+  return date::strftime(new_format, clock::to_time_t(tp));
+}
+
+static inline std::string strftime(const std::string& format) {
+  return date::strftime(format, now());
+}
+
+}  // namespace date
 
 }  // namespace utility
 

@@ -202,14 +202,21 @@ class Logger {
 
   template <typename T>
   inline void _log(log::LogLevel log_level, const T& message) const {
-    std::string output = format_;
-    utility::string::replace(output, "%(time)",
-                             utility::date::strftime_hr(time_format_));
-    utility::string::replace(output, "%(accessid)", access_id_);
-    utility::string::replace(output, "%(level)", log::label(log_level));
-    utility::string::replace(output, "%(message)",
-                             utility::string::to_string(message));
-    _logRaw(output);
+    // @TODO: implement
+    // std::string output = format_;
+    // utility::string::replace(output, "%(time)",
+    //                          utility::date::strftime_hr(time_format_));
+    // utility::string::replace(output, "%(accessid)", access_id_);
+    // utility::string::replace(output, "%(level)", log::label(log_level));
+    // utility::string::replace(output, "%(message)",
+    //                          utility::string::to_string(message));
+    // _logRaw(ouput);
+    _logRaw(utility::string::format(
+        "{}\t{}\t[{}]\t{}",
+        utility::date::strftime_hr(time_format_),
+        access_id_,
+        log::label(log_level),
+        message));
   }
 
   inline void _logRaw(const std::string& message) const {

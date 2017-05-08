@@ -21,88 +21,9 @@
 
 namespace coordparser {
 
-/*
 namespace log {
-
-enum class LogLevel {
-  NONE    = 0b0000'0000'0000'0000'0000'0000,
-  ERROR   = 0b0000'0000'0000'0000'0000'0001,
-  WARNING = 0b0000'0000'0000'0000'0000'0010,
-  NOTICE  = 0b0000'0000'0000'0000'0000'1000,
-  INFO    = 0b0001'0000'0000'0000'0000'0000,
-  DEBUG   = 0b0010'0000'0000'0000'0000'0000,
-  TRACE   = 0b0100'0000'0000'0000'0000'0000,
-  ALL     = 0b1111'1111'1111'1111'1111'1111,
-};
-
-static const std::map<LogLevel, std::string> labels = {
-    {LogLevel::NONE, "none"},
-    {LogLevel::ERROR, "error"},
-    {LogLevel::WARNING, "warn"},
-    {LogLevel::NOTICE, "notice"},
-    {LogLevel::INFO, "info"},
-    {LogLevel::DEBUG, "debug"},
-    {LogLevel::TRACE, "trace"},
-    {LogLevel::ALL, "all"},
-};
-
-static inline std::string label(LogLevel log_level) {
-  return labels.at(log_level);
-}
-
-class BaseHandler {
- public:
-  BaseHandler() {}
-  virtual ~BaseHandler() {}
-
-  virtual void log(const std::string& message) = 0;
-
- private:
-  DISALLOW_COPY_AND_MOVE(BaseHandler);
-};
-
-class FileHandler : public BaseHandler {
- public:
-  FileHandler() {}
-  explicit FileHandler(const std::string& filename) : file_(filename) {
-    ofs_.open(file_, std::ofstream::out | std::ofstream::app);
-  }
-  ~FileHandler() {
-    ofs_.close();
-  }
-
-  void log(const std::string& message) override {
-    ofs_ << message << std::endl;
-  }
-
- private:
-  std::string file_;
-  mutable std::ofstream ofs_;
-};
-
-class StdoutHandler : public BaseHandler {
- public:
-  StdoutHandler() {}
-  ~StdoutHandler() {}
-
-  void log(const std::string& message) override {
-    std::cout << message << std::endl;
-  }
-};
-
-using handler_sptr = std::shared_ptr<BaseHandler>;
-
-namespace internal {
-
-static const LogLevel kDefaultLogLevel = LogLevel::INFO;
-static const char* kDefaultFormat
-    = "%(time)\t%(accessid)\t[%(level)]\t%(message)";
-static const char* kDefaultTimeFormat = "%Y-%m-%d %H:%M:%S.%f %Z";
-
-}  // namespace internal
-
+  using LogLevel = spdlog::level::level_enum;
 }  // namespace log
- */
 
 class Logger : public spdlog::logger {
  public:
@@ -169,118 +90,53 @@ class Logger : public spdlog::logger {
   std::string format_;
 };
 
-namespace log {
-
-namespace internal {
-
-/*
-class Registry {
+class AppLogger : public Logger {
  public:
-  Registry() {
-    createDefault();
+  AppLogger() : Logger("app", app_sinks_.begin(), app_sinks_.end()) {
+    set_level(log::LogLevel::trace);
   }
-  ~Registry() {}
-  static Registry& getInstance() {
-    static Registry instance;
+  static inline AppLogger& getInstance() {
+    static AppLogger instance;
     return instance;
   }
-  void registerLogger(const std::string& name,
-                       const std::shared_ptr<Logger>& logger) {
-    if (has(name)) {
-      drop(name);
+  static void init(const spdlog::filename_t& filename,
+                   log::LogLevel log_level = log::LogLevel::info,
+                   log::LogLevel display_level = log::LogLevel::info) {
+    if (initialized_) {
+      return;
     }
-    loggers_[name] = logger;
+    app_sinks_.clear();
+    auto file_sink_st =
+        std::make_shared<spdlog::sinks::simple_file_sink_st>(filename);
+    auto stdout_color_st =
+#ifdef _WIN32
+        std::make_shared<spdlog::sinks::wincolor_stdout_sink_st>();
+#else
+        std::make_shared<spdlog::sinks::ansicolor_sink>(
+            spdlog::sinks::stdout_sink_st::instance());
+#endif
+    file_sink_st->set_level(log_level);
+    stdout_color_st->set_level(display_level);
+    app_sinks_.push_back(std::move(file_sink_st));
+    app_sinks_.push_back(std::move(stdout_color_st));
+    initialized_ = true;
   }
-  std::shared_ptr<Logger> create(const std::string& name) {
-    std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
-    std::shared_ptr<Logger> logger(
-        Logger::Builder()
-            .setLogLevel(LogLevel::DEBUG)
-            .setFormat(kDefaultFormat)
-            // .addHandler(std::make_shared<FileHandler>(file))
-            .addHandler(std::make_shared<StdoutHandler>())
-            .build());
-    registerLogger(name, logger);
-    return logger;
-  }
-  std::shared_ptr<Logger> createDefault() {
-    return create(defaultName());
-  }
-  std::shared_ptr<Logger> get(const std::string& name) {
-    return loggers_.at(name);
-  }
-  std::shared_ptr<Logger> getDefault() {
-    return get(defaultName());
-  }
-  bool has(const std::string &name) {
-    return loggers_.find(name) != loggers_.end();
-  }
-  void drop(const std::string& name) {
-    loggers_.erase(name);
-  }
-
  protected:
-  static const std::string& defaultName() {
-    static const std::string kDefaultKey = "default";
-    return kDefaultKey;
-  }
-  std::unordered_map<std::string, std::shared_ptr<Logger>> loggers_;
-
- private:
-  DISALLOW_COPY_AND_MOVE(Registry);
+  static bool initialized_;
+  static std::vector<spdlog::sink_ptr> app_sinks_;
 };
 
-static inline std::shared_ptr<Logger> get_default_logger() {
-  return Registry::getInstance().getDefault();
-}
- */
+bool AppLogger::initialized_ = false;
 
-}  // namespace internal
+std::vector<spdlog::sink_ptr> AppLogger::app_sinks_ = {
+    spdlog::sinks::stdout_sink_st::instance()
+};
 
-inline std::shared_ptr<spdlog::logger> my_logger(
-    const std::string& logger_name,
-    const spdlog::filename_t& filename,
-    bool truncate = false,
-    bool stdout = true)
-{
-  std::vector<spdlog::sink_ptr> sinks;
-  sinks.push_back(std::move(
-      std::make_shared<spdlog::sinks::simple_file_sink_st>(
-          filename, truncate)));
-  if (stdout) {
-#ifdef _WIN32
-    sinks.push_back(std::move(
-        std::make_shared<spdlog::sinks::wincolor_stdout_sink_st>()));
-#else
-    sinks.push_back(std::move(
-        std::make_shared<spdlog::sinks::ansicolor_sink>(
-            spdlog::sinks::stdout_sink_st::instance())));
-#endif
-  }
-  return std::make_shared<Logger>(logger_name, sinks.begin(), sinks.end());
-}
-
-namespace internal {
-
-std::once_flag once;
-
-void init() {
-  const std::string file = "/Users/hiroki/work/coordparser/logs/test.log";
-  spdlog::register_logger(my_logger("default", file, false, true));
-}
-
-inline std::shared_ptr<spdlog::logger> get_default_logger() {
-  std::call_once(once, init);
-  return spdlog::get("default");
-}
-
-}  // namespace internal
-
-using LogLevel = spdlog::level::level_enum;
+namespace log {
 
 template <typename ... Args>
 static void log(LogLevel log_level, const char* format, const Args&... args) {
-  internal::get_default_logger()->log(log_level, format, args...);
+  AppLogger::getInstance().log(log_level, format, args...);
 }
 
 template <typename ... Args>
@@ -310,7 +166,7 @@ static void trace(const char* format, const Args&... args) {
 
 template <typename T>
 static void inline log(LogLevel log_level, const T& obj) {
-  internal::get_default_logger()->log(log_level, obj);
+  AppLogger::getInstance().log(log_level, obj);
 }
 
 template <typename T>

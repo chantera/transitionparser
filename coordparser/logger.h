@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "coordparser/utility.h"
@@ -49,6 +50,8 @@ class Logger : public spdlog::logger {
 
  protected:
   void _initialize() {
+    access_time_expr_ = utility::date::strftime_hr("%Y-%m-%d %H:%M:%S.%f %Z",
+                                                   access_time_);
     std::time_t t = clock::to_time_t(access_time_);
     std::tm tm;
     localtime_r(&t, &tm);
@@ -58,25 +61,21 @@ class Logger : public spdlog::logger {
     format_ = utility::string::format("{}\t{}\t[%l]\t%v",
                                       time_format_, access_id_);
     set_pattern(format_);
-    info("LOG Start with ACCESSID=[{}] UNIQUEID=[{}] "
-             "ACCESSTIME=[{:%Y-%m-%d %H:%M:%S.%f %Z}]",
+    info("LOG Start with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}]",
          access_id_,
          unique_id_,
-         tm);
+         access_time_expr_);
   }
 
   void _finalize() {
-    std::time_t t = clock::to_time_t(access_time_);
-    std::tm tm;
-    localtime_r(&t, &tm);
     const double elapsed_time =
         std::chrono::duration_cast<std::chrono::microseconds>(
             utility::date::now() - access_time_).count();
-    info("LOG End with ACCESSID=[{}] UNIQUEID=[{}] "
-             "ACCESSTIME=[{:%Y-%m-%d %H:%M:%S.%f %Z}] PROCESSTIME=[{:3.6f}]\n",
+    info("LOG End with ACCESSID=[{}] UNIQUEID=[{}] ACCESSTIME=[{}] "
+             "PROCESSTIME=[{:3.6f}]\n",
          access_id_,
          unique_id_,
-         tm,
+         access_time_expr_,
          (elapsed_time / 1000) / 1000);
   }
 
@@ -84,6 +83,7 @@ class Logger : public spdlog::logger {
   const std::string access_id_;
   const std::string unique_id_;
   const clock::time_point access_time_;
+  std::string access_time_expr_;
   std::string time_format_;
   std::string format_;
 };
@@ -119,6 +119,7 @@ class AppLogger : public Logger {
     sinks().push_back(std::move(file_sink_st));
     sinks().push_back(std::move(stdout_color_st));
   }
+
  protected:
   static std::vector<spdlog::sink_ptr>& sinks(bool init = false) {
     static std::vector<spdlog::sink_ptr> sinks_;

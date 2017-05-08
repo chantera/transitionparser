@@ -227,8 +227,9 @@ static inline std::string strftime_hr(const std::string& format,
   const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
   const auto microseconds
       = std::chrono::duration_cast<std::chrono::microseconds>(d - seconds);
-  string::replace(new_format, "%f",
-                  string::format("%06ld", microseconds.count()));
+  char str[7];
+  snprintf(str, sizeof(str), "%06lld", microseconds.count());
+  string::replace(new_format, "%f", str);
   return date::strftime(new_format, tp);
 }
 

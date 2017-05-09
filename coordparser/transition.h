@@ -40,11 +40,11 @@ class Transition {
       Action action,
       std::shared_ptr<State>& state);  // NOLINT(runtime/references)
 
-  static State* shift(const std::shared_ptr<State>& state);
+  static State* shift(const State& state);
 
-  static State* left(const std::shared_ptr<State>& state, int label);
+  static State* left(const State& state, int label);
 
-  static State* right(const std::shared_ptr<State>& state, int label);
+  static State* right(const State& state, int label);
 
   static bool isAllowed(Action action, const State& state);
 

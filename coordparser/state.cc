@@ -14,25 +14,24 @@ State::State(const Sentence* sentence) :
     stack_{0},
     buffer_(1),
     heads_(num_tokens_, -1),
-    labels_(num_tokens_, -1),
-    prev_state_(),
-    action_(NoneAction) {}
+    labels_(num_tokens_, -1) {}
 
-State::State(const std::shared_ptr<State>& prev_state,
+State::State(const State& prev_state,
              const Action& action,
              const std::vector<int>& stack,
              const int buffer,
              const std::vector<int>& heads,
              const std::vector<int>& labels) :
-    step_(prev_state->step_ + 1),
-    sentence_(prev_state->sentence_),
-    num_tokens_(prev_state->num_tokens_),
+    step_(prev_state.step_ + 1),
+    sentence_(prev_state.sentence_),
+    num_tokens_(prev_state.num_tokens_),
     stack_(stack),
     buffer_(buffer),
     heads_(heads),
     labels_(labels),
-    prev_state_(prev_state),
-    action_(action) {}
+    history_(prev_state.history_.begin(), prev_state.history_.end()) {
+  history_.push_back(action);
+}
 
 std::ostream& operator<<(std::ostream& os, const State& state) {
   Token pad = Token::createPad();
@@ -100,6 +99,10 @@ const Feature* State::getFeature() const {
     feature_.reset(new Feature(*this));
   }
   return feature_.get();
+}
+
+const std::vector<Action>& State::history() const {
+  return history_;
 }
 
 }  // namespace coordparser

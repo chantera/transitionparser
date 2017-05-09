@@ -30,14 +30,12 @@ class State {
   const int buffer_;
   const std::vector<int> heads_;
   const std::vector<int> labels_;
-  const std::shared_ptr<State> prev_state_;
-  const Action action_;
 
   State() = delete;
 
   explicit State(const Sentence* sentence);
 
-  State(const std::shared_ptr<State>& prev_state,
+  State(const State& prev_state,
         const Action& action,
         const std::vector<int>& stack,
         const int buffer,
@@ -76,9 +74,12 @@ class State {
 
   const Feature* getFeature() const;
 
+  const std::vector<Action>& history() const;
+
  private:
   mutable std::unique_ptr<Feature> feature_;
   double score_ = 0.0;
+  std::vector<Action> history_;
 
   DISALLOW_COPY_AND_ASSIGN(State);
 };

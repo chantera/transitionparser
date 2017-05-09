@@ -39,31 +39,31 @@ int Transition::label(Action action) {
 void Transition::apply(Action action, std::shared_ptr<State>& state) {
   switch (actionType(action)) {
     case SHIFT:
-      state.reset(shift(state));
+      state.reset(shift(*state));
       break;
     case LEFT:
-      state.reset(left(state, label(action)));
+      state.reset(left(*state, label(action)));
       break;
     case RIGHT:
-      state.reset(right(state, label(action)));
+      state.reset(right(*state, label(action)));
       break;
   }
 }
 
 // Shift: (s, i|b, A) => (s|i, b, A)
-State* Transition::shift(const std::shared_ptr<State>& state) {
-  std::vector<int> stack(state->stack_);
-  stack.reserve(state->num_tokens_ + 1);
-  stack.push_back(state->buffer_);
-  return new State(state, shiftAction(), std::move(stack), state->buffer_ + 1,
-                   state->heads_, state->labels_);
+State* Transition::shift(const State& state) {
+  std::vector<int> stack(state.stack_);
+  stack.reserve(state.num_tokens_ + 1);
+  stack.push_back(state.buffer_);
+  return new State(state, shiftAction(), std::move(stack), state.buffer_ + 1,
+                   state.heads_, state.labels_);
 }
 
 // Left: (s|i|j, b, A) => (s|j, b, A +(j,l,i))
-State* Transition::left(const std::shared_ptr<State>& state, int label) {
-  std::vector<int> stack(state->stack_);
-  std::vector<int> heads(state->heads_);
-  std::vector<int> labels(state->labels_);
+State* Transition::left(const State& state, int label) {
+  std::vector<int> stack(state.stack_);
+  std::vector<int> heads(state.heads_);
+  std::vector<int> labels(state.labels_);
   int s0 = stack.back();
   stack.pop_back();
   int s1 = stack.back();
@@ -71,21 +71,21 @@ State* Transition::left(const std::shared_ptr<State>& state, int label) {
   heads[s1] = s0;
   labels[s1] = label;
   stack.push_back(std::move(s0));
-  return new State(state, leftAction(label), std::move(stack), state->buffer_,
+  return new State(state, leftAction(label), std::move(stack), state.buffer_,
                    std::move(heads), std::move(labels));
 }
 
 // Right: (s|i|j, b, A) => (s|i, b, A +(i,l,j))
-State* Transition::right(const std::shared_ptr<State>& state, int label) {
-  std::vector<int> stack(state->stack_);
-  std::vector<int> heads(state->heads_);
-  std::vector<int> labels(state->labels_);
+State* Transition::right(const State& state, int label) {
+  std::vector<int> stack(state.stack_);
+  std::vector<int> heads(state.heads_);
+  std::vector<int> labels(state.labels_);
   int s0 = stack.back();
   stack.pop_back();
   int s1 = stack.back();
   heads[s0] = s1;
   labels[s0] = label;
-  return new State(state, rightAction(label), std::move(stack), state->buffer_,
+  return new State(state, rightAction(label), std::move(stack), state.buffer_,
                    std::move(heads), std::move(labels));
 }
 

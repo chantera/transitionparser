@@ -5,10 +5,7 @@
 
 #include "coordparser/classifier.h"
 
-#include <dynet/init.h>
 #include <dynet/expr.h>
-
-#include "coordparser/logger.h"
 
 namespace DE = dynet::expr;
 
@@ -18,11 +15,8 @@ void NeuralClassifier::prepare(dynet::ComputationGraph* cg) {
   cg_ = cg;
 }
 
-std::vector<float> NeuralClassifier::compute(const Feature& feature) {
-  return dynet::as_vector(cg_->incremental_forward(run(
-      feature.getWordFeatures(),
-      feature.getPosFeatures(),
-      feature.getLabelFeatures())));
+std::vector<float> NeuralClassifier::compute(const FeatureVector& feature) {
+  return dynet::as_vector(cg_->incremental_forward(run({feature})));
 }
 
 MlpClassifier::MlpClassifier(dynet::Model& model,
@@ -65,19 +59,19 @@ MlpClassifier::MlpClassifier(dynet::Model& model,
     p_W3_(model.add_parameters({output_size, hidden2_size})),
     p_b3_(model.add_parameters({output_size})) {}
 
-DE::Expression MlpClassifier::run(const std::vector<unsigned>& X_w,
-                                  const std::vector<unsigned>& X_p,
-                                  const std::vector<unsigned>& X_l) {
-  LOG_TRACE("word features: {}", X_w);
-  LOG_TRACE("pos features: {}", X_p);
-  LOG_TRACE("label features: {}", X_l);
-  DE::Expression h0_w = DE::reshape(DE::lookup(*cg_, p_lookup_w_, X_w),
-                                    {word_feature_size_ * word_embed_size_});
-  DE::Expression h0_p = DE::reshape(DE::lookup(*cg_, p_lookup_p_, X_p),
-                                    {pos_feature_size_ * pos_embed_size_});
-  DE::Expression h0_l = DE::reshape(DE::lookup(*cg_, p_lookup_l_, X_l),
-                                    {label_feature_size_ * label_embed_size_});
-  DE::Expression h0 = DE::concatenate({h0_w, h0_p, h0_l});
+DE::Expression MlpClassifier::run(const std::vector<FeatureVector>& X) {
+  std::vector<DE::Expression> embeddings;
+  auto feature_tensor = Feature::unpackFeatures(X);
+  for (auto feature_batch : feature_tensor[0]) {
+      embeddings.push_back(DE::lookup(*cg_, p_lookup_w_, feature_batch));
+  }
+  for (auto feature_batch : feature_tensor[1]) {
+    embeddings.push_back(DE::lookup(*cg_, p_lookup_p_, feature_batch));
+  }
+  for (auto feature_batch : feature_tensor[2]) {
+    embeddings.push_back(DE::lookup(*cg_, p_lookup_l_, feature_batch));
+  }
+  DE::Expression h0 = DE::concatenate(embeddings);
 
   DE::Expression W1 = DE::parameter(*cg_, p_W1_);
   DE::Expression b1 = DE::parameter(*cg_, p_b1_);

@@ -5,16 +5,15 @@
 
 #include "coordparser/feature.h"
 
+#include <utility>
+
 namespace coordparser {
 
 const unsigned Feature::kNWordFeatures  = 20;
 const unsigned Feature::kNPosFeatures   = 20;
 const unsigned Feature::kNLabelFeatures = 12;
 
-Feature::Feature(const State &state) :
-  word_features_(kNWordFeatures),
-  pos_features_(kNPosFeatures),
-  label_features_(kNLabelFeatures) {
+FeatureVector Feature::extract(const State &state) {
   Token pad = Token::createPad();
   const Token& s0 = state.getStackToken(0, pad);
   const Token& s1 = state.getStackToken(1, pad);
@@ -39,7 +38,8 @@ Feature::Feature(const State &state) :
   const Token& lc1_lc1_s1 = state.getLeftmostToken(lc1_s1.id_, pad);
   const Token& rc1_rc1_s1 = state.getLeftmostToken(rc1_s1.id_, pad);
 
-  word_features_ = {
+  return {
+      // word features
       (unsigned) s0.form_,
       (unsigned) s1.form_,
       (unsigned) s2.form_,
@@ -60,9 +60,7 @@ Feature::Feature(const State &state) :
       (unsigned) rc1_rc1_s0.form_,
       (unsigned) lc1_lc1_s1.form_,
       (unsigned) rc1_rc1_s1.form_,
-  };
-
-  pos_features_ = {
+      // pos features
       (unsigned) s0.postag_,
       (unsigned) s1.postag_,
       (unsigned) s2.postag_,
@@ -83,9 +81,7 @@ Feature::Feature(const State &state) :
       (unsigned) rc1_rc1_s0.postag_,
       (unsigned) lc1_lc1_s1.postag_,
       (unsigned) rc1_rc1_s1.postag_,
-  };
-
-  label_features_ = {
+      // label features
       (unsigned) lc1_s0.deprel_,
       (unsigned) rc1_s0.deprel_,
       (unsigned) lc2_s0.deprel_,
@@ -101,16 +97,42 @@ Feature::Feature(const State &state) :
   };
 }
 
-const std::vector<unsigned>& Feature::getWordFeatures() const {
-  return word_features_;
-}
+std::vector<std::vector<FeatureVector>> Feature::unpackFeatures(
+    const std::vector<FeatureVector>& features) {
+  size_t batch_size = features.size();
+  int index = 0;
 
-const std::vector<unsigned>& Feature::getPosFeatures() const {
-  return pos_features_;
-}
-
-const std::vector<unsigned>& Feature::getLabelFeatures() const {
-  return label_features_;
+  int end = kNWordFeatures;
+  std::vector<FeatureVector> word_features;
+  word_features.reserve(kNWordFeatures);
+  for (; index < end; ++index) {
+    FeatureVector feature_batch(batch_size);
+    for (int i = 0; i < batch_size; ++i) {
+      feature_batch[features[i][index]];
+    }
+    word_features.push_back(std::move(feature_batch));
+  }
+  end += kNPosFeatures;
+  std::vector<FeatureVector> pos_features;
+  pos_features.reserve(kNPosFeatures);
+  for (; index < end; ++index) {
+    FeatureVector feature_batch(batch_size);
+    for (int i = 0; i < batch_size; ++i) {
+      feature_batch[features[i][index]];
+    }
+    pos_features.push_back(std::move(feature_batch));
+  }
+  end += kNLabelFeatures;
+  std::vector<FeatureVector> label_features;
+  label_features.reserve(kNLabelFeatures);
+  for (; index < end; ++index) {
+    FeatureVector feature_batch(batch_size);
+    for (int i = 0; i < batch_size; ++i) {
+      feature_batch[features[i][index]];
+    }
+    label_features.push_back(std::move(feature_batch));
+  }
+  return {word_features, pos_features, label_features};
 }
 
 }  // namespace coordparser

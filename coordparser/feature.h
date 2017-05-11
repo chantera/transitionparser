@@ -15,27 +15,22 @@ namespace coordparser {
 
 class State;
 
+typedef std::vector<unsigned> FeatureVector;
+
 class Feature {
  public:
   static const unsigned kNWordFeatures;
   static const unsigned kNPosFeatures;
   static const unsigned kNLabelFeatures;
 
-  Feature() = delete;
-  explicit Feature(const State &state);
-  DEFAULT_COPY_AND_MOVE(Feature);
-  ~Feature() {}
-
-  const std::vector<unsigned>& getWordFeatures() const;
-
-  const std::vector<unsigned>& getPosFeatures() const;
-
-  const std::vector<unsigned>& getLabelFeatures() const;
+  static FeatureVector extract(const State &state);
+  static std::vector<std::vector<FeatureVector>> unpackFeatures(
+      const std::vector<FeatureVector>& features);
 
  private:
-  std::vector<unsigned> word_features_;
-  std::vector<unsigned> pos_features_;
-  std::vector<unsigned> label_features_;
+  Feature() = delete;
+  DISALLOW_COPY_AND_MOVE(Feature);
+  ~Feature() = delete;
 };
 
 }  // namespace coordparser

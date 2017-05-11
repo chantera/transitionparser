@@ -106,13 +106,6 @@ const Token& State::getRightmostToken(int index,
   return default_token;
 }
 
-const Feature* State::getFeature() const {
-  if (!feature_) {
-    feature_.reset(new Feature(*this));
-  }
-  return feature_.get();
-}
-
 const std::vector<Action>& State::history() const {
   return history_;
 }

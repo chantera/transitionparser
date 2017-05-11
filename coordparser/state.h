@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "coordparser/transition.h"
-#include "coordparser/feature.h"
 #include "coordparser/sentence.h"
 
 namespace coordparser {
@@ -78,12 +77,9 @@ class State {
                                  const Token& default_token,
                                  int from = -1) const;
 
-  const Feature* getFeature() const;
-
   const std::vector<Action>& history() const;
 
  private:
-  mutable std::unique_ptr<Feature> feature_;
   double score_ = 0.0;
   std::vector<Action> history_;
 

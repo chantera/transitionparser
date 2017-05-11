@@ -12,6 +12,7 @@
 #include <vector>
 #include <utility>
 
+#include "coordparser/feature.h"
 #include "coordparser/transition.h"
 #include "coordparser/utility.h"
 
@@ -24,7 +25,7 @@ class Classifier {
   Classifier() {}
   virtual ~Classifier() {}
 
-  virtual std::vector<float> compute(const Feature& feature) = 0;
+  virtual std::vector<float> compute(const FeatureVector& feature) = 0;
 
  private:
   DISALLOW_COPY_AND_MOVE(Classifier);
@@ -34,12 +35,9 @@ class NeuralClassifier : public Classifier {
  public:
   virtual void prepare(dynet::ComputationGraph* cg);
 
-  std::vector<float> compute(const Feature& feature) override;
+  std::vector<float> compute(const FeatureVector& feature) override;
 
-  virtual dynet::expr::Expression run(
-      const std::vector<unsigned>& X_w,
-      const std::vector<unsigned>& X_p,
-      const std::vector<unsigned>& X_l) = 0;
+  virtual dynet::expr::Expression run(const std::vector<FeatureVector>& X) = 0;
 
  protected:
   dynet::ComputationGraph* cg_ = nullptr;
@@ -61,9 +59,7 @@ class MlpClassifier : public NeuralClassifier {
                 const unsigned hidden2_size,
                 const unsigned output_size);
 
-  dynet::expr::Expression run(const std::vector<unsigned>& X_w,
-                              const std::vector<unsigned>& X_p,
-                              const std::vector<unsigned>& X_l) override;
+  dynet::expr::Expression run(const std::vector<FeatureVector>& X) override;
 
  protected:
   const unsigned word_vocab_size_;

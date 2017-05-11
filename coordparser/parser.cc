@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "coordparser/feature.h"
 #include "coordparser/logger.h"
 
 namespace coordparser {
@@ -20,7 +21,6 @@ GreedyParser::GreedyParser(std::shared_ptr<Classifier> classifier) :
 
 std::shared_ptr<State> GreedyParser::parse(const Sentence& sentence) {
   std::shared_ptr<State> state = std::make_shared<State>(&sentence);
-  LOG_DEBUG("Parse: {}", sentence);
   while (!state->isTerminal()) {
     // retrieve an one best action greedily
     Transition::apply(getNextAction(*state), state);
@@ -30,7 +30,8 @@ std::shared_ptr<State> GreedyParser::parse(const Sentence& sentence) {
 
 Action GreedyParser::getNextAction(const State& state) {
   LOG_TRACE("{}", state);
-  std::vector<float> scores = classifier_->compute(std::move(Feature(state)));
+  std::vector<float> scores =
+      classifier_->compute(std::move(Feature::extract(state)));
   LOG_TRACE("scores: {}", scores);
   unsigned best_action = 0;
   float best_score = -INFINITY;

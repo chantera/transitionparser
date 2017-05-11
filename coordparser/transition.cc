@@ -113,4 +113,30 @@ bool Transition::isAllowedRight(const State& state) {
   return state.stack_.size() > 1;
 }
 
+Action Transition::getOracle(const State& state) {
+  if (state.stack_.size() < 2) {
+    // assert !state.isTerminal()
+    return shiftAction();
+  }
+  const Token& s0 = state.getStackToken(0);
+  const Token& s1 = state.getStackToken(1);
+  if (s0.head_ == s1.id_ && doneRightChildrenOf(state, s0.id_)) {
+    return rightAction(s0.deprel_);
+  }
+  if (s1.head_ == s0.id_) {
+    return leftAction(s1.deprel_);
+  }
+  return shiftAction();
+}
+
+bool Transition::doneRightChildrenOf(const State& state, int head) {
+  int index = state.buffer_;
+  while (index < state.num_tokens_) {
+    int actual_head = state.getToken(index).head_;
+    if (actual_head == head) return false;
+    index = head > index ? head : index + 1;
+  }
+  return true;
+}
+
 }  // namespace coordparser

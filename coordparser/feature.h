@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "coordparser/state.h"
+#include "coordparser/utility.h"
 
 namespace coordparser {
 
@@ -22,6 +23,8 @@ class Feature {
 
   Feature() = delete;
   explicit Feature(const State &state);
+  DEFAULT_COPY_AND_MOVE(Feature);
+  ~Feature() {}
 
   const std::vector<unsigned>& getWordFeatures() const;
 

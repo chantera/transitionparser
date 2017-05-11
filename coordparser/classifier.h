@@ -24,7 +24,7 @@ class Classifier {
   Classifier() {}
   virtual ~Classifier() {}
 
-  virtual Action getNextAction(const State& state) = 0;
+  virtual std::vector<float> compute(const Feature& feature) = 0;
 
  private:
   DISALLOW_COPY_AND_MOVE(Classifier);
@@ -33,6 +33,13 @@ class Classifier {
 class NeuralClassifier : public Classifier {
  public:
   virtual void prepare(dynet::ComputationGraph* cg);
+
+  std::vector<float> compute(const Feature& feature) override;
+
+  virtual dynet::expr::Expression run(
+      const std::vector<unsigned>& X_w,
+      const std::vector<unsigned>& X_p,
+      const std::vector<unsigned>& X_l) = 0;
 
  protected:
   dynet::ComputationGraph* cg_ = nullptr;
@@ -52,61 +59,35 @@ class MlpClassifier : public NeuralClassifier {
                 const unsigned label_feature_size,
                 const unsigned hidden1_size,
                 const unsigned hidden2_size,
-                const unsigned n_labels);
+                const unsigned output_size);
 
-  void prepare(dynet::ComputationGraph* cg) override;
+  dynet::expr::Expression run(const std::vector<unsigned>& X_w,
+                              const std::vector<unsigned>& X_p,
+                              const std::vector<unsigned>& X_l) override;
 
-  Action getNextAction(const State& state) override;
+ protected:
+  const unsigned word_vocab_size_;
+  const unsigned word_embed_size_;
+  const unsigned word_feature_size_;
+  const unsigned pos_vocab_size_;
+  const unsigned pos_embed_size_;
+  const unsigned pos_feature_size_;
+  const unsigned label_vocab_size_;
+  const unsigned label_embed_size_;
+  const unsigned label_feature_size_;
+  const unsigned hidden1_size_;
+  const unsigned hidden2_size_;
+  const unsigned output_size_;
 
- private:
-  class MLP {
-   public:
-    const unsigned word_vocab_size_;
-    const unsigned word_embed_size_;
-    const unsigned word_feature_size_;
-    const unsigned pos_vocab_size_;
-    const unsigned pos_embed_size_;
-    const unsigned pos_feature_size_;
-    const unsigned label_vocab_size_;
-    const unsigned label_embed_size_;
-    const unsigned label_feature_size_;
-    const unsigned hidden1_size_;
-    const unsigned hidden2_size_;
-    const unsigned output_size_;
-
-    MLP(dynet::Model& model,  // NOLINT(runtime/references)
-        const unsigned word_vocab_size,
-        const unsigned word_embed_size,
-        const unsigned word_feature_size,
-        const unsigned pos_vocab_size,
-        const unsigned pos_embed_size,
-        const unsigned pos_feature_size,
-        const unsigned label_vocab_size,
-        const unsigned label_embed_size,
-        const unsigned label_feature_size,
-        const unsigned hidden1_size,
-        const unsigned hidden2_size,
-        const unsigned output_size);
-
-    dynet::expr::Expression forward(
-        const std::vector<unsigned>& X_w,
-        const std::vector<unsigned>& X_p,
-        const std::vector<unsigned>& X_l,
-        dynet::ComputationGraph& cg);  // NOLINT(runtime/references)
-
-   private:
-    dynet::LookupParameter p_lookup_w_;
-    dynet::LookupParameter p_lookup_p_;
-    dynet::LookupParameter p_lookup_l_;
-    dynet::Parameter p_W1_;
-    dynet::Parameter p_b1_;
-    dynet::Parameter p_W2_;
-    dynet::Parameter p_b2_;
-    dynet::Parameter p_W3_;
-    dynet::Parameter p_b3_;
-  };
-
-  MLP mlp_;
+  dynet::LookupParameter p_lookup_w_;
+  dynet::LookupParameter p_lookup_p_;
+  dynet::LookupParameter p_lookup_l_;
+  dynet::Parameter p_W1_;
+  dynet::Parameter p_b1_;
+  dynet::Parameter p_W2_;
+  dynet::Parameter p_b2_;
+  dynet::Parameter p_W3_;
+  dynet::Parameter p_b3_;
 };
 
 }  // namespace coordparser

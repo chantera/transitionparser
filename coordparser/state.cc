@@ -48,7 +48,15 @@ bool State::isTerminal() const {
   return buffer_ == num_tokens_;
 }
 
-const Token& State::getStackToken(const unsigned position,
+const Token& State::getToken(unsigned index) const {
+  return (Token &) sentence_->tokens.at(index);
+}
+
+const Token& State::getStackToken(unsigned position) const {
+  return (Token &) sentence_->tokens[stack_.at((stack_.size() - 1) - position)];
+}
+
+const Token& State::getStackToken(unsigned position,
                                   const Token& default_token) const {
   const unsigned bound = static_cast<const unsigned>(stack_.size() - 1);
   if (position > bound) {
@@ -57,7 +65,11 @@ const Token& State::getStackToken(const unsigned position,
   return (Token &) sentence_->tokens[stack_[bound - position]];
 }
 
-const Token& State::getBufferToken(const unsigned position,
+const Token& State::getBufferToken(unsigned position) const {
+  return (Token &) sentence_->tokens.at(buffer_ + position);
+}
+
+const Token& State::getBufferToken(unsigned position,
                                    const Token& default_token) const {
   const unsigned index = buffer_ + position;
   if (index >= num_tokens_) {
@@ -66,9 +78,9 @@ const Token& State::getBufferToken(const unsigned position,
   return (Token &) sentence_->tokens[index];
 }
 
-const Token& State::getLeftmostToken(const int index,
+const Token& State::getLeftmostToken(int index,
                                      const Token& default_token,
-                                     const int from) const {
+                                     int from) const {
   if (index >=0 && index < num_tokens_ && from >= 0 && from < index) {
     for (int i = from; i < index; i++) {
       if (heads_[i] == index) {
@@ -79,13 +91,13 @@ const Token& State::getLeftmostToken(const int index,
   return default_token;
 }
 
-const Token& State::getRightmostToken(const int index,
+const Token& State::getRightmostToken(int index,
                                       const Token& default_token,
-                                      const int from) const {
-  int begin = from == -1 ? num_tokens_ - 1 : from;
+                                      int from) const {
+  from = from == -1 ? num_tokens_ - 1 : from;
   if (index >= 0 && index < num_tokens_
-      && begin > index && begin < num_tokens_) {
-    for (int i = begin; i > index; i--) {
+      && from > index && from < num_tokens_) {
+    for (int i = from; i > index; i--) {
       if (heads_[i] == index) {
         return (Token&) sentence_->tokens[i];
       }

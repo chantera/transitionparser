@@ -54,6 +54,10 @@ class Transition {
 
   static bool isAllowedRight(const State& state);
 
+  static Action getOracle(const State& state);
+
+  static bool doneRightChildrenOf(const State& state, int head);
+
  private:
   Transition() = delete;
   DISALLOW_COPY_AND_MOVE(Transition);

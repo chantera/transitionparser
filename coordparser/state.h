@@ -58,19 +58,25 @@ class State {
 
   bool isTerminal() const;
 
-  const Token& getStackToken(const unsigned position,
+  const Token& getToken(unsigned index) const;
+
+  const Token& getStackToken(unsigned position) const;
+
+  const Token& getStackToken(unsigned position,
                              const Token& default_token) const;
 
-  const Token& getBufferToken(const unsigned position,
+  const Token& getBufferToken(unsigned position) const;
+
+  const Token& getBufferToken(unsigned position,
                               const Token& default_token) const;
 
-  const Token& getLeftmostToken(const int index,
+  const Token& getLeftmostToken(int index,
                                 const Token& default_token,
-                                const int from = 0) const;
+                                int from = 0) const;
 
-  const Token& getRightmostToken(const int index,
+  const Token& getRightmostToken(int index,
                                  const Token& default_token,
-                                 const int from = -1) const;
+                                 int from = -1) const;
 
   const Feature* getFeature() const;
 

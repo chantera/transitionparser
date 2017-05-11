@@ -37,6 +37,8 @@ class GreedyParser : public Parser {
   explicit GreedyParser(std::shared_ptr<Classifier> classifier);
 
   std::shared_ptr<State> parse(const Sentence& sentence) override;
+
+  Action getNextAction(const State& state);
 };
 
 }  // namespace coordparser

@@ -7,6 +7,8 @@
 
 #include <dynet/expr.h>
 
+#include "coordparser/logger.h"
+
 namespace DE = dynet::expr;
 
 namespace coordparser {

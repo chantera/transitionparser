@@ -69,6 +69,9 @@ link_directories(
     ${DYNET_LIBRARY_DIR}
 )
 
-
 add_subdirectory(coordparser)
-# add_subdirectory(test)
+
+enable_testing()
+set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/external/googletest/googletest)
+add_subdirectory(${GTEST_ROOT})
+add_subdirectory(test)

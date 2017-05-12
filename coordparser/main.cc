@@ -125,8 +125,8 @@ class App {
             uas += 1;
             if (state->labels_[token.id] == token.deprel) {
               las += 1;
-            };
-          };
+            }
+          }
         }
       }
 

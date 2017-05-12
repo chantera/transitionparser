@@ -108,7 +108,7 @@ std::vector<std::vector<FeatureVector>> Feature::unpackFeatures(
   for (; index < end; ++index) {
     FeatureVector feature_batch(batch_size);
     for (int i = 0; i < batch_size; ++i) {
-      feature_batch[features[i][index]];
+      feature_batch[i] = features[i][index];
     }
     word_features.push_back(std::move(feature_batch));
   }
@@ -118,7 +118,7 @@ std::vector<std::vector<FeatureVector>> Feature::unpackFeatures(
   for (; index < end; ++index) {
     FeatureVector feature_batch(batch_size);
     for (int i = 0; i < batch_size; ++i) {
-      feature_batch[features[i][index]];
+      feature_batch[i] = features[i][index];
     }
     pos_features.push_back(std::move(feature_batch));
   }
@@ -128,7 +128,7 @@ std::vector<std::vector<FeatureVector>> Feature::unpackFeatures(
   for (; index < end; ++index) {
     FeatureVector feature_batch(batch_size);
     for (int i = 0; i < batch_size; ++i) {
-      feature_batch[features[i][index]];
+      feature_batch[i] = features[i][index];
     }
     label_features.push_back(std::move(feature_batch));
   }

@@ -16,6 +16,7 @@ void NeuralClassifier::prepare(dynet::ComputationGraph* cg) {
 }
 
 std::vector<float> NeuralClassifier::compute(const FeatureVector& feature) {
+  LOG_TRACE("feature: {}", feature);
   return dynet::as_vector(cg_->incremental_forward(run({feature})));
 }
 
@@ -63,7 +64,7 @@ DE::Expression MlpClassifier::run(const std::vector<FeatureVector>& X) {
   std::vector<DE::Expression> embeddings;
   auto feature_tensor = Feature::unpackFeatures(X);
   for (auto feature_batch : feature_tensor[0]) {
-      embeddings.push_back(DE::lookup(*cg_, p_lookup_w_, feature_batch));
+    embeddings.push_back(DE::lookup(*cg_, p_lookup_w_, feature_batch));
   }
   for (auto feature_batch : feature_tensor[1]) {
     embeddings.push_back(DE::lookup(*cg_, p_lookup_p_, feature_batch));

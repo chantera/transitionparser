@@ -64,6 +64,7 @@ struct Token {
       words_.clear();
       d_.clear();
     }
+
    private:
     bool map_unk;
     int unk_id;

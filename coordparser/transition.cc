@@ -120,11 +120,11 @@ Action Transition::getOracle(const State& state) {
   }
   const Token& s0 = state.getStackToken(0);
   const Token& s1 = state.getStackToken(1);
-  if (s0.head_ == s1.id_ && doneRightChildrenOf(state, s0.id_)) {
-    return rightAction(s0.deprel_);
+  if (s0.head == s1.id && doneRightChildrenOf(state, s0.id)) {
+    return rightAction(s0.deprel);
   }
-  if (s1.head_ == s0.id_) {
-    return leftAction(s1.deprel_);
+  if (s1.head == s0.id) {
+    return leftAction(s1.deprel);
   }
   return shiftAction();
 }
@@ -132,7 +132,7 @@ Action Transition::getOracle(const State& state) {
 bool Transition::doneRightChildrenOf(const State& state, int head) {
   int index = state.buffer_;
   while (index < state.num_tokens_) {
-    int actual_head = state.getToken(index).head_;
+    int actual_head = state.getToken(index).head;
     if (actual_head == head) return false;
     index = head > index ? head : index + 1;
   }

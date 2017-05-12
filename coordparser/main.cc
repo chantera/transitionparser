@@ -30,6 +30,8 @@ class App {
     std::string filepath =
         "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
     ConllReader reader(filepath);
+    const std::vector<Sentence> sentences = reader.read();
+    Token::fixDictionaries();
 
     dynet::Model model;
     auto optimizer = dynet::SimpleSGDTrainer(model);
@@ -37,13 +39,13 @@ class App {
     std::shared_ptr<NeuralClassifier> classifier
         = std::make_shared<MlpClassifier>(
             model,
-            10000,  // Token::getVocabSize(),
+            Token::getDict(Token::FORM).size(),
             64,
             Feature::kNWordFeatures,
-            10000,  // Token::getVocabSize(),
+            Token::getDict(Token::POSTAG).size(),
             64,
             Feature::kNPosFeatures,
-            10000,  // Token::getVocabSize(),
+            Token::getDict(Token::DEPREL).size(),
             64,
             Feature::kNLabelFeatures,
             1024,
@@ -51,8 +53,6 @@ class App {
             48);
 
     GreedyParser parser(classifier);
-
-    const std::vector<Sentence> sentences = reader.read();
 
     std::vector<FeatureVector> X;
     std::vector<unsigned> Y;
@@ -111,13 +111,19 @@ class App {
         dynet::ComputationGraph cg;
         classifier->prepare(&cg);
         std::shared_ptr<State> state = parser.parse(sentence);
+        /*
+        log::warning("scores: {}", classifier->compute(Feature::extract(*state)));
+        log::debug("step: {}", state->step_);
+        log::debug("{}", state->heads_);
+        log::debug("{}", state->labels_);
+         */
         for (auto token : sentence.tokens) {
-          if (token.id_ == 0) continue;
+          if (token.id == 0) continue;
 
           ++count;
-          if (state->heads_[token.id_] == token.head_) {
+          if (state->heads_[token.id] == token.head) {
             uas += 1;
-            if (state->labels_[token.id_] == token.deprel_) {
+            if (state->labels_[token.id] == token.deprel) {
               las += 1;
             };
           };

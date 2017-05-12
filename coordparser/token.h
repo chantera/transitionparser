@@ -6,10 +6,9 @@
 #ifndef COORDPARSER_TOKEN_H_
 #define COORDPARSER_TOKEN_H_
 
-#include <boost/bimap.hpp>
-
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -17,19 +16,59 @@ using std::string;
 
 namespace coordparser {
 
-class Token {
+struct Token {
  public:
   enum Attribute {
-    ID,
-    FORM,
-    // LEMMA,
-    // CPOSTAG,
-        POSTAG,
-    // FEATS,
-        HEAD,
-    DEPREL,
-    // PHEAD,
-    // PDEPREL,
+    ID = 0,
+    FORM = 1,
+    // LEMMA = 2,
+    // CPOSTAG = 3,
+    POSTAG = 4,
+    // FEATS = 5,
+    HEAD = 6,
+    DEPREL = 7,
+    // PHEAD = 8,
+    // PDEPREL = 9,
+  };
+
+  class Dict {
+   public:
+    Dict() : map_unk(false) {
+      unk_id = lookup("<unk>");
+    }
+    inline int lookup(const std::string& word) {
+      auto i = d_.find(word);
+      if (i == d_.end()) {
+        if (map_unk) {
+          return unk_id;
+        }
+        words_.push_back(word);
+        return d_[word] = words_.size() - 1;
+      } else {
+        return i->second;
+      }
+    }
+    inline const std::string& lookup(const int& id) const {
+      return words_.at(id);
+    }
+    inline bool contains(const std::string& words) const {
+      return !(d_.find(words) == d_.end());
+    }
+    inline size_t size() const {
+      return words_.size();
+    }
+    void fix() {
+      map_unk = true;
+    }
+    void clear() {
+      words_.clear();
+      d_.clear();
+    }
+   private:
+    bool map_unk;
+    int unk_id;
+    std::vector<std::string> words_;
+    std::unordered_map<std::string, int> d_;
   };
 
   Token() = delete;
@@ -44,44 +83,38 @@ class Token {
   Token& operator=(Token&&) = default;
   ~Token() {}
 
-  std::string getForm() const;
-
-  std::string getPostag() const;
-
-  std::string getDeprel() const;
+  friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
   static Token createRoot();
 
   static Token createPad();
 
-  inline bool isRoot();
+  static const Dict& getDict(const Attribute name);
 
-  friend std::ostream& operator<<(std::ostream& os, const Token& token);
+  static void fixDictionaries();
 
-  const int id_;
-  const int form_;
-  // const int lemma_;
-  // const int cpostag_;
-  const int postag_;
+  const int id;
+  const int form;
+  // const int lemma;
+  // const int cpostag;
+  const int postag;
   // const int feats;
-  const int head_;
-  const int deprel_;
-  // const int phead_;
-  // const int pdeprel_;
+  const int head;
+  const int deprel;
+  // const int phead;
+  // const int pdeprel;
 
  private:
-  typedef boost::bimap<std::pair<Attribute, std::string>, int> attribute_map;
-
   Token(const int id, const int form, const int postag,
         const int head, const int deprel);
   Token(const string& id, const string& form, const string& postag,
         const string& head, const string& deprel);
 
-  static int registerAttribute(const Attribute name, const string& value);
+  static inline int convert(const Attribute name, const string& value);
 
-  static std::string getAttribute(const int index);
+  static inline std::string convert(const Attribute name, const int index);
 
-  static attribute_map attributes_map_;
+  static std::unordered_map<Attribute, Dict> attribute_dicts_;
 };
 
 }  // namespace coordparser

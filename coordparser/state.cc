@@ -39,7 +39,7 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
   Token s1 = state.getStackToken(1, pad);
   Token b0 = state.getBufferToken(0, pad);
   Token b1 = state.getBufferToken(1, pad);
-  os << utility::string::format("step=%d, s0: %s, s1: %s, b0: %s, b1: %s",
+  os << utility::string::format("step={}, s0: {}, s1: {}, b0: {}, b1: {}",
                                 state.step_, s0, s1, b0, b1);
   return os;
 }

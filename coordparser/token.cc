@@ -7,10 +7,6 @@
 
 namespace coordparser {
 
-std::string Token::getForm() const {
-  return Token::getAttribute(form_);
-}
-
 // cppcheck-suppress uninitMemberVar
 Token::Token(const std::vector<string>& attributes)
     : Token(attributes[0], attributes[1], attributes[4], attributes[6],
@@ -24,21 +20,17 @@ Token::Token(const string& id, const string& form, const string& lemma,
     : Token(id, form, postag, head, deprel) {}
 
 Token::Token(const Token& token)
-    : id_(token.id_), form_(token.form_), postag_(token.postag_),
-      head_(token.head_), deprel_(token.deprel_) {
-  // std::cout << id_ << token << std::endl;
+    : id(token.id), form(token.form), postag(token.postag),
+      head(token.head), deprel(token.deprel) {
 }
 
 Token::Token(Token &&token) noexcept
-    : id_(token.id_), form_(token.form_), postag_(token.postag_),
-      head_(token.head_), deprel_(token.deprel_) {}
+    : id(token.id), form(token.form), postag(token.postag),
+      head(token.head), deprel(token.deprel) {}
 
-std::string Token::getPostag() const {
-  return Token::getAttribute(postag_);
-}
-
-std::string Token::getDeprel() const {
-  return Token::getAttribute(deprel_);
+std::ostream& operator<<(std::ostream& os, const Token& token) {
+  os << Token::convert(Token::Attribute::FORM, token.form);
+  return os;
 }
 
 Token Token::createRoot() {
@@ -71,51 +63,42 @@ Token Token::createPad() {
   return pad;
 }
 
-bool Token::isRoot() {
-  return id_ == 0;
+const Token::Dict& Token::getDict(const Token::Attribute name) {
+  return attribute_dicts_[name];
 }
 
-std::ostream& operator<<(std::ostream& os, const Token& token) {
-  os << token.getForm();
-  return os;
+void Token::fixDictionaries() {
+  for (auto& pair : attribute_dicts_) {
+    pair.second.fix();
+  }
 }
 
 Token::Token(const int id, const int form, const int postag,
              const int head, const int deprel)
-    : id_(id), form_(form), postag_(postag), head_(head), deprel_(deprel) {}
+    : id(id), form(form), postag(postag), head(head), deprel(deprel) {}
 
 Token::Token(const string& id, const string& form, const string& postag,
              const string& head, const string& deprel)
     : Token(
         std::stoi(id),
-        registerAttribute(Token::Attribute::FORM,   form),
-        registerAttribute(Token::Attribute::POSTAG, postag),
+        convert(Token::Attribute::FORM,   form),
+        convert(Token::Attribute::POSTAG, postag),
         std::stoi(head),
-        registerAttribute(Token::Attribute::DEPREL, deprel)
+        convert(Token::Attribute::DEPREL, deprel)
     ) {}
 
-int Token::registerAttribute(const Token::Attribute name, const string& value) {
-  std::pair<Attribute, std::string> attribute(name, value);
-  int index;
-  if (attributes_map_.left.find(attribute) != attributes_map_.left.end()) {
-    index = attributes_map_.left.at(attribute);
-  } else {
-    index = attributes_map_.size();
-    attributes_map_.insert(attribute_map::value_type(attribute, index));
-  }
-  return index;
+int Token::convert(const Token::Attribute name, const string& value) {
+  return attribute_dicts_[name].lookup(value);
 }
 
-std::string Token::getAttribute(const int index) {
-  if (attributes_map_.right.find(index) == attributes_map_.right.end()) {
-    return nullptr;
-  }
-  return attributes_map_.right.at(index).second;
+std::string Token::convert(const Token::Attribute name, const int index) {
+  return attribute_dicts_[name].lookup(index);
 }
 
-Token::attribute_map Token::attributes_map_ = [] {
-  attribute_map map;
-  return map;
-}();
+std::unordered_map<Token::Attribute, Token::Dict> Token::attribute_dicts_ = {
+    {Token::Attribute::FORM,   Dict()},
+    {Token::Attribute::POSTAG, Dict()},
+    {Token::Attribute::DEPREL, Dict()},
+};
 
 }  // namespace coordparser

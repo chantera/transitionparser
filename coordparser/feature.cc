@@ -24,76 +24,76 @@ FeatureVector Feature::extract(const State &state) {
   const Token& b2 = state.getBufferToken(2, pad);
   const Token& b3 = state.getBufferToken(3, pad);
 
-  const Token& lc1_s0 = state.getLeftmostToken(s0.id_, pad);
-  const Token& rc1_s0 = state.getRightmostToken(s0.id_, pad);
-  const Token& lc2_s0 = state.getLeftmostToken(s0.id_, pad, lc1_s0.id_ + 1);
-  const Token& rc2_s0 = state.getRightmostToken(s0.id_, pad, rc1_s0.id_ - 1);
-  const Token& lc1_s1 = state.getLeftmostToken(s1.id_, pad);
-  const Token& rc1_s1 = state.getRightmostToken(s1.id_, pad);
-  const Token& lc2_s1 = state.getLeftmostToken(s1.id_, pad, lc1_s1.id_ + 1);
-  const Token& rc2_s1 = state.getRightmostToken(s1.id_, pad, rc1_s1.id_ - 1);
+  const Token& lc1_s0 = state.getLeftmostToken(s0.id, pad);
+  const Token& rc1_s0 = state.getRightmostToken(s0.id, pad);
+  const Token& lc2_s0 = state.getLeftmostToken(s0.id, pad, lc1_s0.id + 1);
+  const Token& rc2_s0 = state.getRightmostToken(s0.id, pad, rc1_s0.id - 1);
+  const Token& lc1_s1 = state.getLeftmostToken(s1.id, pad);
+  const Token& rc1_s1 = state.getRightmostToken(s1.id, pad);
+  const Token& lc2_s1 = state.getLeftmostToken(s1.id, pad, lc1_s1.id + 1);
+  const Token& rc2_s1 = state.getRightmostToken(s1.id, pad, rc1_s1.id - 1);
 
-  const Token& lc1_lc1_s0 = state.getLeftmostToken(lc1_s0.id_, pad);
-  const Token& rc1_rc1_s0 = state.getLeftmostToken(rc1_s0.id_, pad);
-  const Token& lc1_lc1_s1 = state.getLeftmostToken(lc1_s1.id_, pad);
-  const Token& rc1_rc1_s1 = state.getLeftmostToken(rc1_s1.id_, pad);
+  const Token& lc1_lc1_s0 = state.getLeftmostToken(lc1_s0.id, pad);
+  const Token& rc1_rc1_s0 = state.getLeftmostToken(rc1_s0.id, pad);
+  const Token& lc1_lc1_s1 = state.getLeftmostToken(lc1_s1.id, pad);
+  const Token& rc1_rc1_s1 = state.getLeftmostToken(rc1_s1.id, pad);
 
   return {
       // word features
-      (unsigned) s0.form_,
-      (unsigned) s1.form_,
-      (unsigned) s2.form_,
-      (unsigned) s3.form_,
-      (unsigned) b0.form_,
-      (unsigned) b1.form_,
-      (unsigned) b2.form_,
-      (unsigned) b3.form_,
-      (unsigned) lc1_s0.form_,
-      (unsigned) rc1_s0.form_,
-      (unsigned) lc2_s0.form_,
-      (unsigned) rc2_s0.form_,
-      (unsigned) lc1_s1.form_,
-      (unsigned) rc1_s1.form_,
-      (unsigned) lc2_s1.form_,
-      (unsigned) rc2_s1.form_,
-      (unsigned) lc1_lc1_s0.form_,
-      (unsigned) rc1_rc1_s0.form_,
-      (unsigned) lc1_lc1_s1.form_,
-      (unsigned) rc1_rc1_s1.form_,
+      (unsigned) s0.form,
+      (unsigned) s1.form,
+      (unsigned) s2.form,
+      (unsigned) s3.form,
+      (unsigned) b0.form,
+      (unsigned) b1.form,
+      (unsigned) b2.form,
+      (unsigned) b3.form,
+      (unsigned) lc1_s0.form,
+      (unsigned) rc1_s0.form,
+      (unsigned) lc2_s0.form,
+      (unsigned) rc2_s0.form,
+      (unsigned) lc1_s1.form,
+      (unsigned) rc1_s1.form,
+      (unsigned) lc2_s1.form,
+      (unsigned) rc2_s1.form,
+      (unsigned) lc1_lc1_s0.form,
+      (unsigned) rc1_rc1_s0.form,
+      (unsigned) lc1_lc1_s1.form,
+      (unsigned) rc1_rc1_s1.form,
       // pos features
-      (unsigned) s0.postag_,
-      (unsigned) s1.postag_,
-      (unsigned) s2.postag_,
-      (unsigned) s3.postag_,
-      (unsigned) b0.postag_,
-      (unsigned) b1.postag_,
-      (unsigned) b2.postag_,
-      (unsigned) b3.postag_,
-      (unsigned) lc1_s0.postag_,
-      (unsigned) rc1_s0.postag_,
-      (unsigned) lc2_s0.postag_,
-      (unsigned) rc2_s0.postag_,
-      (unsigned) lc1_s1.postag_,
-      (unsigned) rc1_s1.postag_,
-      (unsigned) lc2_s1.postag_,
-      (unsigned) rc2_s1.postag_,
-      (unsigned) lc1_lc1_s0.postag_,
-      (unsigned) rc1_rc1_s0.postag_,
-      (unsigned) lc1_lc1_s1.postag_,
-      (unsigned) rc1_rc1_s1.postag_,
+      (unsigned) s0.postag,
+      (unsigned) s1.postag,
+      (unsigned) s2.postag,
+      (unsigned) s3.postag,
+      (unsigned) b0.postag,
+      (unsigned) b1.postag,
+      (unsigned) b2.postag,
+      (unsigned) b3.postag,
+      (unsigned) lc1_s0.postag,
+      (unsigned) rc1_s0.postag,
+      (unsigned) lc2_s0.postag,
+      (unsigned) rc2_s0.postag,
+      (unsigned) lc1_s1.postag,
+      (unsigned) rc1_s1.postag,
+      (unsigned) lc2_s1.postag,
+      (unsigned) rc2_s1.postag,
+      (unsigned) lc1_lc1_s0.postag,
+      (unsigned) rc1_rc1_s0.postag,
+      (unsigned) lc1_lc1_s1.postag,
+      (unsigned) rc1_rc1_s1.postag,
       // label features
-      (unsigned) lc1_s0.deprel_,
-      (unsigned) rc1_s0.deprel_,
-      (unsigned) lc2_s0.deprel_,
-      (unsigned) rc2_s0.deprel_,
-      (unsigned) lc1_s1.deprel_,
-      (unsigned) rc1_s1.deprel_,
-      (unsigned) lc2_s1.deprel_,
-      (unsigned) rc2_s1.deprel_,
-      (unsigned) lc1_lc1_s0.deprel_,
-      (unsigned) rc1_rc1_s0.deprel_,
-      (unsigned) lc1_lc1_s1.deprel_,
-      (unsigned) rc1_rc1_s1.deprel_,
+      (unsigned) lc1_s0.deprel,
+      (unsigned) rc1_s0.deprel,
+      (unsigned) lc2_s0.deprel,
+      (unsigned) rc2_s0.deprel,
+      (unsigned) lc1_s1.deprel,
+      (unsigned) rc1_s1.deprel,
+      (unsigned) lc2_s1.deprel,
+      (unsigned) rc2_s1.deprel,
+      (unsigned) lc1_lc1_s0.deprel,
+      (unsigned) rc1_rc1_s0.deprel,
+      (unsigned) lc1_lc1_s1.deprel,
+      (unsigned) rc1_rc1_s1.deprel,
   };
 }
 

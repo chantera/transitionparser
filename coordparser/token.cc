@@ -33,33 +33,11 @@ std::ostream& operator<<(std::ostream& os, const Token& token) {
   return os;
 }
 
-Token Token::createRoot() {
-  Token token(
-      "0",       // ID
-      "<ROOT>",  // FORM
-      // "<ROOT>",  // LEMMA
-      // "ROOT",    // CPOSTAG
-      "ROOT",    // POSTAG
-      // "_",       // FEATS
-      "-1",      // HEAD
-      "ROOT");   // DEPREL
-      // "_",       // PHEAD
-      // "_");      // PDEPREL
-  return token;
+const Token& Token::createRoot() {
+  return root;
 }
 
-Token Token::createPad() {
-  static Token pad(
-      "-10",    // ID
-      "<PAD>",  // FORM
-      // "<PAD>",  // LEMMA
-      // "NULL",   // CPOSTAG
-      "NULL",   // POSTAG
-      // "",       // FEATS
-      "-11",     // HEAD
-      "NULL");  // DEPREL
-      // "",       // PHEAD
-      // "");      // PDEPREL
+const Token& Token::createPad() {
   return pad;
 }
 
@@ -100,5 +78,29 @@ std::unordered_map<Token::Attribute, Token::Dict> Token::attribute_dicts_ = {
     {Token::Attribute::POSTAG, Dict()},
     {Token::Attribute::DEPREL, Dict()},
 };
+
+const Token Token::root(
+    "0",       // ID
+    "<ROOT>",  // FORM
+    // "<ROOT>",  // LEMMA
+    // "ROOT",    // CPOSTAG
+    "ROOT",    // POSTAG
+    // "_",       // FEATS
+    "-1",      // HEAD
+    "ROOT");   // DEPREL
+// "_",       // PHEAD
+// "_");      // PDEPREL
+
+const Token Token::pad(
+    "-10",    // ID
+    "<PAD>",  // FORM
+    // "<PAD>",  // LEMMA
+    // "NULL",   // CPOSTAG
+    "NULL",   // POSTAG
+    // "",       // FEATS
+    "-11",     // HEAD
+    "NULL");  // DEPREL
+// "",       // PHEAD
+// "");      // PDEPREL
 
 }  // namespace coordparser

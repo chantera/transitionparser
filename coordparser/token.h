@@ -85,9 +85,9 @@ struct Token {
 
   friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
-  static Token createRoot();
+  static const Token& createRoot();
 
-  static Token createPad();
+  static const Token& createPad();
 
   static const Dict& getDict(const Attribute name);
 
@@ -115,6 +115,10 @@ struct Token {
   static inline std::string convert(const Attribute name, const int index);
 
   static std::unordered_map<Attribute, Dict> attribute_dicts_;
+
+  static const Token root;
+
+  static const Token pad;
 };
 
 }  // namespace coordparser

@@ -28,7 +28,8 @@ class App {
     log::info("Hello, World!");
 
     std::string filepath =
-        "/Users/hiroki/Desktop/NLP/data/TreeBank3_stanford/dep/wsj_02.conll";
+        "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
+            "penn_treebank/dep/stanford/section/parse-train.conll";
     ConllReader reader(filepath);
     const std::vector<Sentence> sentences = reader.read();
     Token::fixDictionaries();
@@ -101,9 +102,9 @@ class App {
       }
       log::info("loss {}", loss);
 
-      int count = 0;
-      int uas = 0;
-      int las = 0;
+      float count = 0;
+      float uas = 0;
+      float las = 0;
       int j = 0;
       int num_sentences = sentences.size();
       for (auto& sentence : sentences) {
@@ -114,9 +115,9 @@ class App {
         /*
         log::warning("scores: {}", classifier->compute(Feature::extract(*state)));
         log::debug("step: {}", state->step_);
+         */
         log::debug("{}", state->heads_);
         log::debug("{}", state->labels_);
-         */
         for (auto token : sentence.tokens) {
           if (token.id == 0) continue;
 
@@ -130,7 +131,9 @@ class App {
         }
       }
 
-      log::info("UAS: {}, LAS: {}", uas / count, las / count);
+      log::info("UAS: {:.4f}, LAS: {:.4f}",
+                (uas / count) * 100,
+                (las / count) * 100);
 
       ++epoch;
     }

@@ -53,7 +53,7 @@ void Transition::apply(Action action, std::shared_ptr<State>& state) {
 // Shift: (s, i|b, A) => (s|i, b, A)
 State* Transition::shift(const State& state) {
   std::vector<int> stack(state.stack_);
-  stack.reserve(state.num_tokens_ + 1);
+  stack.reserve(state.num_tokens_);
   stack.push_back(state.buffer_);
   return new State(state, shiftAction(), std::move(stack), state.buffer_ + 1,
                    state.heads_, state.labels_);
@@ -102,7 +102,7 @@ bool Transition::isAllowed(Action action, const State& state) {
 }
 
 bool Transition::isAllowedShift(const State& state) {
-  return !state.isTerminal();
+  return state.buffer_ < state.num_tokens_;
 }
 
 bool Transition::isAllowedLeft(const State& state) {

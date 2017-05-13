@@ -14,7 +14,7 @@ State::State(const Sentence* sentence) :
     stack_{0},
     buffer_(1),
     heads_(num_tokens_, -1),
-    labels_(num_tokens_, -1) {}
+    labels_(num_tokens_, sentence_->tokens[0].deprel) {}
 
 State::State(const State& prev_state,
              const Action& action,
@@ -30,6 +30,7 @@ State::State(const State& prev_state,
     heads_(heads),
     labels_(labels),
     history_(prev_state.history_.begin(), prev_state.history_.end()) {
+  COORDPARSER_ASSERT(buffer_ <= num_tokens_, "buffer exceeds num_tokens.");
   history_.push_back(action);
 }
 
@@ -45,7 +46,7 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
 }
 
 bool State::isTerminal() const {
-  return buffer_ == num_tokens_;
+  return buffer_ == num_tokens_ && stack_.size() < 2;
 }
 
 const Token& State::getToken(unsigned index) const {

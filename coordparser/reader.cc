@@ -23,6 +23,7 @@ std::vector<Sentence> ConllReader::read() {
 
   std::vector<Sentence> sentences;
   std::vector<Token> tokens;
+  tokens.push_back(std::move(Token::createRoot()));
   std::string line;
   int count = 0;
 

@@ -60,6 +60,14 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
     return os; \
   }
 
+#define COORDPARSER_ASSERT(expr, msg) { \
+    if (!(expr)) { \
+      std::ostringstream oss; \
+      oss << msg; \
+      throw std::runtime_error(oss.str()); \
+    } \
+  }
+
 namespace utility {
 
 namespace vector {

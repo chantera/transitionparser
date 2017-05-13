@@ -72,6 +72,6 @@ link_directories(
 add_subdirectory(coordparser)
 
 enable_testing()
-set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/external/googletest/googletest)
+set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/external/googletest)
 add_subdirectory(${GTEST_ROOT})
 add_subdirectory(test)

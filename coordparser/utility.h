@@ -169,15 +169,18 @@ static inline void trim(std::string& s) {  // NOLINT(runtime/references)
   rtrim(s);
 }
 
-static inline std::vector<std::string> split(const std::string& string,
+static inline std::vector<std::string> split(const std::string& s,
                                              char delimiter) {
-  std::istringstream stream(string);
-  std::string field;
-  std::vector<std::string> splits;
-  while (std::getline(stream, field, delimiter)) {
-    splits.push_back(field);
+  std::vector<std::string> result;
+  auto i = 0;
+  auto pos = s.find(delimiter);
+  while (pos != std::string::npos) {
+    result.push_back(s.substr(i, pos-i));
+    i = ++pos;
+    pos = s.find(delimiter, pos);
   }
-  return splits;
+  if (pos == std::string::npos) result.push_back(s.substr(i, s.length()));
+  return result;
 }
 
 template <typename T>

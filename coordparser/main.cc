@@ -33,6 +33,7 @@ class App {
             "penn_treebank/dep/stanford/section/parse-train.conll";
     ConllReader reader(filepath);
     const std::vector<Sentence> sentences = reader.read();
+    log::info("sentence size: {} from '{}'", sentences.size(), filepath);
     Token::fixDictionaries();
 
     dynet::Model model;

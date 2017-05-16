@@ -14,7 +14,7 @@ State::State(const Sentence* sentence) :
     stack_{0},
     buffer_(1),
     heads_(num_tokens_, -1),
-    labels_(num_tokens_, sentence_->tokens[0].deprel) {}
+    labels_(num_tokens_, -1) {}
 
 State::State(const State& prev_state,
              const Action& action,

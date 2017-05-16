@@ -51,7 +51,7 @@ class App {
             Feature::kNLabelFeatures,
             1024,
             256,
-            48);
+            (Token::getDict(Token::DEPREL).size() - 2) * 2 + 1);
 
     GreedyParser parser(classifier);
 
@@ -124,7 +124,7 @@ class App {
           ++count;
           if (state->heads_[token.id] == token.head) {
             uas += 1;
-            if (state->labels_[token.id] == token.deprel) {
+            if (state->labels_[token.id] == token.label) {
               las += 1;
             }
           }

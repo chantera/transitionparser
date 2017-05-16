@@ -186,6 +186,34 @@ static inline std::string to_string(const T& message) {
   return ss.str();
 }
 
+template <typename S, class UnaryOperator>
+static inline S transform(const S& s, UnaryOperator op) {
+  S temp(s);
+  std::transform(temp.begin(), temp.end(), temp.begin(), op);
+  return temp;
+}
+
+template <typename S, class UnaryOperator>
+static inline void transform(S* s, UnaryOperator op) {
+  std::transform(s->begin(), s->end(), s->begin(), op);
+}
+
+static inline std::string toupper(const std::string& string) {
+  return transform(string, ::toupper);
+}
+
+static inline void toupper(std::string* string) {
+  transform(string, ::toupper);
+}
+
+static inline std::string tolower(const std::string& string) {
+  return transform(string, ::tolower);
+}
+
+static inline void tolower(std::string* string) {
+  transform(string, ::tolower);
+}
+
 }  // namespace string
 
 namespace file {

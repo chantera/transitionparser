@@ -33,9 +33,7 @@ struct Token {
 
   class Dict {
    public:
-    Dict() : map_unk(false) {
-      unk_id = lookup("<unk>");
-    }
+    Dict() : map_unk(false) {}
     inline int lookup(const std::string& word) {
       auto i = d_.find(word);
       if (i == d_.end()) {
@@ -64,10 +62,14 @@ struct Token {
       words_.clear();
       d_.clear();
     }
+    inline int set_unk(const std::string& unk) {
+      unk_id = lookup(unk);
+      return unk_id;
+    }
 
    private:
     bool map_unk;
-    int unk_id;
+    int unk_id = -1;
     std::vector<std::string> words_;
     std::unordered_map<std::string, int> d_;
   };
@@ -95,31 +97,29 @@ struct Token {
   static void fixDictionaries();
 
   const int id;
-  const int form;
+  const std::string form;
   // const int lemma;
   // const int cpostag;
-  const int postag;
+  const std::string postag;
   // const int feats;
   const int head;
-  const int deprel;
+  const std::string deprel;
   // const int phead;
   // const int pdeprel;
 
+  const unsigned word;
+  const unsigned tag;
+  const unsigned label;
+
  private:
-  Token(const int id, const int form, const int postag,
-        const int head, const int deprel);
-  Token(const string& id, const string& form, const string& postag,
-        const string& head, const string& deprel);
+  inline Token(const int& id, const string& form, const string& postag,
+        const int& head, const string& deprel);
 
   static inline int convert(const Attribute name, const string& value);
 
   static inline std::string convert(const Attribute name, const int index);
 
   static std::unordered_map<Attribute, Dict> attribute_dicts_;
-
-  static const Token root;
-
-  static const Token pad;
 };
 
 }  // namespace coordparser

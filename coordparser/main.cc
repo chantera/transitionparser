@@ -5,6 +5,7 @@
 
 #include <dynet/dynet.h>
 #include <dynet/expr.h>
+#include <dynet/tensor.h>
 
 #include <iostream>
 #include <memory>
@@ -77,6 +78,7 @@ class App {
     while (epoch < num_epochs) {
       log::info("iteration {}", epoch + 1);
       double loss = 0;
+      double correct = 0;
 
       for (int batch_index = 0; batch_index < num_batches; ++batch_index) {
         log::info("process batch {} of {}", batch_index + 1, num_batches);
@@ -85,7 +87,8 @@ class App {
         const uint64_t current_batch_size = std::min(size - offset, batch_size);
         std::vector<FeatureVector> x(current_batch_size);
         std::vector<unsigned> t(current_batch_size);
-        for (int index = 0; index < current_batch_size; ++index) {
+        int index;
+        for (index = 0; index < current_batch_size; ++index) {
           x[index] = X[offset + index];
           t[index] = Y[offset + index];
         }
@@ -94,13 +97,21 @@ class App {
         classifier->prepare(&cg);
 
         auto y = classifier->run(x);
+        auto pred_actions = dynet::as_vector(dynet::TensorTools::argmax(
+            cg.incremental_forward(dynet::expr::softmax(y))));
+        for (index = 0; index < current_batch_size; ++index) {
+          if (pred_actions[index] == t[index]) ++correct;
+        }
         auto loss_expr = dynet::expr::sum_batches(
             dynet::expr::pickneglogsoftmax(y, t)) / current_batch_size;
-        loss += dynet::as_scalar(cg.forward(loss_expr));
+        loss += dynet::as_scalar(cg.incremental_forward(loss_expr));
         cg.backward(loss_expr);
         optimizer.update();
       }
       log::info("loss {}", loss);
+      log::info("accuracy {}", correct / size);
+      ++epoch;
+      continue;
 
       float count = 0;
       float uas = 0;

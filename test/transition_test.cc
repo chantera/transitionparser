@@ -30,23 +30,18 @@ class TransitionTest : public ::testing::Test {
 TEST_F(TransitionTest, Oracle) {
   for (auto& sentence : sentences_) {
     std::cout << sentence << std::endl;
-    std::vector<int> gold_heads;
-    std::vector<int> gold_labels;
-    for (auto& token : sentence.tokens) {
-      gold_heads.push_back(token.head);
-      gold_labels.push_back(token.label);
+    State state(sentence);
+    while (!Transition::isTerminal(state)) {
+      Action action = Transition::getOracle(state);
+      Transition::apply(action, &state);
     }
-    std::shared_ptr<coordparser::State> state
-        = std::make_shared<coordparser::State>(&sentence);
-    while (!state->isTerminal()) {
-      Action action = Transition::getOracle(*state);
-      std::cout << state->stack_ << "] [" << state->buffer_
-                << "..., action: " << action << std::endl;
-      Transition::apply(action, state);
+    int correct = 0;
+    for (int i = 0; i < state.numTokens(); ++i) {
+      if (state.head(i) == state.getToken(i).head &&
+          state.label(i) == state.getToken(i).label) {
+        ++correct;
+      }
     }
-    // std::cout << gold_heads << std::endl;
-    // std::cout << state->heads_ << std::endl;
-    ASSERT_THAT(state->heads_, ::testing::ContainerEq(gold_heads));
-    ASSERT_THAT(state->labels_, ::testing::ContainerEq(gold_labels));
+    ASSERT_TRUE(correct == state.numTokens());
   }
 }

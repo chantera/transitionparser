@@ -8,7 +8,6 @@
 namespace coordparser {
 
 State::State(const Sentence& sentence) :
-    step_(0),
     sentence_(&sentence),
     num_tokens_((const unsigned int) sentence.tokens.size()),
     stack_{0},
@@ -24,7 +23,6 @@ State::State(const State& prev_state,
              const int buffer,
              const std::vector<int>& heads,
              const std::vector<int>& labels) :
-    step_(prev_state.step_ + 1),
     sentence_(prev_state.sentence_),
     num_tokens_(prev_state.num_tokens_),
     stack_(stack),
@@ -37,13 +35,13 @@ State::State(const State& prev_state,
 }
 
 std::ostream& operator<<(std::ostream& os, const State& state) {
-  Token pad = Token::createPad();
-  Token s0 = state.getStackToken(0, pad);
-  Token s1 = state.getStackToken(1, pad);
-  Token b0 = state.getBufferToken(0, pad);
-  Token b1 = state.getBufferToken(1, pad);
+  const Token& pad = Token::createPad();
+  const Token& s0 = state.getToken(state.stack(0), pad);
+  const Token& s1 = state.getToken(state.stack(1), pad);
+  const Token& b0 = state.getToken(state.buffer(0), pad);
+  const Token& b1 = state.getToken(state.buffer(1), pad);
   os << utility::string::format("step={}, s0: {}, s1: {}, b0: {}, b1: {}",
-                                state.step_, s0, s1, b0, b1);
+                                state.step(), s0, s1, b0, b1);
   return os;
 }
 
@@ -104,6 +102,12 @@ int State::buffer() const {
   return buffer_;
 }
 
+int State::buffer(int position) const {
+  if (position < 0) return -1;
+  const int index = buffer_ + position;
+  return index < num_tokens_ ? -1 : index;
+}
+
 int State::head(int index) const {
   return heads_[index];
 }
@@ -112,62 +116,37 @@ int State::label(int index) const {
   return labels_[index];
 }
 
-const Token& State::getToken(unsigned index) const {
-  return (Token &) sentence_->tokens.at(index);
-}
-
-const Token& State::getStackToken(unsigned position) const {
-  return (Token &) sentence_->tokens[stack_.at((stack_.size() - 1) - position)];
-}
-
-const Token& State::getStackToken(unsigned position,
-                                  const Token& default_token) const {
-  const unsigned bound = static_cast<const unsigned>(stack_.size() - 1);
-  if (position > bound) {
-    return default_token;
-  }
-  return (Token &) sentence_->tokens[stack_[bound - position]];
-}
-
-const Token& State::getBufferToken(unsigned position) const {
-  return (Token &) sentence_->tokens.at(buffer_ + position);
-}
-
-const Token& State::getBufferToken(unsigned position,
-                                   const Token& default_token) const {
-  const unsigned index = buffer_ + position;
-  if (index >= num_tokens_) {
-    return default_token;
-  }
-  return (Token &) sentence_->tokens[index];
-}
-
-const Token& State::getLeftmostToken(int index,
-                                     const Token& default_token,
-                                     int from) const {
+int State::leftmost(int index, int from) const {
   if (index >=0 && index < num_tokens_ && from >= 0 && from < index) {
     for (int i = from; i < index; i++) {
       if (heads_[i] == index) {
-        return (Token&) sentence_->tokens[i];
+        return i;
       }
     }
   }
-  return default_token;
+  return -1;
 }
 
-const Token& State::getRightmostToken(int index,
-                                      const Token& default_token,
-                                      int from) const {
+int State::rightmost(int index, int from) const {
   from = from == -1 ? num_tokens_ - 1 : from;
   if (index >= 0 && index < num_tokens_
       && from > index && from < num_tokens_) {
     for (int i = from; i > index; i--) {
       if (heads_[i] == index) {
-        return (Token&) sentence_->tokens[i];
+        return i;
       }
     }
   }
-  return default_token;
+  return -1;
+}
+
+const Token& State::getToken(int index) const {
+  return sentence_->tokens.at(index);
+}
+
+const Token& State::getToken(int index, const Token& default_token) const {
+  if (index < 0 || index >= num_tokens_) return default_token;
+  return sentence_->tokens[index];
 }
 
 const std::vector<Action>& State::history() const {

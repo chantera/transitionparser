@@ -30,7 +30,7 @@ Token::Token(Token &&token) noexcept
       tag(token.tag), label(token.label) {}
 
 std::ostream& operator<<(std::ostream& os, const Token& token) {
-  os << Token::convert(Token::Attribute::FORM, token.form);
+  os << token.form;
   return os;
 }
 

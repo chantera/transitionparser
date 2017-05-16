@@ -73,34 +73,23 @@ class State {
 
   int buffer() const;
 
+  int buffer(int position) const;
+
   int head(int index) const;
 
   int label(int index) const;
 
-  const Token& getToken(unsigned index) const;
+  int leftmost(int index, int from = 0) const;
 
-  const Token& getStackToken(unsigned position) const;
+  int rightmost(int index, int from = -1) const;
 
-  const Token& getStackToken(unsigned position,
-                             const Token& default_token) const;
+  const Token& getToken(int index) const;
 
-  const Token& getBufferToken(unsigned position) const;
-
-  const Token& getBufferToken(unsigned position,
-                              const Token& default_token) const;
-
-  const Token& getLeftmostToken(int index,
-                                const Token& default_token,
-                                int from = 0) const;
-
-  const Token& getRightmostToken(int index,
-                                 const Token& default_token,
-                                 int from = -1) const;
+  const Token& getToken(int index, const Token& default_token) const;
 
   const std::vector<Action>& history() const;
 
  private:
-  int step_;
   const Sentence* sentence_;
   const unsigned num_tokens_;
   std::vector<int> stack_;

@@ -15,28 +15,32 @@ const unsigned Feature::kNLabelFeatures = 12;
 
 FeatureVector Feature::extract(const State &state) {
   Token pad = Token::createPad();
-  const Token& s0 = state.getStackToken(0, pad);
-  const Token& s1 = state.getStackToken(1, pad);
-  const Token& s2 = state.getStackToken(2, pad);
-  const Token& s3 = state.getStackToken(3, pad);
-  const Token& b0 = state.getBufferToken(0, pad);
-  const Token& b1 = state.getBufferToken(1, pad);
-  const Token& b2 = state.getBufferToken(2, pad);
-  const Token& b3 = state.getBufferToken(3, pad);
+  const Token& s0 = state.getToken(state.stack(0), pad);
+  const Token& s1 = state.getToken(state.stack(1), pad);
+  const Token& s2 = state.getToken(state.stack(2), pad);
+  const Token& s3 = state.getToken(state.stack(3), pad);
+  const Token& b0 = state.getToken(state.buffer(0), pad);
+  const Token& b1 = state.getToken(state.buffer(1), pad);
+  const Token& b2 = state.getToken(state.buffer(2), pad);
+  const Token& b3 = state.getToken(state.buffer(3), pad);
 
-  const Token& lc1_s0 = state.getLeftmostToken(s0.id, pad);
-  const Token& rc1_s0 = state.getRightmostToken(s0.id, pad);
-  const Token& lc2_s0 = state.getLeftmostToken(s0.id, pad, lc1_s0.id + 1);
-  const Token& rc2_s0 = state.getRightmostToken(s0.id, pad, rc1_s0.id - 1);
-  const Token& lc1_s1 = state.getLeftmostToken(s1.id, pad);
-  const Token& rc1_s1 = state.getRightmostToken(s1.id, pad);
-  const Token& lc2_s1 = state.getLeftmostToken(s1.id, pad, lc1_s1.id + 1);
-  const Token& rc2_s1 = state.getRightmostToken(s1.id, pad, rc1_s1.id - 1);
+  const Token& lc1_s0 = state.getToken(state.leftmost(s0.id), pad);
+  const Token& rc1_s0 = state.getToken(state.rightmost(s0.id), pad);
+  const Token& lc2_s0 =
+      state.getToken(state.leftmost(s0.id, lc1_s0.id + 1), pad);
+  const Token& rc2_s0 =
+      state.getToken(state.rightmost(s0.id, rc1_s0.id - 1), pad);
+  const Token& lc1_s1 = state.getToken(state.leftmost(s1.id), pad);
+  const Token& rc1_s1 = state.getToken(state.rightmost(s1.id), pad);
+  const Token& lc2_s1 =
+      state.getToken(state.leftmost(s1.id, lc1_s1.id + 1), pad);
+  const Token& rc2_s1 =
+      state.getToken(state.rightmost(s1.id, rc1_s1.id - 1), pad);
 
-  const Token& lc1_lc1_s0 = state.getLeftmostToken(lc1_s0.id, pad);
-  const Token& rc1_rc1_s0 = state.getLeftmostToken(rc1_s0.id, pad);
-  const Token& lc1_lc1_s1 = state.getLeftmostToken(lc1_s1.id, pad);
-  const Token& rc1_rc1_s1 = state.getLeftmostToken(rc1_s1.id, pad);
+  const Token& lc1_lc1_s0 = state.getToken(state.leftmost(lc1_s0.id), pad);
+  const Token& rc1_rc1_s0 = state.getToken(state.rightmost(rc1_s0.id), pad);
+  const Token& lc1_lc1_s1 = state.getToken(state.leftmost(lc1_s1.id), pad);
+  const Token& rc1_rc1_s1 = state.getToken(state.rightmost(rc1_s1.id), pad);
 
   return {
       // word features

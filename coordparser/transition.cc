@@ -105,8 +105,8 @@ Action Transition::getOracle(const State& state) {
     // assert !state.isTerminal()
     return shiftAction();
   }
-  const Token& s0 = state.getStackToken(0);
-  const Token& s1 = state.getStackToken(1);
+  const Token& s0 = state.getToken(state.stack(0));
+  const Token& s1 = state.getToken(state.stack(1));
   if (s0.head == s1.id && doneRightChildrenOf(state, s0.id)) {
     return rightAction(s0.label);
   }

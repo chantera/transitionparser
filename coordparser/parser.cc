@@ -5,6 +5,9 @@
 
 #include "coordparser/parser.h"
 
+#include <dynet/expr.h>
+#include <dynet/tensor.h>
+
 #include <utility>
 #include <vector>
 
@@ -26,6 +29,46 @@ std::unique_ptr<State> GreedyParser::parse(const Sentence& sentence) {
     Transition::apply(getNextAction(*state), state.get());
   }
   return state;
+}
+
+std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
+    const std::vector<Sentence>& sentences) {
+  std::vector<std::unique_ptr<State>> states;
+  states.reserve(sentences.size());
+  for (auto& sentence : sentences) {
+    states.push_back(std::make_unique<State>(sentence));
+  }
+  std::vector<State*> targets;
+  std::vector<FeatureVector> features;
+  targets.reserve(sentences.size());
+  features.reserve(sentences.size());
+
+  while (true) {
+    targets.clear();
+    features.clear();
+    for (auto& state : states) {
+      if (!Transition::isTerminal(*state)) {
+        targets.push_back(state.get());
+        features.push_back(std::move(Feature::extract(*state)));
+      }
+    }
+    if (targets.empty()) break;
+    std::vector<std::vector<float>> score_matrix =
+        classifier_->compute_batch(features);
+    for (int i = 0; i < targets.size(); ++i) {
+      int best_action = -1;
+      float best_score = -INFINITY;
+      for (unsigned action = 0; action < score_matrix[i].size(); ++action) {
+        if (score_matrix[i][action] > best_score &&
+            Transition::isAllowed(action, *targets[i])) {
+          best_action = action;
+          best_score = score_matrix[i][action];
+        }
+      }
+      Transition::apply(best_action, targets[i]);
+    }
+  }
+  return states;
 }
 
 Action GreedyParser::getNextAction(const State& state) {

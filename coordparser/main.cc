@@ -36,6 +36,13 @@ class App {
     log::info("sentence size: {} from '{}'", sentences.size(), filepath);
     Token::fixDictionaries();
 
+    std::string filepath2 =
+        "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
+            "penn_treebank/dep/stanford/section/wsj_22.conll";
+    ConllReader reader2(filepath2);
+    const std::vector<Sentence> sentences2 = reader2.read();
+    log::info("sentence2 size: {} from '{}'", sentences2.size(), filepath2);
+
     dynet::Model model;
     auto optimizer = dynet::SimpleSGDTrainer(model);
 
@@ -120,6 +127,7 @@ class App {
       float count = 0;
       float uas = 0;
       float las = 0;
+      /*
       int j = 0;
       int num_sentences = sentences.size();
       for (auto& sentence : sentences) {
@@ -140,6 +148,21 @@ class App {
           }
         }
       }
+       */
+      dynet::ComputationGraph cg;
+      classifier->prepare(&cg);
+      auto states = parser.parse_batch(sentences2);
+      for (auto& state : states) {
+        for (int i = 1; i < state->numTokens(); ++i) {
+          ++count;
+          if (state->head(i) == state->getToken(i).head) {
+            uas += 1;
+            if (state->label(i) == state->getToken(i).label) {
+              las += 1;
+            }
+          }
+        }
+      }
       log::info("UAS: {:.4f}, LAS: {:.4f}",
                 (uas / count) * 100,
                 (las / count) * 100);
@@ -151,9 +174,8 @@ class App {
     dynet::DynetParams params;
     params.random_seed = 818426556;
     params.mem_descriptor = "512,512,1024";
-    params.random_seed = 0;
-    params.weight_decay = 0.0f;       // L2正則化の強さ
-    params.shared_parameters = false; // パラメータをshared memory上に置くかどうか
+    params.weight_decay = 0.0f;
+    params.shared_parameters = false;
     dynet::initialize(params);
 
     coordparser::AppLogger::init("/Users/hiroki/work/coordparser/logs/test.log",

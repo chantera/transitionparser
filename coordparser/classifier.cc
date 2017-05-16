@@ -22,6 +22,22 @@ std::vector<float> NeuralClassifier::compute(const FeatureVector& feature) {
   return dynet::as_vector(cg_->incremental_forward(run({feature})));
 }
 
+std::vector<std::vector<float>> NeuralClassifier::compute_batch(
+    const std::vector<FeatureVector>& features) {
+  int batch_size = features.size();
+  std::vector<std::vector<float>> score_matrix;
+  score_matrix.reserve(batch_size);
+
+  auto v = dynet::as_vector(cg_->incremental_forward(run(features)));
+  int dim = v.size() / batch_size;
+  auto start = v.begin();
+  for (int i = 0; i < batch_size; ++i) {
+    score_matrix.emplace_back(std::make_move_iterator(start),
+                              std::make_move_iterator(start += dim));
+  }
+  return score_matrix;
+}
+
 MlpClassifier::MlpClassifier(dynet::Model& model,
                              const unsigned word_vocab_size,
                              const unsigned word_embed_size,

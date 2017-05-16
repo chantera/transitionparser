@@ -7,6 +7,7 @@
 #define COORDPARSER_PARSER_H_
 
 #include <memory>
+#include <vector>
 
 #include "coordparser/classifier.h"
 #include "coordparser/state.h"
@@ -37,6 +38,9 @@ class GreedyParser : public Parser {
   explicit GreedyParser(std::shared_ptr<Classifier> classifier);
 
   std::unique_ptr<State> parse(const Sentence& sentence) override;
+
+  std::vector<std::unique_ptr<State>> parse_batch(
+      const std::vector<Sentence>& sentences);
 
   Action getNextAction(const State& state);
 };

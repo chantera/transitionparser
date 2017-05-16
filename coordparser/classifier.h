@@ -27,6 +27,9 @@ class Classifier {
 
   virtual std::vector<float> compute(const FeatureVector& feature) = 0;
 
+  virtual std::vector<std::vector<float>> compute_batch(
+      const std::vector<FeatureVector>& features) = 0;
+
  private:
   DISALLOW_COPY_AND_MOVE(Classifier);
 };
@@ -36,6 +39,9 @@ class NeuralClassifier : public Classifier {
   virtual void prepare(dynet::ComputationGraph* cg);
 
   std::vector<float> compute(const FeatureVector& feature) override;
+
+  std::vector<std::vector<float>> compute_batch(
+      const std::vector<FeatureVector>& features) override;
 
   virtual dynet::expr::Expression run(const std::vector<FeatureVector>& X) = 0;
 

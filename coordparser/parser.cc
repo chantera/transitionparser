@@ -19,11 +19,11 @@ Parser::Parser(std::shared_ptr<Classifier> classifier) :
 GreedyParser::GreedyParser(std::shared_ptr<Classifier> classifier) :
     Parser(classifier) {}
 
-State GreedyParser::parse(const Sentence& sentence) {
-  State state(sentence);
-  while (Transition::isTerminal(state)) {
+std::unique_ptr<State> GreedyParser::parse(const Sentence& sentence) {
+  std::unique_ptr<State> state = std::make_unique<State>(sentence);
+  while (!Transition::isTerminal(*state)) {
     // retrieve an one best action greedily
-    Transition::apply(getNextAction(state), &state);
+    Transition::apply(getNextAction(*state), state.get());
   }
   return state;
 }

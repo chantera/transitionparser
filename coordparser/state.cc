@@ -112,8 +112,16 @@ int State::head(int index) const {
   return heads_[index];
 }
 
+const std::vector<int>& State::heads() const {
+  return heads_;
+}
+
 int State::label(int index) const {
   return labels_[index];
+}
+
+const std::vector<int>& State::labels() const {
+  return labels_;
 }
 
 int State::leftmost(int index, int from) const {

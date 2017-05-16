@@ -112,42 +112,36 @@ class App {
       log::info("accuracy {}", correct / size);
       ++epoch;
 
-      // if (epoch < 6) {
-      //   continue;
-      // }
+      if (epoch < 6) {
+        continue;
+      }
 
-      // float count = 0;
-      // float uas = 0;
-      // float las = 0;
-      // int j = 0;
-      // int num_sentences = sentences.size();
-      // for (auto& sentence : sentences) {
-      //   log::info("testing sentence {} of {}", ++j, num_sentences);
-      //   dynet::ComputationGraph cg;
-      //   classifier->prepare(&cg);
-      //   State state = parser.parse(sentence);
-      //   /*
-      //   log::warning("scores: {}", classifier->compute(Feature::extract(*state)));
-      //   log::debug("step: {}", state->step_);
-      //    */
-      //   log::debug("{}", state->heads_);
-      //   log::debug("{}", state->labels_);
-      //   for (auto token : sentence.tokens) {
-      //     if (token.id == 0) continue;
-
-      //     ++count;
-      //     if (state->heads_[token.id] == token.head) {
-      //       uas += 1;
-      //       if (state->labels_[token.id] == token.label) {
-      //         las += 1;
-      //       }
-      //     }
-      //   }
-      // }
-
-      // log::info("UAS: {:.4f}, LAS: {:.4f}",
-      //           (uas / count) * 100,
-      //           (las / count) * 100);
+      float count = 0;
+      float uas = 0;
+      float las = 0;
+      int j = 0;
+      int num_sentences = sentences.size();
+      for (auto& sentence : sentences) {
+        log::info("testing sentence {} of {}", ++j, num_sentences);
+        dynet::ComputationGraph cg;
+        classifier->prepare(&cg);
+        std::unique_ptr<State> state = parser.parse(sentence);
+        log::debug("{}", state->heads());
+        log::debug("{}", state->labels());
+        for (auto& token : sentence.tokens) {
+          if (token.id == 0) continue;
+          ++count;
+          if (state->head(token.id) == token.head) {
+            uas += 1;
+            if (state->label(token.id) == token.label) {
+              las += 1;
+            }
+          }
+        }
+      }
+      log::info("UAS: {:.4f}, LAS: {:.4f}",
+                (uas / count) * 100,
+                (las / count) * 100);
     }
   }
 

@@ -77,7 +77,11 @@ class State {
 
   int head(int index) const;
 
+  const std::vector<int>& heads() const;
+
   int label(int index) const;
+
+  const std::vector<int>& labels() const;
 
   int leftmost(int index, int from = 0) const;
 

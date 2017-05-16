@@ -33,11 +33,12 @@ Action GreedyParser::getNextAction(const State& state) {
   std::vector<float> scores =
       classifier_->compute(std::move(Feature::extract(state)));
   LOG_TRACE("scores: {}", scores);
-  unsigned best_action = 0;
+  int best_action = -1;
   float best_score = -INFINITY;
-  for (unsigned i = 1; i < scores.size(); ++i) {
+  for (unsigned i = 0; i < scores.size(); ++i) {
     if (scores[i] > best_score && Transition::isAllowed(i, state)) {
       best_action = i;
+      best_score = scores[i];
     }
   }
   LOG_TRACE("best action: {}", best_action);

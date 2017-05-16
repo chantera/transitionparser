@@ -90,7 +90,7 @@ State* Transition::right(const State& state, int label) {
 }
 
 bool Transition::isAllowed(Action action, const State& state) {
-  switch (ActionType(action)) {
+  switch (actionType(action)) {
     case SHIFT:
       return isAllowedShift(state);
     case LEFT:

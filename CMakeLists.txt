@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 2.8)
 project(coordparser)
+
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 # Set default build type.
 if(NOT CMAKE_BUILD_TYPE)
@@ -18,18 +20,6 @@ else()
   set(DEBUG 0)
 endif()
 
-function(check_option name)
-  if(DEFINED ENV{${name}} AND NOT DEFINED ${name})
-    set(${name} "$ENV{${name}}")
-  endif()
-  if(${name})
-    MESSAGE("-- ${name}: ${${name}}")
-  else()
-    MESSAGE(FATAL_ERROR "Please give the variable `${name}`.")
-  endif()
-endfunction()
-
-
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -37,36 +27,30 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 find_package(Boost REQUIRED)
-set(EIGEN_INCLUDE_DIR /usr/local/Cellar/eigen/HEAD-a038e46f2d3e/include/eigen3)
-set(DYNET_INCLUDE_DIR /Users/hiroki/work/dynet)
-set(DYNET_LIBRARY_DIR /Users/hiroki/work/dynet/build/dynet)
-MESSAGE("EIGEN_INCLUDE_DIR=${EIGEN_INCLUDE_DIR}")
-MESSAGE("DYNET_INCLUDE_DIR=${DYNET_INCLUDE_DIR}")
-MESSAGE("DYNET_LIBRARY_DIR=${DYNET_LIBRARY_DIR}")
-#check_option(DYNET_INCLUDE_DIR)
-#check_option(DYNET_LIBRARY_DIR)
+find_package(Eigen3 REQUIRED)
+find_package(DyNet REQUIRED)
 
 #set(DYNET_LIBRARIES "gdynet")  # GPU
 set(DYNET_LIBRARIES "dynet")
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/coordparser/config.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/coordparser/config.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/coordparser/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/coordparser/config.h
 )
 add_definitions(-DHAVE_CONFIG_H)
 
 include_directories(
-    ${PROJECT_SOURCE_DIR}
-    ${PROJECT_BINARY_DIR}
-    ${Boost_INCLUDE_DIRS}
-    ${EIGEN_INCLUDE_DIR}
-    ${DYNET_INCLUDE_DIR}
-    ${CMAKE_SOURCE_DIR}/external/spdlog/include
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_BINARY_DIR}
+  ${Boost_INCLUDE_DIR}
+  ${EIGEN3_INCLUDE_DIR}
+  ${DyNet_INCLUDE_DIR}
+  ${CMAKE_SOURCE_DIR}/external/spdlog/include
 )
 
 link_directories(
-    ${Boost_LIBRARY_DIRS}
-    ${DYNET_LIBRARY_DIR}
+  ${Boost_LIBRARY_DIR}
+  ${DyNet_LIBRARY_DIR}
 )
 
 add_subdirectory(coordparser)

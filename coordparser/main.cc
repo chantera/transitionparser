@@ -60,12 +60,12 @@ class App {
     std::vector<unsigned> Y;
 
     for (auto& sentence : sentences) {
-      std::shared_ptr<State> state = std::make_shared<State>(&sentence);
-      while (!state->isTerminal()) {
-        Action action = Transition::getOracle(*state);
+      State state(sentence);
+      while (!Transition::isTerminal(state)) {
+        Action action = Transition::getOracle(state);
         Y.push_back(static_cast<unsigned>(action));
-        X.push_back(std::move(Feature::extract(*state)));
-        Transition::apply(action, state);
+        X.push_back(std::move(Feature::extract(state)));
+        Transition::apply(action, &state);
       }
     }
 
@@ -111,42 +111,43 @@ class App {
       log::info("loss {}", loss);
       log::info("accuracy {}", correct / size);
       ++epoch;
-      continue;
 
-      float count = 0;
-      float uas = 0;
-      float las = 0;
-      int j = 0;
-      int num_sentences = sentences.size();
-      for (auto& sentence : sentences) {
-        log::info("testing sentence {} of {}", ++j, num_sentences);
-        dynet::ComputationGraph cg;
-        classifier->prepare(&cg);
-        std::shared_ptr<State> state = parser.parse(sentence);
-        /*
-        log::warning("scores: {}", classifier->compute(Feature::extract(*state)));
-        log::debug("step: {}", state->step_);
-         */
-        log::debug("{}", state->heads_);
-        log::debug("{}", state->labels_);
-        for (auto token : sentence.tokens) {
-          if (token.id == 0) continue;
+      // if (epoch < 6) {
+      //   continue;
+      // }
 
-          ++count;
-          if (state->heads_[token.id] == token.head) {
-            uas += 1;
-            if (state->labels_[token.id] == token.label) {
-              las += 1;
-            }
-          }
-        }
-      }
+      // float count = 0;
+      // float uas = 0;
+      // float las = 0;
+      // int j = 0;
+      // int num_sentences = sentences.size();
+      // for (auto& sentence : sentences) {
+      //   log::info("testing sentence {} of {}", ++j, num_sentences);
+      //   dynet::ComputationGraph cg;
+      //   classifier->prepare(&cg);
+      //   State state = parser.parse(sentence);
+      //   /*
+      //   log::warning("scores: {}", classifier->compute(Feature::extract(*state)));
+      //   log::debug("step: {}", state->step_);
+      //    */
+      //   log::debug("{}", state->heads_);
+      //   log::debug("{}", state->labels_);
+      //   for (auto token : sentence.tokens) {
+      //     if (token.id == 0) continue;
 
-      log::info("UAS: {:.4f}, LAS: {:.4f}",
-                (uas / count) * 100,
-                (las / count) * 100);
+      //     ++count;
+      //     if (state->heads_[token.id] == token.head) {
+      //       uas += 1;
+      //       if (state->labels_[token.id] == token.label) {
+      //         las += 1;
+      //       }
+      //     }
+      //   }
+      // }
 
-      ++epoch;
+      // log::info("UAS: {:.4f}, LAS: {:.4f}",
+      //           (uas / count) * 100,
+      //           (las / count) * 100);
     }
   }
 
@@ -154,33 +155,10 @@ class App {
   void initialize() {
     dynet::DynetParams params;
     params.random_seed = 818426556;
-    params.mem_descriptor = "1024";
-
-    /*
-    // 確保するメモリ量を3つ指定する(MB単位)。
-    // それぞれforward-path, backward-path, パラメータで使用する量。
-    params.mem_descriptor = "1024,1024,2048";
-    // 下記のように1つだけ指定することも可能。
-    // その場合は内部的に3等分したものがそれぞれに使用される。
-    //params.mem_descriptor = "4096";
-
-    params.random_seed = 0;           // ランダムシード。0なら適当に初期化
+    params.mem_descriptor = "512,512,1024";
+    params.random_seed = 0;
     params.weight_decay = 0.0f;       // L2正則化の強さ
     params.shared_parameters = false; // パラメータをshared memory上に置くかどうか
-
-  #if HAVE_CUDA
-    // 以下はCUDAに関連付けてインストールした場合の設定。
-    // 下記のように設定するとメモリに余裕があるGPUを1個勝手に選んで使う。
-    // 複数GPUには今のところ未対応。
-    const unsigned MAX_GPUS = 1024;
-        // 適当に大きな値。挿さっているGPUの枚数以上にすればよい。
-    params.ngpus_requested = false;
-    params.ids_requested = false;
-    params.requested_gpus = -1;
-    params.gpus_mask = std::vector<int>(MAX_GPUS, 0);
-  #endif
-    */
-
     dynet::initialize(params);
 
     coordparser::AppLogger::init("/Users/hiroki/work/coordparser/logs/test.log",

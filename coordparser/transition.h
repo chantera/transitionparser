@@ -36,15 +36,13 @@ class Transition {
 
   static int label(Action action);
 
-  static void apply(
-      Action action,
-      std::shared_ptr<State>& state);  // NOLINT(runtime/references)
+  static void apply(Action action, State* state);
 
-  static State* shift(const State& state);
+  static void shift(State* state);
 
-  static State* left(const State& state, int label);
+  static void left(State* state, int label);
 
-  static State* right(const State& state, int label);
+  static void right(State* state, int label);
 
   static bool isAllowed(Action action, const State& state);
 
@@ -53,6 +51,8 @@ class Transition {
   static bool isAllowedLeft(const State& state);
 
   static bool isAllowedRight(const State& state);
+
+  static bool isTerminal(const State& state);
 
   static Action getOracle(const State& state);
 

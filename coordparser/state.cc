@@ -7,14 +7,16 @@
 
 namespace coordparser {
 
-State::State(const Sentence* sentence) :
+State::State(const Sentence& sentence) :
     step_(0),
-    sentence_(sentence),
-    num_tokens_((const unsigned int) sentence->tokens.size()),
+    sentence_(&sentence),
+    num_tokens_((const unsigned int) sentence.tokens.size()),
     stack_{0},
     buffer_(1),
     heads_(num_tokens_, 0),
-    labels_(num_tokens_, 0) {}
+    labels_(num_tokens_, 0) {
+  stack_.reserve(num_tokens_);
+}
 
 State::State(const State& prev_state,
              const Action& action,
@@ -45,8 +47,69 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
   return os;
 }
 
-bool State::isTerminal() const {
-  return buffer_ == num_tokens_ && stack_.size() < 2;
+void State::advance() {
+  ++buffer_;
+}
+
+void State::push(int index) {
+  stack_.push_back(index);
+}
+
+int State::pop() {
+  const int index = stack_.back();
+  stack_.pop_back();
+  return index;
+}
+
+void State::addArc(int index, int head, int label) {
+  heads_[index] = head;
+  labels_[index] = label;
+}
+
+void State::record(Action action) {
+  history_.push_back(action);
+}
+
+int State::step() const {
+  return history_.size();
+}
+
+int State::numTokens() const {
+  return num_tokens_;
+}
+
+bool State::end() const {
+  return buffer_ == num_tokens_;
+}
+
+int State::top() const {
+  return stack_.back();
+}
+
+int State::stack(int position) const {
+  if (position < 0) return -1;
+  const int index = stackSize() - 1 - position;
+  return index < 0 ? -1 : stack_[index];
+}
+
+int State::stackSize() const {
+  return stack_.size();
+}
+
+bool State::stackEmpty() const {
+  return stack_.empty();
+}
+
+int State::buffer() const {
+  return buffer_;
+}
+
+int State::head(int index) const {
+  return heads_[index];
+}
+
+int State::label(int index) const {
+  return labels_[index];
 }
 
 const Token& State::getToken(unsigned index) const {

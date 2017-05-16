@@ -23,7 +23,7 @@ class Parser {
 
   explicit Parser(std::shared_ptr<Classifier> classifier);
 
-  virtual std::shared_ptr<State> parse(const Sentence& sentence) = 0;
+  virtual State parse(const Sentence& sentence) = 0;
 
  protected:
   const std::shared_ptr<Classifier> classifier_;
@@ -36,7 +36,7 @@ class GreedyParser : public Parser {
  public:
   explicit GreedyParser(std::shared_ptr<Classifier> classifier);
 
-  std::shared_ptr<State> parse(const Sentence& sentence) override;
+  State parse(const Sentence& sentence) override;
 
   Action getNextAction(const State& state);
 };

@@ -36,57 +36,40 @@ int Transition::label(Action action) {
   return action < 1 ? -1 : (action - 1) >> 1;
 }
 
-void Transition::apply(Action action, std::shared_ptr<State>& state) {
+void Transition::apply(Action action, State* state) {
   switch (actionType(action)) {
     case SHIFT:
-      state.reset(shift(*state));
+      shift(state);
       break;
     case LEFT:
-      state.reset(left(*state, label(action)));
+      left(state, label(action));
       break;
     case RIGHT:
-      state.reset(right(*state, label(action)));
+      right(state, label(action));
       break;
   }
+  state->record(action);
 }
 
 // Shift: (s, i|b, A) => (s|i, b, A)
-State* Transition::shift(const State& state) {
-  std::vector<int> stack(state.stack_);
-  stack.reserve(state.num_tokens_);
-  stack.push_back(state.buffer_);
-  return new State(state, shiftAction(), std::move(stack), state.buffer_ + 1,
-                   state.heads_, state.labels_);
+void Transition::shift(State* state) {
+  state->push(state->buffer());
+  state->advance();
 }
 
 // Left: (s|i|j, b, A) => (s|j, b, A +(j,l,i))
-State* Transition::left(const State& state, int label) {
-  std::vector<int> stack(state.stack_);
-  std::vector<int> heads(state.heads_);
-  std::vector<int> labels(state.labels_);
-  int s0 = stack.back();
-  stack.pop_back();
-  int s1 = stack.back();
-  stack.pop_back();
-  heads[s1] = s0;
-  labels[s1] = label;
-  stack.push_back(std::move(s0));
-  return new State(state, leftAction(label), std::move(stack), state.buffer_,
-                   std::move(heads), std::move(labels));
+void Transition::left(State* state, int label) {
+  int s0 = state->pop();
+  int s1 = state->pop();
+  state->addArc(s1, s0, label);
+  state->push(s0);
 }
 
 // Right: (s|i|j, b, A) => (s|i, b, A +(i,l,j))
-State* Transition::right(const State& state, int label) {
-  std::vector<int> stack(state.stack_);
-  std::vector<int> heads(state.heads_);
-  std::vector<int> labels(state.labels_);
-  int s0 = stack.back();
-  stack.pop_back();
-  int s1 = stack.back();
-  heads[s0] = s1;
-  labels[s0] = label;
-  return new State(state, rightAction(label), std::move(stack), state.buffer_,
-                   std::move(heads), std::move(labels));
+void Transition::right(State* state, int label) {
+  int s0 = state->pop();
+  int s1 = state->top();
+  state->addArc(s0, s1, label);
 }
 
 bool Transition::isAllowed(Action action, const State& state) {
@@ -102,19 +85,23 @@ bool Transition::isAllowed(Action action, const State& state) {
 }
 
 bool Transition::isAllowedShift(const State& state) {
-  return state.buffer_ < state.num_tokens_;
+  return !state.end();
 }
 
 bool Transition::isAllowedLeft(const State& state) {
-  return state.stack_.size() > 2;
+  return state.stackSize() > 2;
 }
 
 bool Transition::isAllowedRight(const State& state) {
-  return state.stack_.size() > 1;
+  return state.stackSize() > 1;
+}
+
+bool Transition::isTerminal(const State& state) {
+  return state.end() && state.stackSize() < 2;
 }
 
 Action Transition::getOracle(const State& state) {
-  if (state.stack_.size() < 2) {
+  if (state.stackSize() < 2) {
     // assert !state.isTerminal()
     return shiftAction();
   }
@@ -130,8 +117,8 @@ Action Transition::getOracle(const State& state) {
 }
 
 bool Transition::doneRightChildrenOf(const State& state, int head) {
-  int index = state.buffer_;
-  while (index < state.num_tokens_) {
+  int index = state.buffer();
+  while (index < state.numTokens()) {
     int actual_head = state.getToken(index).head;
     if (actual_head == head) return false;
     index = head > index ? head : index + 1;

@@ -22,17 +22,9 @@ class Feature;
 
 class State {
  public:
-  const int step_;
-  const Sentence* sentence_;
-  const unsigned num_tokens_;
-  const std::vector<int> stack_;
-  const int buffer_;
-  const std::vector<int> heads_;
-  const std::vector<int> labels_;
-
   State() = delete;
 
-  explicit State(const Sentence* sentence);
+  explicit State(const Sentence& sentence);
 
   State(const State& prev_state,
         const Action& action,
@@ -55,7 +47,35 @@ class State {
     return os;
   }
 
-  bool isTerminal() const;
+  void advance();
+
+  void push(int index);
+
+  int pop();
+
+  void addArc(int index, int head, int label);
+
+  void record(Action action);
+
+  int step() const;
+
+  int numTokens() const;
+
+  bool end() const;
+
+  int top() const;
+
+  int stack(int position) const;
+
+  int stackSize() const;
+
+  bool stackEmpty() const;
+
+  int buffer() const;
+
+  int head(int index) const;
+
+  int label(int index) const;
 
   const Token& getToken(unsigned index) const;
 
@@ -80,6 +100,13 @@ class State {
   const std::vector<Action>& history() const;
 
  private:
+  int step_;
+  const Sentence* sentence_;
+  const unsigned num_tokens_;
+  std::vector<int> stack_;
+  int buffer_;
+  std::vector<int> heads_;
+  std::vector<int> labels_;
   double score_ = 0.0;
   std::vector<Action> history_;
 

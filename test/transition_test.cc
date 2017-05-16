@@ -34,7 +34,7 @@ TEST_F(TransitionTest, Oracle) {
     std::vector<int> gold_labels;
     for (auto& token : sentence.tokens) {
       gold_heads.push_back(token.head);
-      gold_labels.push_back(token.deprel);
+      gold_labels.push_back(token.label);
     }
     std::shared_ptr<coordparser::State> state
         = std::make_shared<coordparser::State>(&sentence);

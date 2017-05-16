@@ -13,8 +13,8 @@ State::State(const Sentence* sentence) :
     num_tokens_((const unsigned int) sentence->tokens.size()),
     stack_{0},
     buffer_(1),
-    heads_(num_tokens_, -1),
-    labels_(num_tokens_, -1) {}
+    heads_(num_tokens_, 0),
+    labels_(num_tokens_, 0) {}
 
 State::State(const State& prev_state,
              const Action& action,

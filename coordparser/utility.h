@@ -175,11 +175,12 @@ static inline std::vector<std::string> split(const std::string& s,
   auto i = 0;
   auto pos = s.find(delimiter);
   while (pos != std::string::npos) {
-    result.push_back(s.substr(i, pos-i));
+    result.push_back(std::move(s.substr(i, pos-i)));
     i = ++pos;
     pos = s.find(delimiter, pos);
   }
-  if (pos == std::string::npos) result.push_back(s.substr(i, s.length()));
+  if (pos == std::string::npos)
+    result.push_back(std::move(s.substr(i, s.length())));
   return result;
 }
 

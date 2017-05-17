@@ -34,21 +34,26 @@ std::unique_ptr<State> GreedyParser::parse(const Sentence& sentence) {
 std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
     const std::vector<Sentence>& sentences) {
   std::vector<std::unique_ptr<State>> states;
+  std::vector<State*> targets;
   states.reserve(sentences.size());
+  targets.reserve(sentences.size());
   for (auto& sentence : sentences) {
     states.push_back(std::make_unique<State>(sentence));
+    targets.push_back(states.back().get());
   }
-  std::vector<State*> targets;
+  std::vector<State*> temp;
   std::vector<FeatureVector> features;
-  targets.reserve(sentences.size());
+  temp.reserve(sentences.size());
   features.reserve(sentences.size());
 
   while (true) {
+    temp.clear();
+    temp.assign(targets.begin(), targets.end());
     targets.clear();
     features.clear();
-    for (auto& state : states) {
+    for (auto& state : temp) {
       if (!Transition::isTerminal(*state)) {
-        targets.push_back(state.get());
+        targets.push_back(state);
         features.push_back(std::move(Feature::extract(*state)));
       }
     }

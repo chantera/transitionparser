@@ -96,6 +96,7 @@ class AppLogger : public Logger {
  public:
   AppLogger() : Logger("app", sinks(true).begin(), sinks().end()) {
     set_level(log::LogLevel::trace);
+    flush_on(log::LogLevel::trace);
   }
   static inline AppLogger& getInstance() {
     static AppLogger instance;

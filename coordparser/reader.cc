@@ -11,12 +11,12 @@
 
 namespace coordparser {
 
-Reader::Reader(const std::string& filepath) : filepath(filepath) {}
+Reader::Reader(const std::string& filepath) : filepath_(filepath) {}
 
 ConllReader::ConllReader(const std::string& filepath) : Reader(filepath) {}
 
 std::vector<Sentence> ConllReader::read() {
-  std::ifstream ifs(filepath);
+  std::ifstream ifs(filepath_);
   if (ifs.fail()) {
     // @TODO
   }
@@ -43,6 +43,11 @@ std::vector<Sentence> ConllReader::read() {
     sentences.emplace_back(++count, tokens);
   }
   return sentences;
+}
+
+std::vector<Sentence> ConllReader::read(const std::string& filepath) {
+  filepath_ = filepath;
+  return read();
 }
 
 }  // namespace coordparser

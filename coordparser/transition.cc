@@ -10,6 +10,14 @@
 
 namespace coordparser {
 
+int Transition::numActionTypes() {
+  return 3;
+}
+
+int Transition::numActions(int num_labels) {
+  return 1 + num_labels * 2;
+}
+
 // The SHIFT action uses the same value as the corresponding action type.
 Action Transition::shiftAction() {
   return SHIFT;

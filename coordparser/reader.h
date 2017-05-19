@@ -16,14 +16,14 @@ namespace coordparser {
 
 class Reader {
  public:
-  Reader() = delete;
+  Reader() {}
   explicit Reader(const std::string& filepath);
   virtual ~Reader() {}
 
   virtual std::vector<Sentence> read() = 0;
 
  protected:
-  const std::string filepath;
+  std::string filepath_;
 
  private:
   DISALLOW_COPY_AND_MOVE(Reader);
@@ -31,10 +31,12 @@ class Reader {
 
 class ConllReader : public Reader {
  public:
-  ConllReader() = delete;
+  ConllReader() {}
   explicit ConllReader(const std::string& filepath);
 
   std::vector<Sentence> read() override;
+
+  std::vector<Sentence> read(const std::string& filepath);
 
  private:
   static const char kDelimiter = '\t';

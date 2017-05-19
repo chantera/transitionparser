@@ -26,6 +26,10 @@ class Transition {
       RIGHT  = 2,
   };
 
+  static int numActionTypes();
+
+  static int numActions(int num_labels);
+
   static Action shiftAction();
 
   static Action leftAction(int label);

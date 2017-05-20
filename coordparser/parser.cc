@@ -59,7 +59,7 @@ std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
   std::vector<FeatureVector> features;
   features.reserve(batch_size);
 
-  for (int batch_index = 0; batch_index < num_batches; ++batch_index) {
+  for (unsigned batch_index = 0; batch_index < num_batches; ++batch_index) {
     LOG_TRACE("parse batch {} of {}", batch_index + 1, num_batches);
     size_t offset = batch_index * batch_size;
     const size_t current_batch_size =
@@ -89,7 +89,7 @@ std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
       if (targets.empty()) break;
       std::vector<std::vector<float>> score_matrix =
           classifier_->compute_batch(features);
-      for (int i = 0; i < targets.size(); ++i) {
+      for (unsigned i = 0; i < targets.size(); ++i) {
         int best_action = -1;
         float best_score = -INFINITY;
         for (unsigned action = 0; action < score_matrix[i].size(); ++action) {

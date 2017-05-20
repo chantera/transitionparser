@@ -56,8 +56,7 @@ std::vector<std::vector<T>> create_batch(const std::vector<T>& samples,
   size_t num_batches = sample_size / batch_size + 1;
 
   std::vector<int> indices(sample_size);
-  std::size_t i(0);
-  std::generate(std::begin(indices), std::end(indices), [&]{ return i++; });
+  std::iota(std::begin(indices), std::end(indices), 0);
   if (shuffle) std::shuffle(indices.begin(), indices.end(), std::mt19937());
 
   std::vector<std::vector<T>> batches;
@@ -89,8 +88,7 @@ create_batch(std::vector<X> samples_x,
   size_t num_batches = sample_size / batch_size + 1;
 
   std::vector<int> indices(sample_size);
-  std::size_t i(0);
-  std::generate(std::begin(indices), std::end(indices), [&]{ return i++; });
+  std::iota(std::begin(indices), std::end(indices), 0);
   if (shuffle) std::shuffle(indices.begin(), indices.end(), std::mt19937());
 
   std::vector<std::pair<std::vector<X>, std::vector<Y>>> batches;

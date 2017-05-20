@@ -94,13 +94,13 @@ create_batch(std::vector<X> samples_x,
   std::vector<std::pair<std::vector<X>, std::vector<Y>>> batches;
   batches.reserve(num_batches);
 
-  for (int batch_index = 0; batch_index < num_batches; ++batch_index) {
+  for (unsigned batch_index = 0; batch_index < num_batches; ++batch_index) {
     int offset = batch_index * batch_size;
     const size_t current_batch_size =
         std::min(sample_size - offset, batch_size);
     std::vector<X> batch_x(current_batch_size);
     std::vector<Y> batch_y(current_batch_size);
-    for (int index = 0; index < current_batch_size; ++index) {
+    for (unsigned index = 0; index < current_batch_size; ++index) {
       batch_x[index] = samples_x[indices[offset + index]];
       batch_y[index] = samples_y[indices[offset + index]];
     }

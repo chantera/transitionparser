@@ -94,7 +94,7 @@ class App {
         auto y = classifier->run(x);
         auto pred_actions = dynet::as_vector(dynet::TensorTools::argmax(
             cg.incremental_forward(dynet::expr::softmax(y))));
-        for (int index = 0; index < current_batch_size; ++index) {
+        for (unsigned index = 0; index < current_batch_size; ++index) {
           if (pred_actions[index] == t[index]) ++correct;
         }
         auto loss_expr = dynet::expr::sum_batches(
@@ -123,7 +123,8 @@ class App {
           ++count;
           if (state->head(i) == state->getToken(i).head) {
             uas += 1;
-            if (state->label(i) == state->getToken(i).label) {
+            if (state->label(i)
+                == static_cast<unsigned>(state->getToken(i).label)) {
               las += 1;
             }
           }

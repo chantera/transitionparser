@@ -95,7 +95,7 @@ class State {
 
  private:
   const Sentence* sentence_;
-  const unsigned num_tokens_;
+  const int num_tokens_;
   std::vector<int> stack_;
   int buffer_;
   std::vector<int> heads_;

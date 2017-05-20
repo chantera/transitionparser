@@ -36,10 +36,10 @@ class Logger : public spdlog::logger {
 
   template<class It>
   inline Logger(const std::string& logger_name, const It& begin, const It& end):
+      spdlog::logger(logger_name, begin, end),
       access_id_(utility::hash::generate_uuid().substr(0, 6)),
       unique_id_("UNIQID"),
-      access_time_(clock::now()),
-      spdlog::logger(logger_name, begin, end) { _initialize(); }
+      access_time_(clock::now()) { _initialize(); }
 
   inline Logger(const std::string& logger_name,
                 spdlog::sinks_init_list sinks_list):

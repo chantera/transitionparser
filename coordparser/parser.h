@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "coordparser/classifier.h"
+#include "coordparser/sentence.h"
 #include "coordparser/state.h"
 #include "coordparser/utility.h"
 
 namespace coordparser {
-
-class Sentence;
 
 class Parser {
  public:

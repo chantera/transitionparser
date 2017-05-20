@@ -67,7 +67,7 @@ class App {
       while (!Transition::isTerminal(state)) {
         Action action = Transition::getOracle(state);
         Y.push_back(static_cast<unsigned>(action));
-        X.push_back(std::move(Feature::extract(state)));
+        X.push_back(Feature::extract(state));
         Transition::apply(action, &state);
       }
     }
@@ -135,11 +135,11 @@ class App {
     }
   }
 
-  void initialize(unsigned random_seed=0,
-                  const std::string& memory="512,1024,512",
-                  log::LogLevel log_level=log::LogLevel::info,
-                  log::LogLevel display_level=log::LogLevel::debug,
-                  const std::string& log_dir="logs") {
+  void initialize(unsigned random_seed = 0,
+                  const std::string& memory = "512,1024,512",
+                  log::LogLevel log_level = log::LogLevel::info,
+                  log::LogLevel display_level = log::LogLevel::debug,
+                  const std::string& log_dir = "logs") {
     dynet::DynetParams params;
     params.random_seed = random_seed;
     params.mem_descriptor = memory;
@@ -162,8 +162,7 @@ int main(int argc, const char* argv[]) {
       args.getOptionOrDefault("memory", "512,1024,512"),
       coordparser::log::LogLevel::info,
       coordparser::log::LogLevel::debug,
-      "/Users/hiroki/work/coordparser/logs"
-  );
+      "/Users/hiroki/work/coordparser/logs");
   app.train(
       args.getOptionOrDefault(
           "trainfile",
@@ -174,7 +173,6 @@ int main(int argc, const char* argv[]) {
           "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
               "penn_treebank/dep/stanford/section/wsj_22.conll"),
       std::stoi(args.getOptionOrDefault("epoch", "10")),
-      std::stoi(args.getOptionOrDefault("batchsize", "32"))
-  );
+      std::stoi(args.getOptionOrDefault("batchsize", "32")));
   return 0;
 }

@@ -8,6 +8,7 @@
 #include <dynet/expr.h>
 #include <dynet/tensor.h>
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -82,7 +83,7 @@ std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
       for (const auto& state : temp) {
         if (!Transition::isTerminal(*state)) {
           targets.push_back(state);
-          features.push_back(std::move(Feature::extract(*state)));
+          features.push_back(Feature::extract(*state));
         }
       }
       if (targets.empty()) break;

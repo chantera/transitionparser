@@ -174,15 +174,15 @@ static inline void trim(std::string& s) {  // NOLINT(runtime/references)
 static inline std::vector<std::string> split(const std::string& s,
                                              char delimiter) {
   std::vector<std::string> result;
-  auto i = 0;
+  std::string::size_type i = 0;
   auto pos = s.find(delimiter);
   while (pos != std::string::npos) {
-    result.push_back(std::move(s.substr(i, pos-i)));
+    result.push_back(s.substr(i, pos-i));
     i = ++pos;
     pos = s.find(delimiter, pos);
   }
   if (pos == std::string::npos)
-    result.push_back(std::move(s.substr(i, s.length())));
+    result.push_back(s.substr(i, s.length()));
   return result;
 }
 
@@ -344,7 +344,6 @@ class CmdArgs {
       return;
     }
     std::regex re("^-(-)?([^=\\s]+)(?:[=\\s](.*))?$");
-    char* arg;
     std::cmatch matches;
     for (int i = 1; i < argc_; ++i) {
       if (!std::regex_match(argv_[i], matches, re)) {

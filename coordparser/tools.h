@@ -3,11 +3,13 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_READER_H_
-#define COORDPARSER_READER_H_
+#ifndef COORDPARSER_TOOLS_H_
+#define COORDPARSER_TOOLS_H_
 
 #include <algorithm>
+#include <random>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "coordparser/sentence.h"
@@ -49,7 +51,7 @@ std::vector<Sentence> read_conll(const std::string& filepath) {
 template<typename T>
 std::vector<std::vector<T>> create_batch(const std::vector<T>& samples,
                                          const size_t batch_size,
-                                         const bool shuffle=true) {
+                                         const bool shuffle = true) {
   size_t sample_size = samples.size();
   size_t num_batches = sample_size / batch_size + 1;
 
@@ -80,7 +82,7 @@ std::vector<std::pair<std::vector<X>, std::vector<Y>>>
 create_batch(std::vector<X> samples_x,
              std::vector<Y> samples_y,
              const size_t batch_size,
-             const bool shuffle=true) {
+             const bool shuffle = true) {
   size_t sample_size = samples_x.size();
   COORDPARSER_ASSERT(sample_size = samples_y.size(),
                      "samples_x and samples_y must be same size");
@@ -112,4 +114,4 @@ create_batch(std::vector<X> samples_x,
 
 }  // namespace coordparser
 
-#endif  // COORDPARSER_READER_H_
+#endif  // COORDPARSER_TOOLS_H_

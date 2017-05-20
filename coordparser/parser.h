@@ -42,6 +42,9 @@ class GreedyParser : public Parser {
   std::vector<std::unique_ptr<State>> parse_batch(
       const std::vector<Sentence>& sentences);
 
+  std::vector<std::unique_ptr<State>> parse_batch(
+      const std::vector<Sentence>& sentences, const size_t batch_size);
+
   Action getNextAction(const State& state);
 };
 

@@ -24,6 +24,7 @@ struct Sentence {
 
   const int id;
   const std::vector<Token> tokens;
+  const unsigned length;
 };
 
 }  // namespace coordparser

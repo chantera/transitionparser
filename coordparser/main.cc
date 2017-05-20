@@ -15,7 +15,7 @@
 #include "coordparser/classifier.h"
 #include "coordparser/logger.h"
 #include "coordparser/parser.h"
-#include "coordparser/reader.h"
+#include "coordparser/tools.h"
 
 namespace coordparser {
 
@@ -25,16 +25,16 @@ class App {
 
   void train(const std::string& train_file,
              const std::string& test_file,
-             int num_epochs) {
+             const int num_epochs,
+             const int batch_size) {
     log::info("Hello, World!");
 
-    ConllReader reader;
-    const std::vector<Sentence> train_sentences = reader.read(train_file);
+    const std::vector<Sentence> train_sentences = read_conll(train_file);
     log::info("train sentence size: {} from '{}'",
               train_sentences.size(), train_file);
     Token::fixDictionaries();
 
-    const std::vector<Sentence> test_sentences = reader.read(test_file);
+    const std::vector<Sentence> test_sentences = read_conll(test_file);
     log::info("test sentence size: {} from '{}'",
               test_sentences.size(), test_file);
 
@@ -73,27 +73,20 @@ class App {
     }
 
     int epoch = 0;
-    uint64_t batch_size = 1024;
-    uint64_t size = X.size();
-    uint64_t num_batches = size / batch_size + 1;
+    size_t sample_size = X.size();
+    size_t num_batches = sample_size / batch_size + 1;
 
     while (epoch < num_epochs) {
       log::info("iteration {}", epoch + 1);
       double loss = 0;
       double correct = 0;
 
-      for (int batch_index = 0; batch_index < num_batches; ++batch_index) {
-        log::info("process batch {} of {}", batch_index + 1, num_batches);
-
-        int offset = batch_index * batch_size;
-        const uint64_t current_batch_size = std::min(size - offset, batch_size);
-        std::vector<FeatureVector> x(current_batch_size);
-        std::vector<unsigned> t(current_batch_size);
-        int index;
-        for (index = 0; index < current_batch_size; ++index) {
-          x[index] = X[offset + index];
-          t[index] = Y[offset + index];
-        }
+      int batch_index = 0;
+      for (auto& batch : create_batch(X, Y, batch_size, true)) {
+        log::info("process batch {} of {}", ++batch_index, num_batches);
+        auto& x = batch.first;
+        auto& t = batch.second;
+        size_t current_batch_size = x.size();
 
         dynet::ComputationGraph cg;
         classifier->prepare(&cg);
@@ -101,7 +94,7 @@ class App {
         auto y = classifier->run(x);
         auto pred_actions = dynet::as_vector(dynet::TensorTools::argmax(
             cg.incremental_forward(dynet::expr::softmax(y))));
-        for (index = 0; index < current_batch_size; ++index) {
+        for (int index = 0; index < current_batch_size; ++index) {
           if (pred_actions[index] == t[index]) ++correct;
         }
         auto loss_expr = dynet::expr::sum_batches(
@@ -110,8 +103,9 @@ class App {
         cg.backward(loss_expr);
         optimizer.update();
       }
+
       log::info("loss {}", loss);
-      log::info("accuracy {}", correct / size);
+      log::info("accuracy {}", correct / sample_size);
       ++epoch;
 
       if (epoch < 6) {
@@ -123,7 +117,7 @@ class App {
       float las = 0;
       dynet::ComputationGraph cg;
       classifier->prepare(&cg);
-      auto states = parser.parse_batch(test_sentences);
+      auto states = parser.parse_batch(test_sentences, batch_size);
       for (auto& state : states) {
         for (int i = 1; i < state->numTokens(); ++i) {
           ++count;
@@ -179,7 +173,8 @@ int main(int argc, const char* argv[]) {
           "testfile",
           "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
               "penn_treebank/dep/stanford/section/wsj_22.conll"),
-      std::stoi(args.getOptionOrDefault("epoch", "10"))
+      std::stoi(args.getOptionOrDefault("epoch", "10")),
+      std::stoi(args.getOptionOrDefault("batchsize", "32"))
   );
   return 0;
 }

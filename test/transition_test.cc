@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include <coordparser/reader.h>
+#include <coordparser/tools.h>
 #include <coordparser/sentence.h>
 #include <coordparser/state.h>
 #include <coordparser/transition.h>
@@ -18,8 +18,7 @@ class TransitionTest : public ::testing::Test {
     std::string filepath =
         "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
             "penn_treebank/dep/stanford/section/parse-train.conll";
-    ConllReader reader(filepath);
-    sentences_ = reader.read();
+    sentences_ = read_conll(filepath);
   }
 
   virtual void TearDown() {}

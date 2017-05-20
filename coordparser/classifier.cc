@@ -19,7 +19,8 @@ void NeuralClassifier::prepare(dynet::ComputationGraph* cg) {
 
 std::vector<float> NeuralClassifier::compute(const FeatureVector& feature) {
   LOG_TRACE("feature: {}", feature);
-  return dynet::as_vector(cg_->incremental_forward(run({feature})));
+  cg_->clear();
+  return dynet::as_vector(cg_->forward(run({feature})));
 }
 
 std::vector<std::vector<float>> NeuralClassifier::compute_batch(
@@ -28,7 +29,8 @@ std::vector<std::vector<float>> NeuralClassifier::compute_batch(
   std::vector<std::vector<float>> score_matrix;
   score_matrix.reserve(batch_size);
 
-  auto v = dynet::as_vector(cg_->incremental_forward(run(features)));
+  cg_->clear();
+  auto v = dynet::as_vector(cg_->forward(run(features)));
   int dim = v.size() / batch_size;
   auto start = v.begin();
   for (int i = 0; i < batch_size; ++i) {

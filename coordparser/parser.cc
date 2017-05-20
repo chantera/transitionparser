@@ -33,46 +33,76 @@ std::unique_ptr<State> GreedyParser::parse(const Sentence& sentence) {
 
 std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
     const std::vector<Sentence>& sentences) {
-  std::vector<std::unique_ptr<State>> states;
-  std::vector<State*> targets;
-  states.reserve(sentences.size());
-  targets.reserve(sentences.size());
-  for (auto& sentence : sentences) {
-    states.push_back(std::make_unique<State>(sentence));
-    targets.push_back(states.back().get());
-  }
-  std::vector<State*> temp;
-  std::vector<FeatureVector> features;
-  temp.reserve(sentences.size());
-  features.reserve(sentences.size());
+  return parse_batch(sentences, sentences.size());
+}
 
-  while (true) {
-    temp.clear();
-    temp.assign(targets.begin(), targets.end());
+std::vector<std::unique_ptr<State>> GreedyParser::parse_batch(
+    const std::vector<Sentence>& sentences, const size_t batch_size) {
+  size_t num_sentences = sentences.size();
+  size_t num_batches = num_sentences / batch_size + 1;
+
+  std::vector<std::unique_ptr<State>> states;
+  states.reserve(num_sentences);
+
+  std::vector<int> indices(num_sentences);
+  std::iota(std::begin(indices), std::end(indices), 0);
+  std::sort(indices.begin(), indices.end(),
+            [&sentences](size_t idx1, size_t idx2) {
+              return sentences[idx1].length < sentences[idx2].length;
+            });
+
+  std::vector<State*> targets;
+  targets.reserve(batch_size);
+  std::vector<State*> temp;
+  temp.reserve(batch_size);
+  std::vector<FeatureVector> features;
+  features.reserve(batch_size);
+
+  for (int batch_index = 0; batch_index < num_batches; ++batch_index) {
+    LOG_TRACE("parse batch {} of {}", batch_index + 1, num_batches);
+    size_t offset = batch_index * batch_size;
+    const size_t current_batch_size =
+        std::min(num_sentences - offset, batch_size);
+
     targets.clear();
+    temp.clear();
     features.clear();
-    for (auto& state : temp) {
-      if (!Transition::isTerminal(*state)) {
-        targets.push_back(state);
-        features.push_back(std::move(Feature::extract(*state)));
-      }
+
+    for (size_t i = offset; i < offset + current_batch_size; ++i) {
+      auto state = std::make_unique<State>(sentences.at(indices[i]));
+      targets.push_back(state.get());
+      states.push_back(std::move(state));
     }
-    if (targets.empty()) break;
-    std::vector<std::vector<float>> score_matrix =
-        classifier_->compute_batch(features);
-    for (int i = 0; i < targets.size(); ++i) {
-      int best_action = -1;
-      float best_score = -INFINITY;
-      for (unsigned action = 0; action < score_matrix[i].size(); ++action) {
-        if (score_matrix[i][action] > best_score &&
-            Transition::isAllowed(action, *targets[i])) {
-          best_action = action;
-          best_score = score_matrix[i][action];
+
+    while (true) {
+      temp.clear();
+      temp.assign(targets.begin(), targets.end());
+      targets.clear();
+      features.clear();
+      for (const auto& state : temp) {
+        if (!Transition::isTerminal(*state)) {
+          targets.push_back(state);
+          features.push_back(std::move(Feature::extract(*state)));
         }
       }
-      Transition::apply(best_action, targets[i]);
+      if (targets.empty()) break;
+      std::vector<std::vector<float>> score_matrix =
+          classifier_->compute_batch(features);
+      for (int i = 0; i < targets.size(); ++i) {
+        int best_action = -1;
+        float best_score = -INFINITY;
+        for (unsigned action = 0; action < score_matrix[i].size(); ++action) {
+          if (score_matrix[i][action] > best_score &&
+              Transition::isAllowed(action, *targets[i])) {
+            best_action = action;
+            best_score = score_matrix[i][action];
+          }
+        }
+        Transition::apply(best_action, targets[i]);
+      }
     }
   }
+
   return states;
 }
 

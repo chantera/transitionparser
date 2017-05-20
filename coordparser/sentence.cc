@@ -10,7 +10,8 @@
 namespace coordparser {
 
 Sentence::Sentence(const int id, const std::vector<Token>& tokens) :
-    id(id), tokens(tokens) {}
+    id(id), tokens(tokens),
+    length(static_cast<const unsigned int>(tokens.size())) {}
 
 std::ostream& operator<<(std::ostream& os, const Sentence& sentence) {
   os << utility::vector::join(sentence.tokens, ' ');

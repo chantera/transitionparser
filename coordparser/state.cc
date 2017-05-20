@@ -9,7 +9,7 @@ namespace coordparser {
 
 State::State(const Sentence& sentence) :
     sentence_(&sentence),
-    num_tokens_((const unsigned int) sentence.tokens.size()),
+    num_tokens_(sentence.length),
     stack_{0},
     buffer_(1),
     heads_(num_tokens_, 0),

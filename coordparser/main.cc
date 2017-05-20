@@ -124,7 +124,7 @@ class App {
           if (state->head(i) == state->getToken(i).head) {
             uas += 1;
             if (state->label(i)
-                == static_cast<unsigned>(state->getToken(i).label)) {
+                == static_cast<int>(state->getToken(i).label)) {
               las += 1;
             }
           }

@@ -37,7 +37,7 @@ TEST_F(TransitionTest, Oracle) {
     int correct = 0;
     for (int i = 0; i < state.numTokens(); ++i) {
       if (state.head(i) == state.getToken(i).head &&
-          state.label(i) == state.getToken(i).label) {
+          state.label(i) == static_cast<int>(state.getToken(i).label)) {
         ++correct;
       }
     }

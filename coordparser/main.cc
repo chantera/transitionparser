@@ -83,7 +83,10 @@ class App {
 
       int batch_index = 0;
       for (auto& batch : create_batch(X, Y, batch_size, true)) {
-        log::info("process batch {} of {}", ++batch_index, num_batches);
+        ++batch_index;
+        if (batch_index % (num_batches / 10) == 0) {
+          log::info("process batch {} of {}", ++batch_index, num_batches);
+        }
         auto& x = batch.first;
         auto& t = batch.second;
         size_t current_batch_size = x.size();
@@ -109,7 +112,7 @@ class App {
       ++epoch;
 
       if (epoch < 6) {
-        continue;
+        // continue;
       }
 
       float count = 0;

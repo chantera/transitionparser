@@ -277,10 +277,11 @@ static inline std::string strftime_hr(const std::string& format,
   std::string new_format = format;
   const auto d = tp.time_since_epoch();
   const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(d);
-  const std::chrono::duration<u_int64_t, std::micro> microseconds
+  const auto microseconds
       = std::chrono::duration_cast<std::chrono::microseconds>(d - seconds);
   char str[7];
-  snprintf(str, sizeof(str), "%06ld", microseconds.count());
+  snprintf(str, sizeof(str), "%06lld",
+           (long long int) microseconds.count());  // NOLINT(runtime/int)
   string::replace(new_format, "%f", str);
   return date::strftime(new_format, tp);
 }
@@ -389,7 +390,7 @@ class CmdArgs {
 
   std::string getParamOrDefault(unsigned index,
                                 const std::string& defaultValue) {
-    if (index < 0 || index > params_.size()) {
+    if (index > params_.size()) {
       return defaultValue;
     }
     return params_[index];

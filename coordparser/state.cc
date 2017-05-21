@@ -40,8 +40,10 @@ std::ostream& operator<<(std::ostream& os, const State& state) {
   const Token& s1 = state.getToken(state.stack(1), pad);
   const Token& b0 = state.getToken(state.buffer(0), pad);
   const Token& b1 = state.getToken(state.buffer(1), pad);
-  os << utility::string::format("step={}, s0: {}, s1: {}, b0: {}, b1: {}",
-                                state.step(), s0, s1, b0, b1);
+  const Action prev_action = state.step() > 0 ? state.history_.back() : -1;
+  os << utility::string::format("step={}, s0: {}, s1: {}, b0: {}, b1: {}, "
+                                    "prev_action: {}",
+                                state.step(), s0, s1, b0, b1, prev_action);
   return os;
 }
 
@@ -105,7 +107,7 @@ int State::buffer() const {
 int State::buffer(int position) const {
   if (position < 0) return -1;
   const int index = buffer_ + position;
-  return index < num_tokens_ ? -1 : index;
+  return index < num_tokens_ ? index : -1;
 }
 
 int State::head(int index) const {

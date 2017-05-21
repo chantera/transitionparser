@@ -33,9 +33,12 @@ std::vector<std::vector<float>> NeuralClassifier::compute_batch(
   auto v = dynet::as_vector(cg_->forward(run(features)));
   int dim = v.size() / batch_size;
   auto start = v.begin();
+  auto end = start + dim;
   for (int i = 0; i < batch_size; ++i) {
     score_matrix.emplace_back(std::make_move_iterator(start),
-                              std::make_move_iterator(start += dim));
+                              std::make_move_iterator(end));
+    start = end;
+    end = start + dim;
   }
   return score_matrix;
 }

@@ -55,6 +55,9 @@ void Transition::apply(Action action, State* state) {
     case RIGHT:
       right(state, label(action));
       break;
+    default:
+      COORDPARSER_EXCEPTION("INVALID ACTION {}", action);
+      break;
   }
   state->record(action);
 }

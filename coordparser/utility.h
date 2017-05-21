@@ -63,6 +63,9 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
     return os; \
   }
 
+#define COORDPARSER_EXCEPTION(...) \
+  throw std::runtime_error(utility::string::format(__VA_ARGS__))
+
 #define COORDPARSER_ASSERT(expr, msg) { \
     if (!(expr)) { \
       std::ostringstream oss; \

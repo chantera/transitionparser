@@ -15,10 +15,11 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
 STRINGS "Debug" "Dev" "Release" "MinSizeRel" "RelWithDebInfo")
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-  set(DEBUG 1)
+  option(DEBUG "enable debug mode" ON)
 else()
-  set(DEBUG 0)
+  option(DEBUG "enable debug mode" OFF)
 endif()
+option(USE_GPU "use GPU" OFF)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

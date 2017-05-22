@@ -39,7 +39,8 @@
 
 # Application files
 cmake-build-*
-logs/*
+logs
+out
 !.gitkeep
 
 

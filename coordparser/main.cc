@@ -25,16 +25,17 @@ class App {
 
   void train(const std::string& train_file,
              const std::string& test_file,
+             const std::string& out_dir,
              const int num_epochs,
              const int batch_size) {
     log::info("Hello, World!");
 
-    const std::vector<Sentence> train_sentences = read_conll(train_file);
+    const std::vector<Sentence> train_sentences = tools::read_conll(train_file);
     log::info("train sentence size: {} from '{}'",
               train_sentences.size(), train_file);
     Token::fixDictionaries();
 
-    const std::vector<Sentence> test_sentences = read_conll(test_file);
+    const std::vector<Sentence> test_sentences = tools::read_conll(test_file);
     log::info("test sentence size: {} from '{}'",
               test_sentences.size(), test_file);
 
@@ -82,7 +83,7 @@ class App {
       double correct = 0;
 
       int batch_index = 0;
-      for (auto& batch : create_batch(X, Y, batch_size, true)) {
+      for (auto& batch : tools::create_batch(X, Y, batch_size, true)) {
         ++batch_index;
         if (batch_index % (num_batches / 10) == 0) {
           log::info("process batch {} of {}", ++batch_index, num_batches);
@@ -159,24 +160,24 @@ class App {
 }  // namespace coordparser
 
 int main(int argc, const char* argv[]) {
-  utility::CmdArgs args(argc, argv);
-  coordparser::App app;
-  app.initialize(
-      std::stoi(args.getOptionOrDefault("seed", "818426556")),
-      args.getOptionOrDefault("memory", "512,1024,512"),
-      coordparser::log::LogLevel::info,
-      coordparser::log::LogLevel::debug,
-      "/Users/hiroki/work/coordparser/logs");
-  app.train(
-      args.getOptionOrDefault(
-          "trainfile",
-          "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
-              "penn_treebank/dep/stanford/section/parse-train.conll"),
-      args.getOptionOrDefault(
-          "testfile",
-          "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
-              "penn_treebank/dep/stanford/section/wsj_22.conll"),
-      std::stoi(args.getOptionOrDefault("epoch", "10")),
-      std::stoi(args.getOptionOrDefault("batchsize", "32")));
+  try {
+    coordparser::tools::CmdArgs args(argc, argv);
+    coordparser::App app;
+    app.initialize(
+        std::stoi(args.getOptionOrDefault("seed", "0")),
+        args.getOptionOrDefault("memory", "512,1024,512"),
+        coordparser::log::LogLevel::info,
+        coordparser::log::LogLevel::debug,
+        "/Users/hiroki/work/coordparser/logs");
+    app.train(
+        args.getOption("trainfile"),
+        args.getOption("testfile"),
+        args.getOption("outdir"),
+        std::stoi(args.getOptionOrDefault("epoch", "10")),
+        std::stoi(args.getOptionOrDefault("batchsize", "32")));
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    exit(1);
+  }
   return 0;
 }

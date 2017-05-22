@@ -6,7 +6,13 @@
 #ifndef COORDPARSER_UTILITY_H_
 #define COORDPARSER_UTILITY_H_
 
+
+#ifndef USE_INTERNAL_FMT
+#include <spdlog/fmt/fmt.h>
+#include <spdlog/fmt/ostr.h>
+#else
 #include <boost/format.hpp>
+#endif
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -21,14 +27,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-template <class T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& v);
-
-#ifndef USE_INTERNAL_FMT
-#include <spdlog/fmt/fmt.h>
-#include <spdlog/fmt/ostr.h>
-#endif
 
 #define DEFAULT_COPY_AND_ASSIGN(TypeName) \
   TypeName(const TypeName&) = default; \
@@ -294,147 +292,6 @@ static inline std::string strftime_hr(const std::string& format) {
 }
 
 }  // namespace date
-
-class CmdArgs {
- public:
-  CmdArgs(int argc, const char* argv[]) : argc_(argc), argv_(argv) {
-    parse();
-  }
-
-  friend std::ostream& operator<<(std::ostream& os, const CmdArgs& args) {
-    os << "params: ";
-    int i;
-    int size = args.params_.size();
-    for (i = 0; i < size; ++i) {
-      os << args.params_[i];
-      if (i != size - 1) {
-        os << ", ";
-      }
-    }
-    os << ", options: ";
-    size = args.option_keys_.size();
-    for (i = 0; i < size; ++i) {
-      auto& key = args.option_keys_[i];
-      auto& value = args.options_.at(key);
-      os << key << "=" << value;
-      if (i != size - 1) {
-        os << ", ";
-      }
-    }
-    return os;
-  }
-
-  // regex
-  //     ^-(-)?([^=\s]+)(?:[=\s](.*))?$        1   2       3
-  // long name pattern
-  //     --long1=value1      long1 => value1   "-" "long1" "value1"
-  //     --long2 value2      long2 => value2   "-" "long2" "value1"
-  //     --long3             long3 => ""       "-" "long3" ""
-  // short name pattern
-  //     -a=value4           a     => value4   ""  "a"     "value4"
-  //     -b value5           b     => value5   ""  "b"     "value5"
-  //     -c                  c     => ""       ""  "c"     ""
-  //     -def=value6         d     => ""       ""  "def"   "value6"
-  //                         e     => ""       ""  "def"   "value6"
-  //                         f     => value6   ""  "def"   "value6"
-  //     -ghi value7         g     => ""       ""  "ghi"   "value7"
-  //                         h     => ""       ""  "ghi"   "value7"
-  //                         i     => value7   ""  "ghi"   "value7"
-  //     -jkl                j     => ""       ""  "jkl"   ""
-  //                         k     => ""       ""  "jkl"   ""
-  //                         l     => ""       ""  "jkl"   ""
-  void parse() {
-    if (argc_ < 2) {
-      return;
-    }
-    std::regex re("^-(-)?([^=\\s]+)(?:[=\\s](.*))?$");
-    std::cmatch matches;
-    for (int i = 1; i < argc_; ++i) {
-      if (!std::regex_match(argv_[i], matches, re)) {
-        params_.emplace_back(argv_[i]);
-        continue;
-      }
-      std::vector<std::string> names;
-      if (matches[1] == '-') {
-        names.emplace_back(matches[2]);
-      } else {
-        for (char& ch : matches[2].str()) {
-          names.push_back(std::string({ch}));
-        }
-      }
-      std::string name = std::move(names.back());
-      names.pop_back();
-      for (auto& n : names) {
-        add_option(n, "");
-      }
-      if (matches[3].str() != "") {
-        add_option(name, matches[3]);
-      } else if (i + 1 < argc_) {
-        const char* next = argv_[i + 1];
-        if (next[0] != '-') {
-          add_option(name, next);
-          i++;
-        } else {
-          add_option(name, "");
-        }
-      } else {
-        add_option(name, "");
-      }
-    }
-  }
-
-  unsigned getParamSize() {
-    return static_cast<unsigned>(params_.size());
-  }
-
-  std::string getParam(unsigned index) {
-    return params_.at(index);
-  }
-
-  std::string getParamOrDefault(unsigned index,
-                                const std::string& defaultValue) {
-    if (index > params_.size()) {
-      return defaultValue;
-    }
-    return params_[index];
-  }
-
-  bool hasOption(const std::string& key) {
-    return !(options_.find(key) == options_.end());
-  }
-
-  const std::unordered_map<std::string, std::string>& getOptions() {
-    return options_;
-  }
-
-  std::string getOption(const std::string& key) {
-    return options_.at(key);
-  }
-
-  std::string getOptionOrDefault(const std::string& key,
-                                 const std::string& defaultValue) {
-    if (!hasOption(key)) {
-      return defaultValue;
-    }
-    return options_[key];
-  }
-
-  int size() {
-    return argc_;
-  }
-
- private:
-  void add_option(const std::string& key, const std::string& value) {
-    option_keys_.push_back(key);
-    options_[key] = value;
-  }
-
-  const int argc_;
-  const char** argv_;
-  std::vector<std::string> params_;
-  std::vector<std::string> option_keys_;
-  std::unordered_map<std::string, std::string> options_;
-};
 
 }  // namespace utility
 

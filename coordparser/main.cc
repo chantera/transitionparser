@@ -28,7 +28,8 @@ class App {
              const std::string& test_file,
              const std::string& out_dir,
              const int num_epochs,
-             const int batch_size) {
+             const int batch_size,
+             const bool save=false) {
     log::info("Hello, World!");
 
     const std::vector<Sentence> train_sentences = tools::read_conll(train_file);
@@ -113,10 +114,6 @@ class App {
       log::info("accuracy {}", correct / sample_size);
       ++epoch;
 
-      if (epoch < 6) {
-        // continue;
-      }
-
       float count = 0;
       float uas = 0;
       float las = 0;
@@ -138,6 +135,12 @@ class App {
       log::info("UAS: {:.4f}, LAS: {:.4f}",
                 (uas / count) * 100,
                 (las / count) * 100);
+    }
+
+    if (save) {
+      const std::string date = utility::date::strftime("%Y%m%d");
+      tools::archive(utility::string::format("{}/{}.model", out_dir, date),
+                     model);
     }
   }
 

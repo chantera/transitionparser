@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
+#include <boost/program_options.hpp>
 #include <dynet/dynet.h>
 #include <dynet/expr.h>
 #include <dynet/tensor.h>
@@ -159,22 +160,43 @@ class App {
 
 }  // namespace coordparser
 
+namespace cp = coordparser;
+namespace po = boost::program_options;
+
 int main(int argc, const char* argv[]) {
   try {
-    coordparser::tools::CmdArgs args(argc, argv);
-    coordparser::App app;
+    po::options_description option("train option");
+    option.add_options()
+        ("help,h", "show help")
+        ("trainfile", po::value<std::string>()->required(), "train file")
+        ("testfile",  po::value<std::string>()->required(), "test file")
+        ("outdir", po::value<std::string>()->required(), "output directory")
+        ("seed", po::value<unsigned>()->default_value(0), "seed value")
+        ("epoch", po::value<int>()->default_value(10),
+         "number of training iteration")
+        ("batchsize", po::value<int>()->default_value(32), "batch size")
+        ("memory", po::value<std::string>()->default_value("512,1024,512"),
+         "allocating memory");
+
+    po::options_description opt;
+    opt.add(option);
+    po::variables_map args;
+    po::store(po::parse_command_line(argc, argv, opt), args);
+    po::notify(args);
+
+    cp::App app;
     app.initialize(
-        std::stoi(args.getOptionOrDefault("seed", "0")),
-        args.getOptionOrDefault("memory", "512,1024,512"),
-        coordparser::log::LogLevel::info,
-        coordparser::log::LogLevel::debug,
-        "/Users/hiroki/work/coordparser/logs");
+        args["seed"].as<unsigned>(),
+        args["memory"].as<std::string>(),
+        cp::log::LogLevel::info,
+        cp::log::LogLevel::debug,
+        args["outdir"].as<std::string>() + "/logs");
     app.train(
-        args.getOption("trainfile"),
-        args.getOption("testfile"),
-        args.getOption("outdir"),
-        std::stoi(args.getOptionOrDefault("epoch", "10")),
-        std::stoi(args.getOptionOrDefault("batchsize", "32")));
+        args["trainfile"].as<std::string>(),
+        args["testfile"].as<std::string>(),
+        args["outdir"].as<std::string>(),
+        args["epoch"].as<int>(),
+        args["batchsize"].as<int>());
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
     exit(1);

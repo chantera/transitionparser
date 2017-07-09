@@ -3,18 +3,18 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_PARSER_H_
-#define COORDPARSER_PARSER_H_
+#ifndef TRANSITIONPARSER_PARSER_H_
+#define TRANSITIONPARSER_PARSER_H_
 
 #include <memory>
 #include <vector>
 
-#include "coordparser/classifier.h"
-#include "coordparser/sentence.h"
-#include "coordparser/state.h"
-#include "coordparser/utility.h"
+#include "transitionparser/classifier.h"
+#include "transitionparser/sentence.h"
+#include "transitionparser/state.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 class Parser {
  public:
@@ -47,6 +47,6 @@ class GreedyParser : public Parser {
   Action getNextAction(const State& state);
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_PARSER_H_
+#endif  // TRANSITIONPARSER_PARSER_H_

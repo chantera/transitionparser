@@ -3,7 +3,7 @@
 
 set(HEADER_FILES logger.h utility.h parser.h classifier.h state.h sentence.h transition.h token.h tools.h feature.h)
 set(SOURCE_FILES parser.cc classifier.cc state.cc sentence.cc transition.cc token.cc feature.cc)
-add_library(coordparser ${HEADER_FILES} ${SOURCE_FILES})
+add_library(transitionparser ${HEADER_FILES} ${SOURCE_FILES})
 
 add_executable(main main.cc)
-target_link_libraries(main ${Boost_LIBRARIES} ${DYNET_LIBRARIES} coordparser)
+target_link_libraries(main ${Boost_LIBRARIES} ${DYNET_LIBRARIES} transitionparser)

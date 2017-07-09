@@ -3,11 +3,11 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/feature.h"
+#include "transitionparser/feature.h"
 
 #include <utility>
 
-namespace coordparser {
+namespace transitionparser {
 
 const unsigned Feature::kNWordFeatures  = 20;
 const unsigned Feature::kNPosFeatures   = 20;
@@ -139,4 +139,4 @@ std::vector<std::vector<FeatureVector>> Feature::unpackFeatures(
   return {word_features, pos_features, label_features};
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

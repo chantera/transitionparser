@@ -3,11 +3,11 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/sentence.h"
+#include "transitionparser/sentence.h"
 
 #include <vector>
 
-namespace coordparser {
+namespace transitionparser {
 
 Sentence::Sentence(const int id, const std::vector<Token>& tokens) :
     id(id), tokens(tokens),
@@ -18,4 +18,4 @@ std::ostream& operator<<(std::ostream& os, const Sentence& sentence) {
   return os;
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

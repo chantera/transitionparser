@@ -3,12 +3,12 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/transition.h"
+#include "transitionparser/transition.h"
 
 #include <utility>
 #include <vector>
 
-namespace coordparser {
+namespace transitionparser {
 
 int Transition::numActionTypes() {
   return 3;
@@ -56,7 +56,7 @@ void Transition::apply(Action action, State* state) {
       right(state, label(action));
       break;
     default:
-      COORDPARSER_EXCEPTION("INVALID ACTION {}", action);
+      TRANSITIONPARSER_EXCEPTION("INVALID ACTION {}", action);
       break;
   }
   state->record(action);
@@ -137,4 +137,4 @@ bool Transition::doneRightChildrenOf(const State& state, int head) {
   return true;
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

@@ -3,15 +3,15 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/classifier.h"
+#include "transitionparser/classifier.h"
 
 #include <dynet/expr.h>
 
-#include "coordparser/logger.h"
+#include "transitionparser/logger.h"
 
 namespace DE = dynet::expr;
 
-namespace coordparser {
+namespace transitionparser {
 
 void NeuralClassifier::prepare(dynet::ComputationGraph* cg) {
   cg_ = cg;
@@ -112,4 +112,4 @@ DE::Expression MlpClassifier::run(const std::vector<FeatureVector>& X) {
   return y;
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

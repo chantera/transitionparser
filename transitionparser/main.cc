@@ -13,12 +13,12 @@
 #include <string>
 #include <vector>
 
-#include "coordparser/classifier.h"
-#include "coordparser/logger.h"
-#include "coordparser/parser.h"
-#include "coordparser/tools.h"
+#include "transitionparser/classifier.h"
+#include "transitionparser/logger.h"
+#include "transitionparser/parser.h"
+#include "transitionparser/tools.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 class App {
  public:
@@ -157,13 +157,13 @@ class App {
     dynet::initialize(params);
 
     std::string file = log_dir + "/" + utility::date::strftime("%Y%m%d.log");
-    coordparser::AppLogger::init(file, log_level, display_level);
+    transitionparser::AppLogger::init(file, log_level, display_level);
   }
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-namespace cp = coordparser;
+namespace cp = transitionparser;
 namespace po = boost::program_options;
 
 int main(int argc, const char* argv[]) {

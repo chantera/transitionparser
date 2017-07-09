@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_CLASSIFIER_H_
-#define COORDPARSER_CLASSIFIER_H_
+#ifndef TRANSITIONPARSER_CLASSIFIER_H_
+#define TRANSITIONPARSER_CLASSIFIER_H_
 
 #include <dynet/training.h>
 #include <dynet/dynet.h>
@@ -12,11 +12,11 @@
 #include <vector>
 #include <utility>
 
-#include "coordparser/feature.h"
-#include "coordparser/transition.h"
-#include "coordparser/utility.h"
+#include "transitionparser/feature.h"
+#include "transitionparser/transition.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 class State;
 
@@ -92,6 +92,6 @@ class MlpClassifier : public NeuralClassifier {
   dynet::Parameter p_b3_;
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  //  COORDPARSER_CLASSIFIER_H_
+#endif  //  TRANSITIONPARSER_CLASSIFIER_H_

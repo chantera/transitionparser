@@ -3,14 +3,14 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include <coordparser/tools.h>
-#include <coordparser/sentence.h>
-#include <coordparser/state.h>
-#include <coordparser/transition.h>
+#include <transitionparser/tools.h>
+#include <transitionparser/sentence.h>
+#include <transitionparser/state.h>
+#include <transitionparser/transition.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-using namespace coordparser;  // NOLINT(build/namespaces)
+using namespace transitionparser;  // NOLINT(build/namespaces)
 
 class TransitionTest : public ::testing::Test {
  protected:

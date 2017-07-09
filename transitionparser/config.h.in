@@ -1,5 +1,5 @@
-#ifndef COORDPARSER_CONFIG_H_
-#define COORDPARSER_CONFIG_H_
+#ifndef TRANSITIONPARSER_CONFIG_H_
+#define TRANSITIONPARSER_CONFIG_H_
 
 #cmakedefine USE_GPU
 #ifdef USE_GPU
@@ -14,4 +14,4 @@
   #define LOG_DEBUG_ON
 #endif
 
-#endif  //  COORDPARSER_CONFIG_H_
+#endif  //  TRANSITIONPARSER_CONFIG_H_

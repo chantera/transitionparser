@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_TOOLS_H_
-#define COORDPARSER_TOOLS_H_
+#ifndef TRANSITIONPARSER_TOOLS_H_
+#define TRANSITIONPARSER_TOOLS_H_
 
 #include <boost/archive/text_oarchive.hpp>
 
@@ -14,10 +14,10 @@
 #include <utility>
 #include <vector>
 
-#include "coordparser/sentence.h"
-#include "coordparser/utility.h"
+#include "transitionparser/sentence.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 namespace tools {
 
@@ -86,7 +86,7 @@ create_batch(std::vector<X> samples_x,
              const size_t batch_size,
              const bool shuffle = true) {
   size_t sample_size = samples_x.size();
-  COORDPARSER_ASSERT(sample_size = samples_y.size(),
+  TRANSITIONPARSER_ASSERT(sample_size = samples_y.size(),
                      "samples_x and samples_y must be same size");
   size_t num_batches = sample_size / batch_size + 1;
 
@@ -227,7 +227,7 @@ class CmdArgs {
 
   std::string getOption(const std::string& key) {
     if (!hasOption(key)) {
-      COORDPARSER_EXCEPTION("cannot retrieve the option [key={}]", key);
+      TRANSITIONPARSER_EXCEPTION("cannot retrieve the option [key={}]", key);
     }
     return options_.at(key);
   }
@@ -266,6 +266,6 @@ void archive(const std::string& filepath, const T& object) {
 
 }  // namespace tools
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_TOOLS_H_
+#endif  // TRANSITIONPARSER_TOOLS_H_

@@ -3,9 +3,9 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/state.h"
+#include "transitionparser/state.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 State::State(const Sentence& sentence) :
     sentence_(&sentence),
@@ -30,7 +30,7 @@ State::State(const State& prev_state,
     heads_(heads),
     labels_(labels),
     history_(prev_state.history_.begin(), prev_state.history_.end()) {
-  COORDPARSER_ASSERT(buffer_ <= num_tokens_, "buffer exceeds num_tokens.");
+  TRANSITIONPARSER_ASSERT(buffer_ <= num_tokens_, "buffer exceeds num_tokens.");
   history_.push_back(action);
 }
 
@@ -163,4 +163,4 @@ const std::vector<Action>& State::history() const {
   return history_;
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

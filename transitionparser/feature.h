@@ -3,15 +3,15 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_FEATURE_H_
-#define COORDPARSER_FEATURE_H_
+#ifndef TRANSITIONPARSER_FEATURE_H_
+#define TRANSITIONPARSER_FEATURE_H_
 
 #include <vector>
 
-#include "coordparser/state.h"
-#include "coordparser/utility.h"
+#include "transitionparser/state.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 class State;
 
@@ -33,6 +33,6 @@ class Feature {
   ~Feature() = delete;
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_FEATURE_H_
+#endif  // TRANSITIONPARSER_FEATURE_H_

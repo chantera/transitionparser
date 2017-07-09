@@ -3,15 +3,15 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_SENTENCE_H_
-#define COORDPARSER_SENTENCE_H_
+#ifndef TRANSITIONPARSER_SENTENCE_H_
+#define TRANSITIONPARSER_SENTENCE_H_
 
 #include <vector>
 
-#include "coordparser/token.h"
-#include "coordparser/utility.h"
+#include "transitionparser/token.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 struct Sentence {
  public:
@@ -27,6 +27,6 @@ struct Sentence {
   const unsigned length;
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_SENTENCE_H_
+#endif  // TRANSITIONPARSER_SENTENCE_H_

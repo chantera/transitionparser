@@ -3,11 +3,11 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_LOGGER_H_
-#define COORDPARSER_LOGGER_H_
+#ifndef TRANSITIONPARSER_LOGGER_H_
+#define TRANSITIONPARSER_LOGGER_H_
 
 #ifdef HAVE_CONFIG_H
-#include "coordparser/config.h"
+#include "transitionparser/config.h"
 #endif
 
 #include <spdlog/spdlog.h>
@@ -22,9 +22,9 @@
 #include <utility>
 #include <vector>
 
-#include "coordparser/utility.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 namespace log {
   using LogLevel = spdlog::level::level_enum;
@@ -214,6 +214,6 @@ log::trace("[" __FILE__ " line #" LOG_STR_HELPER(__LINE__) "] " __VA_ARGS__)
 #define LOG_DEBUG(...)
 #endif
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_LOGGER_H_
+#endif  // TRANSITIONPARSER_LOGGER_H_

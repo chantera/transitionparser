@@ -3,9 +3,9 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/token.h"
+#include "transitionparser/token.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 // cppcheck-suppress uninitMemberVar
 Token::Token(const std::vector<string>& attributes)
@@ -101,4 +101,4 @@ std::unordered_map<Token::Attribute, Token::Dict> Token::attribute_dicts_ = {
     {Token::Attribute::DEPREL, Dict()},
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser

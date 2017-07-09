@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_UTILITY_H_
-#define COORDPARSER_UTILITY_H_
+#ifndef TRANSITIONPARSER_UTILITY_H_
+#define TRANSITIONPARSER_UTILITY_H_
 
 
 #ifndef USE_INTERNAL_FMT
@@ -61,10 +61,10 @@
     return os; \
   }
 
-#define COORDPARSER_EXCEPTION(...) \
+#define TRANSITIONPARSER_EXCEPTION(...) \
   throw std::runtime_error(utility::string::format(__VA_ARGS__))
 
-#define COORDPARSER_ASSERT(expr, msg) { \
+#define TRANSITIONPARSER_ASSERT(expr, msg) { \
     if (!(expr)) { \
       std::ostringstream oss; \
       oss << msg; \
@@ -301,4 +301,4 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
   return os;
 }
 
-#endif  // COORDPARSER_UTILITY_H_
+#endif  // TRANSITIONPARSER_UTILITY_H_

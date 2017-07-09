@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_STATE_H_
-#define COORDPARSER_STATE_H_
+#ifndef TRANSITIONPARSER_STATE_H_
+#define TRANSITIONPARSER_STATE_H_
 
 #include <deque>
 #include <memory>
@@ -12,10 +12,10 @@
 #include <stack>
 #include <vector>
 
-#include "coordparser/transition.h"
-#include "coordparser/sentence.h"
+#include "transitionparser/transition.h"
+#include "transitionparser/sentence.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 typedef int Action;
 class Feature;
@@ -106,6 +106,6 @@ class State {
   DISALLOW_COPY_AND_ASSIGN(State);
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_STATE_H_
+#endif  // TRANSITIONPARSER_STATE_H_

@@ -3,7 +3,7 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#include "coordparser/parser.h"
+#include "transitionparser/parser.h"
 
 #include <dynet/expr.h>
 #include <dynet/tensor.h>
@@ -12,10 +12,10 @@
 #include <utility>
 #include <vector>
 
-#include "coordparser/feature.h"
-#include "coordparser/logger.h"
+#include "transitionparser/feature.h"
+#include "transitionparser/logger.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 Parser::Parser(std::shared_ptr<Classifier> classifier) :
     classifier_(classifier) {}
@@ -124,4 +124,4 @@ Action GreedyParser::getNextAction(const State& state) {
   return static_cast<Action>(best_action);
 }
 
-}  // namespace coordparser
+}  // namespace transitionparser

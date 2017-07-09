@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(coordparser)
+project(transitionparser)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -33,8 +33,8 @@ find_package(DyNet REQUIRED)
 set(DYNET_LIBRARIES "dynet")
 
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/coordparser/config.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/coordparser/config.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/transitionparser/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/transitionparser/config.h
 )
 add_definitions(-DHAVE_CONFIG_H)
 
@@ -52,7 +52,7 @@ link_directories(
   ${DyNet_LIBRARY_DIR}
 )
 
-add_subdirectory(coordparser)
+add_subdirectory(transitionparser)
 
 enable_testing()
 set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/external/googletest)

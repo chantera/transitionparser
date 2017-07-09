@@ -3,8 +3,8 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_TOKEN_H_
-#define COORDPARSER_TOKEN_H_
+#ifndef TRANSITIONPARSER_TOKEN_H_
+#define TRANSITIONPARSER_TOKEN_H_
 
 #include <iostream>
 #include <string>
@@ -14,7 +14,7 @@
 
 using std::string;
 
-namespace coordparser {
+namespace transitionparser {
 
 struct Token {
  public:
@@ -122,6 +122,6 @@ struct Token {
   static std::unordered_map<Attribute, Dict> attribute_dicts_;
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_TOKEN_H_
+#endif  // TRANSITIONPARSER_TOKEN_H_

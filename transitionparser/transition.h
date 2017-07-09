@@ -3,15 +3,15 @@
 // Copyright (c) 2017 Hiroki Teranishi. All rights reserved.
 //
 
-#ifndef COORDPARSER_TRANSITION_H_
-#define COORDPARSER_TRANSITION_H_
+#ifndef TRANSITIONPARSER_TRANSITION_H_
+#define TRANSITIONPARSER_TRANSITION_H_
 
 #include <memory>
 
-#include "coordparser/state.h"
-#include "coordparser/utility.h"
+#include "transitionparser/state.h"
+#include "transitionparser/utility.h"
 
-namespace coordparser {
+namespace transitionparser {
 
 class State;
 
@@ -68,6 +68,6 @@ class Transition {
   ~Transition() = delete;
 };
 
-}  // namespace coordparser
+}  // namespace transitionparser
 
-#endif  // COORDPARSER_TRANSITION_H_
+#endif  // TRANSITIONPARSER_TRANSITION_H_

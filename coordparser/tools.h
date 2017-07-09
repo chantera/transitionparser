@@ -38,7 +38,6 @@ std::vector<Sentence> read_conll(const std::string& filepath) {
     if (line.length() == 0) {
       if (tokens.size() > 1) {
         sentences.emplace_back(++count, tokens);
-        if (sentences.size() >= 999) break;
         tokens.clear();
         tokens.push_back(std::move(Token::createRoot()));
       }

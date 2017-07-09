@@ -18,7 +18,7 @@ class TransitionTest : public ::testing::Test {
     std::string filepath =
         "/Users/hiroki/Desktop/NLP/data/archive.20161120/"
             "penn_treebank/dep/stanford/section/parse-train.conll";
-    sentences_ = read_conll(filepath);
+    sentences_ = tools::read_conll(filepath);
   }
 
   virtual void TearDown() {}

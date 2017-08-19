@@ -9,8 +9,6 @@
 
 #include "transitionparser/logger.h"
 
-namespace DE = dynet::expr;
-
 namespace transitionparser {
 
 void NeuralClassifier::prepare(dynet::ComputationGraph* cg) {
@@ -43,7 +41,7 @@ std::vector<std::vector<float>> NeuralClassifier::compute_batch(
   return score_matrix;
 }
 
-MlpClassifier::MlpClassifier(dynet::Model& model,
+MlpClassifier::MlpClassifier(dynet::ParameterCollection& model,
                              const unsigned word_vocab_size,
                              const unsigned word_embed_size,
                              const unsigned word_feature_size,
@@ -83,31 +81,31 @@ MlpClassifier::MlpClassifier(dynet::Model& model,
     p_W3_(model.add_parameters({output_size, hidden2_size})),
     p_b3_(model.add_parameters({output_size})) {}
 
-DE::Expression MlpClassifier::run(const std::vector<FeatureVector>& X) {
-  std::vector<DE::Expression> embeddings;
+dynet::Expression MlpClassifier::run(const std::vector<FeatureVector>& X) {
+  std::vector<dynet::Expression> embeddings;
   auto feature_tensor = Feature::unpackFeatures(X);
   for (auto feature_batch : feature_tensor[0]) {
-    embeddings.push_back(DE::lookup(*cg_, p_lookup_w_, feature_batch));
+    embeddings.push_back(dynet::lookup(*cg_, p_lookup_w_, feature_batch));
   }
   for (auto feature_batch : feature_tensor[1]) {
-    embeddings.push_back(DE::lookup(*cg_, p_lookup_p_, feature_batch));
+    embeddings.push_back(dynet::lookup(*cg_, p_lookup_p_, feature_batch));
   }
   for (auto feature_batch : feature_tensor[2]) {
-    embeddings.push_back(DE::lookup(*cg_, p_lookup_l_, feature_batch));
+    embeddings.push_back(dynet::lookup(*cg_, p_lookup_l_, feature_batch));
   }
-  DE::Expression h0 = DE::concatenate(embeddings);
+  dynet::Expression h0 = dynet::concatenate(embeddings);
 
-  DE::Expression W1 = DE::parameter(*cg_, p_W1_);
-  DE::Expression b1 = DE::parameter(*cg_, p_b1_);
-  DE::Expression h1 = DE::rectify(W1 * h0 + b1);
+  dynet::Expression W1 = dynet::parameter(*cg_, p_W1_);
+  dynet::Expression b1 = dynet::parameter(*cg_, p_b1_);
+  dynet::Expression h1 = dynet::rectify(W1 * h0 + b1);
 
-  DE::Expression W2 = DE::parameter(*cg_, p_W2_);
-  DE::Expression b2 = DE::parameter(*cg_, p_b2_);
-  DE::Expression h2 = DE::rectify(W2 * h1 + b2);
+  dynet::Expression W2 = dynet::parameter(*cg_, p_W2_);
+  dynet::Expression b2 = dynet::parameter(*cg_, p_b2_);
+  dynet::Expression h2 = dynet::rectify(W2 * h1 + b2);
 
-  DE::Expression W3 = DE::parameter(*cg_, p_W3_);
-  DE::Expression b3 = DE::parameter(*cg_, p_b3_);
-  DE::Expression y = W3 * h2 + b3;
+  dynet::Expression W3 = dynet::parameter(*cg_, p_W3_);
+  dynet::Expression b3 = dynet::parameter(*cg_, p_b3_);
+  dynet::Expression y = W3 * h2 + b3;
 
   return y;
 }

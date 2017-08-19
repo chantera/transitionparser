@@ -6,8 +6,6 @@
 #ifndef TRANSITIONPARSER_TOOLS_H_
 #define TRANSITIONPARSER_TOOLS_H_
 
-#include <boost/archive/text_oarchive.hpp>
-
 #include <algorithm>
 #include <random>
 #include <string>
@@ -257,13 +255,6 @@ class CmdArgs {
   std::vector<std::string> option_keys_;
   std::unordered_map<std::string, std::string> options_;
 };
-
-template<class T>
-void archive(const std::string& filepath, const T& object) {
-  std::ofstream ofs(filepath);
-  boost::archive::text_oarchive oar(ofs);
-  oar << object;
-}
 
 }  // namespace tools
 

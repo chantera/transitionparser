@@ -6,6 +6,7 @@
 #include <boost/program_options.hpp>
 #include <dynet/dynet.h>
 #include <dynet/expr.h>
+#include <dynet/io.h>
 #include <dynet/tensor.h>
 
 #include <iostream>
@@ -41,7 +42,7 @@ class App {
     log::info("test sentence size: {} from '{}'",
               test_sentences.size(), test_file);
 
-    dynet::Model model;
+    dynet::ParameterCollection model;
     auto optimizer = dynet::SimpleSGDTrainer(model);
 
     std::shared_ptr<NeuralClassifier> classifier
@@ -99,12 +100,12 @@ class App {
 
         auto y = classifier->run(x);
         auto pred_actions = dynet::as_vector(dynet::TensorTools::argmax(
-            cg.incremental_forward(dynet::expr::softmax(y))));
+            cg.incremental_forward(dynet::softmax(y))));
         for (unsigned index = 0; index < current_batch_size; ++index) {
           if (pred_actions[index] == t[index]) ++correct;
         }
-        auto loss_expr = dynet::expr::sum_batches(
-            dynet::expr::pickneglogsoftmax(y, t)) / current_batch_size;
+        auto loss_expr = dynet::sum_batches(
+            dynet::pickneglogsoftmax(y, t)) / current_batch_size;
         loss += dynet::as_scalar(cg.incremental_forward(loss_expr));
         cg.backward(loss_expr);
         optimizer.update();
@@ -138,14 +139,17 @@ class App {
     }
 
     if (save) {
-      const std::string date = utility::date::strftime("%Y%m%d");
-      tools::archive(utility::string::format("{}/{}.model", out_dir, date),
-                     model);
+      {
+        const std::string date = utility::date::strftime("%Y%m%d");
+        dynet::TextFileSaver saver(
+            utility::string::format("{}/{}.model", out_dir, date));
+        saver.save(model);
+      }
     }
   }
 
   void initialize(unsigned random_seed = 0,
-                  const std::string& memory = "512,1024,512",
+                  const std::string& memory = "512,1024,512,512",
                   log::LogLevel log_level = log::LogLevel::info,
                   log::LogLevel display_level = log::LogLevel::debug,
                   const std::string& log_dir = "logs") {
@@ -163,7 +167,7 @@ class App {
 
 }  // namespace transitionparser
 
-namespace cp = transitionparser;
+namespace tp = transitionparser;
 namespace po = boost::program_options;
 
 int main(int argc, const char* argv[]) {
@@ -178,7 +182,7 @@ int main(int argc, const char* argv[]) {
         ("epoch", po::value<int>()->default_value(10),
          "number of training iteration")
         ("batchsize", po::value<int>()->default_value(32), "batch size")
-        ("memory", po::value<std::string>()->default_value("512,1024,512"),
+        ("memory", po::value<std::string>()->default_value("512,1024,512,512"),
          "allocating memory");
 
     po::options_description opt;
@@ -187,12 +191,12 @@ int main(int argc, const char* argv[]) {
     po::store(po::parse_command_line(argc, argv, opt), args);
     po::notify(args);
 
-    cp::App app;
+    tp::App app;
     app.initialize(
         args["seed"].as<unsigned>(),
         args["memory"].as<std::string>(),
-        cp::log::LogLevel::info,
-        cp::log::LogLevel::debug,
+        tp::log::LogLevel::info,
+        tp::log::LogLevel::debug,
         args["outdir"].as<std::string>() + "/logs");
     app.train(
         args["trainfile"].as<std::string>(),

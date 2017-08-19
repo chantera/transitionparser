@@ -39,8 +39,10 @@
 
 # Application files
 cmake-build-*
+build
 logs
 out
+Testing
 !.gitkeep
 
 

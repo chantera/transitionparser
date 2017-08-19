@@ -43,7 +43,7 @@ class NeuralClassifier : public Classifier {
   std::vector<std::vector<float>> compute_batch(
       const std::vector<FeatureVector>& features) override;
 
-  virtual dynet::expr::Expression run(const std::vector<FeatureVector>& X) = 0;
+  virtual dynet::Expression run(const std::vector<FeatureVector>& X) = 0;
 
  protected:
   dynet::ComputationGraph* cg_ = nullptr;
@@ -51,7 +51,7 @@ class NeuralClassifier : public Classifier {
 
 class MlpClassifier : public NeuralClassifier {
  public:
-  MlpClassifier(dynet::Model& model,  // NOLINT(runtime/references)
+  MlpClassifier(dynet::ParameterCollection& model,  // NOLINT(runtime/references)
                 const unsigned word_vocab_size,
                 const unsigned word_embed_size,
                 const unsigned word_feature_size,
@@ -65,7 +65,7 @@ class MlpClassifier : public NeuralClassifier {
                 const unsigned hidden2_size,
                 const unsigned output_size);
 
-  dynet::expr::Expression run(const std::vector<FeatureVector>& X) override;
+  dynet::Expression run(const std::vector<FeatureVector>& X) override;
 
  protected:
   const unsigned word_vocab_size_;

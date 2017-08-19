@@ -116,8 +116,7 @@ class AppLogger : public Logger {
 #ifdef _WIN32
         std::make_shared<spdlog::sinks::wincolor_stdout_sink_st>();
 #else
-        std::make_shared<spdlog::sinks::ansicolor_sink>(
-            spdlog::sinks::stdout_sink_st::instance());
+        std::make_shared<spdlog::sinks::ansicolor_stdout_sink_st>();
 #endif
     file_sink_st->set_level(log_level);
     stdout_color_st->set_level(display_level);

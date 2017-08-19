@@ -8,6 +8,8 @@
 
 
 #ifndef USE_INTERNAL_FMT
+template <class T>
+std::ostream& operator<<(std::ostream&, const std::vector<T>&);
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/fmt/ostr.h>
 #else
